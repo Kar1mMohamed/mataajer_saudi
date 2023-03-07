@@ -43,7 +43,7 @@ class FavoritesView extends GetView<FavoritesController> {
   }
 
   Widget _favoriteCard(int index) {
-    bool isLoved = index.isOdd;
+    bool isLoved = true;
     String categoryString = controller
         .categoriesList[Random().nextInt(controller.categoriesList.length)];
     return InkWell(

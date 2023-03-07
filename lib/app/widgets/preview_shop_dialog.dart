@@ -18,7 +18,7 @@ class PreviewShopDialog extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(50.r),
+          borderRadius: BorderRadius.circular(12.r),
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -269,18 +269,28 @@ class PreviewShopDialog extends StatelessWidget {
                   height: 100.h,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) => Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(50.r),
-                          child: Image.network(
-                            'https://firebasestorage.googleapis.com/v0/b/mataajer-saudi.appspot.com/o/%D8%A7%D9%84%D9%88%D8%A7%D8%AF%D9%8A.jpg?alt=media&token=29 af9bc2-953f-48e5-a5ce-65a0ceeacdda',
-                            height: 75.h,
+                    itemBuilder: (context, index) => InkWell(
+                      focusColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                        Get.back();
+                        Get.dialog(const PreviewShopDialog());
+                      },
+                      child: Column(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(50.r),
+                            child: Image.network(
+                              'https://firebasestorage.googleapis.com/v0/b/mataajer-saudi.appspot.com/o/%D8%A7%D9%84%D9%88%D8%A7%D8%AF%D9%8A.jpg?alt=media&token=29 af9bc2-953f-48e5-a5ce-65a0ceeacdda',
+                              height: 75.h,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 10.h),
-                        const Text('متجر مشابه'),
-                      ],
+                          SizedBox(height: 10.h),
+                          const Text('متجر مشابه'),
+                        ],
+                      ),
                     ),
                     separatorBuilder: (context, index) => SizedBox(width: 20.w),
                     itemCount: 5,

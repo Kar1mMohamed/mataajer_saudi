@@ -38,6 +38,10 @@ class HomeView extends GetView<HomeController> {
                     ),
                   ),
                   InkWell(
+                    focusColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                    splashColor: Colors.transparent,
                     onTap: () {
                       Get.bottomSheet(_categoriesBottomSheet());
                     },
@@ -257,6 +261,10 @@ class HomeView extends GetView<HomeController> {
   Widget _categoryCard(int index) {
     bool isActive = controller.categorySelectedIndex == index;
     return InkWell(
+      focusColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      splashColor: Colors.transparent,
       onTap: () {
         controller.updateCategorySelectedIndex(index);
       },
@@ -299,6 +307,10 @@ class HomeView extends GetView<HomeController> {
     String categoryString = controller
         .categoriesList[Random().nextInt(controller.categoriesList.length)];
     return InkWell(
+      focusColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      splashColor: Colors.transparent,
       onTap: () => Get.dialog(const PreviewShopDialog()),
       child: Container(
         padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
@@ -317,6 +329,10 @@ class HomeView extends GetView<HomeController> {
               top: 10,
               left: 5,
               child: InkWell(
+                focusColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                splashColor: Colors.transparent,
                 onTap: () {
                   // controller.updateLoved(index);
                   print('loved');
@@ -392,6 +408,10 @@ class HomeView extends GetView<HomeController> {
           style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500)),
       leading: Builder(builder: (context) {
         return InkWell(
+          focusColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+          splashColor: Colors.transparent,
           onTap: () => Scaffold.of(context).openDrawer(),
           child: Image.asset(
             Assets.menuIcon,
@@ -487,6 +507,10 @@ class HomeView extends GetView<HomeController> {
                         bool isActive =
                             controller.categorySelectedIndex == index;
                         return InkWell(
+                          focusColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          splashColor: Colors.transparent,
                           onTap: () {
                             controller.updateCategorySelectedIndex(index);
                           },
