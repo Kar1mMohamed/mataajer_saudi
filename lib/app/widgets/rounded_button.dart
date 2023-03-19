@@ -18,7 +18,7 @@ class RoundedButton extends StatelessWidget {
       this.isFilled = true,
       this.textStyle,
       required this.press,
-      this.color = MataajerTheme.mainColor,
+      this.color = const Color(0xFFB786CA),
       this.textColor = Colors.white,
       this.icon,
       this.width,
@@ -40,7 +40,7 @@ class RoundedButton extends StatelessWidget {
           // primary: color,
           backgroundColor: color ?? (isFilled! ? null : Colors.white),
           padding: EdgeInsets.symmetric(
-              horizontal: 40, vertical: verticalPadding ?? 10),
+              horizontal: 20, vertical: verticalPadding ?? 15),
           shape: RoundedRectangleBorder(
             side: isFilled!
                 ? BorderSide.none
@@ -52,7 +52,7 @@ class RoundedButton extends StatelessWidget {
           ),
 
           textStyle: TextStyle(
-            fontFamily: 'Cairo',
+            fontFamily: 'Tajawal',
             color: isFilled!
                 ? Colors.white
                 : (textColor ?? MataajerTheme.mainColor),

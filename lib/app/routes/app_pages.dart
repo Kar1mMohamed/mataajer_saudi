@@ -1,5 +1,9 @@
 import 'package:get/get.dart';
 
+import '../modules/ResetPassword/bindings/reset_password_binding.dart';
+import '../modules/ResetPassword/views/reset_password_view.dart';
+import '../modules/ShopLoginAndRegister/bindings/shop_login_and_register_binding.dart';
+import '../modules/ShopLoginAndRegister/views/shop_login_and_register_view.dart';
 import '../modules/favorites/bindings/favorites_binding.dart';
 import '../modules/favorites/views/favorites_view.dart';
 import '../modules/home/bindings/home_binding.dart';
@@ -14,7 +18,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.LOGIN;
+  static const INITIAL = Routes.RESET_PASSWORD;
 
   static final routes = [
     GetPage(
@@ -36,6 +40,16 @@ class AppPages {
       name: _Paths.FAVORITES,
       page: () => const FavoritesView(),
       binding: FavoritesBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHOP_LOGIN_AND_REGISTER,
+      page: () => const ShopLoginAndRegisterView(),
+      binding: ShopLoginAndRegisterBinding(),
+    ),
+    GetPage(
+      name: _Paths.RESET_PASSWORD,
+      page: () => const ResetPasswordView(),
+      binding: ResetPasswordBinding(),
     ),
   ];
 }

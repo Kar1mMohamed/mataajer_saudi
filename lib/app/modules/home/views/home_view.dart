@@ -211,7 +211,7 @@ class HomeView extends GetView<HomeController> {
                 // );
                 return GridView.count(
                   crossAxisCount: crossCount,
-                  childAspectRatio: 1.5,
+                  childAspectRatio: 1.4,
                   scrollDirection: Axis.horizontal,
                   children:
                       List.generate(list.length, (index) => _shopCard(index)),
@@ -272,7 +272,7 @@ class HomeView extends GetView<HomeController> {
         margin: EdgeInsets.only(right: index != 0 ? 10.w : 0.00),
         padding: EdgeInsets.all(10.sp),
         decoration: BoxDecoration(
-          color: isActive ? MataajerTheme.mainColor : Colors.grey[200],
+          color: isActive ? MataajerTheme.mainColor : Colors.white,
           borderRadius: BorderRadius.circular(25.r),
           border: Border.all(
             color: MataajerTheme.mainColor,
@@ -344,7 +344,8 @@ class HomeView extends GetView<HomeController> {
                 ),
               ),
             ),
-            Center(
+            Align(
+              alignment: Alignment.center,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -352,7 +353,7 @@ class HomeView extends GetView<HomeController> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(50.r),
                     child: Image.network(
-                      'https://firebasestorage.googleapis.com/v0/b/mataajer-saudi.appspot.com/o/%D8%A7%D9%84%D9%88%D8%A7%D8%AF%D9%8A.jpg?alt=media&token=29 af9bc2-953f-48e5-a5ce-65a0ceeacdda',
+                      'https://firebasestorage.googleapis.com/v0/b/mataajer-saudi.appspot.com/o/%d8%a7%d9%84%d9%88%d8%a7%d8%af%d9%8a.jpg?alt=media&token=29af9bc2-953f-48e5-a5ce-65a0ceeacdda',
                       height: 75.h,
                     ),
                   ),
@@ -404,8 +405,10 @@ class HomeView extends GetView<HomeController> {
       shadowColor: Colors.transparent,
       foregroundColor: Colors.transparent,
       elevation: 0,
-      title: Text('الرئيسية',
-          style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500)),
+      title: Text(
+        'الرئيسية',
+        style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500),
+      ),
       leading: Builder(builder: (context) {
         return InkWell(
           focusColor: Colors.transparent,
@@ -833,6 +836,5 @@ class HomeView extends GetView<HomeController> {
   //       ),
   //     ),
   //   );
-
   // }
 }

@@ -7,6 +7,8 @@ abstract class Routes {
   static const LOGIN = _Paths.LOGIN;
   static const NOTIFICATIONS = _Paths.NOTIFICATIONS;
   static const FAVORITES = _Paths.FAVORITES;
+  static const SHOP_LOGIN_AND_REGISTER = _Paths.SHOP_LOGIN_AND_REGISTER;
+  static const RESET_PASSWORD = _Paths.RESET_PASSWORD;
 }
 
 abstract class _Paths {
@@ -15,4 +17,6 @@ abstract class _Paths {
   static const LOGIN = '/login';
   static const NOTIFICATIONS = '/notifications';
   static const FAVORITES = '/favorites';
+  static const SHOP_LOGIN_AND_REGISTER = '/shop-login-and-register';
+  static const RESET_PASSWORD = '/reset-password';
 }

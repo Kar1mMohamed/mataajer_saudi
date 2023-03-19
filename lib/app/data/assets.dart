@@ -12,4 +12,12 @@ abstract class Assets {
   static String bigLoveIcon = 'assets/png/bigLoveIcon.png';
   static String allIcon = 'assets/png/allIcon.png';
   static String homeBanner = 'assets/images/homeBanner.png';
+  static String loginRegisterImage = 'assets/images/loginRegisterImage.png';
+  static String emailPNG = 'assets/images/email.png';
+  static String passwordPNG = 'assets/images/password.png';
+  static String imageVectorPNG = 'assets/png/imageVector.png';
+  static String hidePNG = 'assets/png/hide.png';
+  static String marketVectorPNG = 'assets/png/marketVector.png';
+  static String wrongCheck2PNG = 'assets/png/wrongCheck2.png';
+  static String rightCheck2PNG = 'assets/png/rightCheck2.png';
 }

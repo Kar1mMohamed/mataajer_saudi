@@ -266,7 +266,7 @@ class PreviewShopDialog extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: SizedBox(
-                  height: 100.h,
+                  height: Get.context!.height * 0.18,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) => InkWell(
