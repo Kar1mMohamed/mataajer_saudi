@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
+import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
@@ -16,71 +17,73 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      drawer: const MyDrawer(),
+      drawer: MyDrawer(shops: controller.shops, isShop: controller.isShop),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _search(),
-            ),
-            SizedBox(height: 20.h),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'تصنيفات المتاجر',
-                    style: TextStyle(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  InkWell(
-                    focusColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    onTap: () {
-                      Get.bottomSheet(_categoriesBottomSheet());
-                    },
-                    child: Text(
-                      'عرض المزيد ',
+        child: GetBuilder<HomeController>(builder: (_) {
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _search(),
+              ),
+              SizedBox(height: 20.h),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'تصنيفات المتاجر',
                       style: TextStyle(
-                        color: MataajerTheme.mainColorDarken,
                         fontSize: 15.sp,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 10.h),
-            SizedBox(
-              height: 40.h,
-              child: GetBuilder<HomeController>(
-                  id: 'categories',
-                  builder: (_) {
-                    return ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: controller.categoriesList.length,
-                      itemBuilder: (context, index) {
-                        return _categoryCard(index);
+                    InkWell(
+                      focusColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                        Get.bottomSheet(_categoriesBottomSheet());
                       },
-                    );
-                  }),
-            ),
-            SizedBox(height: 20.h),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _homeBanner(context),
-            ),
-            SizedBox(height: 20.h),
-            _shops(),
-          ],
-        ),
+                      child: Text(
+                        'عرض المزيد ',
+                        style: TextStyle(
+                          color: MataajerTheme.mainColorDarken,
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10.h),
+              SizedBox(
+                height: 40.h,
+                child: GetBuilder<HomeController>(
+                    id: 'categories',
+                    builder: (_) {
+                      return ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: controller.categoriesList.length,
+                        itemBuilder: (context, index) {
+                          return _categoryCard(index);
+                        },
+                      );
+                    }),
+              ),
+              SizedBox(height: 20.h),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _homeBanner(context),
+              ),
+              SizedBox(height: 20.h),
+              _shops(),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -148,13 +151,12 @@ class HomeView extends GetView<HomeController> {
   Widget _shops() {
     return Column(
       children: [
-        _shopItem('متاجر مثبتة', Icons.keyboard_arrow_up,
-            controller.categoriesList, 1),
-        _shopItem('الاكثر زيارة', Icons.remove_red_eye_outlined,
-            controller.categoriesList, 2),
-        _shopItem('الاكثر عروضا', Icons.percent, controller.categoriesList, 2),
-        _shopItem('متاجر اخرى', Icons.maps_home_work_outlined,
-            controller.categoriesList, 2),
+        _shopItem('متاجر مثبتة', Icons.keyboard_arrow_up, controller.shops, 1),
+        _shopItem(
+            'الاكثر زيارة', Icons.remove_red_eye_outlined, controller.shops, 2),
+        _shopItem('الاكثر عروضا', Icons.percent, controller.shops, 2),
+        _shopItem(
+            'متاجر اخرى', Icons.maps_home_work_outlined, controller.shops, 2),
       ],
     );
   }
@@ -213,8 +215,8 @@ class HomeView extends GetView<HomeController> {
                   crossAxisCount: crossCount,
                   childAspectRatio: 1.4,
                   scrollDirection: Axis.horizontal,
-                  children:
-                      List.generate(list.length, (index) => _shopCard(index)),
+                  children: List.generate(
+                      list.length, (index) => _shopCard(list[index])),
                 );
               }),
         ),
@@ -289,7 +291,7 @@ class HomeView extends GetView<HomeController> {
                 color: !isActive ? MataajerTheme.mainColor : null,
               ),
             Text(
-              controller.categoriesList[index],
+              controller.categoriesList[index].name,
               style: TextStyle(
                 color: isActive ? Colors.white : Colors.black,
                 fontSize: 13.sp,
@@ -302,101 +304,105 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _shopCard(int index) {
-    bool isLoved = index.isOdd;
-    String categoryString = controller
-        .categoriesList[Random().nextInt(controller.categoriesList.length)];
-    return InkWell(
-      focusColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      hoverColor: Colors.transparent,
-      splashColor: Colors.transparent,
-      onTap: () => Get.dialog(const PreviewShopDialog()),
-      child: Container(
-        padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
-        margin: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp, bottom: 10.0.sp),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(25.r),
-          // border: Border.all(
-          //   color: MataajerTheme.mainColor,
-          //   width: 1,
-          // ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: 10,
-              left: 5,
-              child: InkWell(
-                focusColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                onTap: () {
-                  // controller.updateLoved(index);
-                  print('loved');
-                },
-                child: Icon(
-                  Icons.favorite,
-                  color: isLoved ? Colors.red : const Color(0xFFC6C6C6),
-                  size: 25.sp,
-                ),
+  Widget _shopCard(ShopModule shop) {
+    return GetBuilder<HomeController>(
+        id: 'shopCard-${shop.uid}',
+        builder: (_) {
+          bool isLoved = controller.favShops.contains(shop);
+          String categoryString = shop.categories.first.name;
+          return InkWell(
+            focusColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            splashColor: Colors.transparent,
+            onTap: () => Get.dialog(const PreviewShopDialog()),
+            child: Container(
+              padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
+              margin:
+                  EdgeInsets.only(left: 5.0.sp, right: 5.0.sp, bottom: 10.0.sp),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(25.r),
+                // border: Border.all(
+                //   color: MataajerTheme.mainColor,
+                //   width: 1,
+                // ),
               ),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Stack(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(50.r),
-                    child: Image.network(
-                      'https://firebasestorage.googleapis.com/v0/b/mataajer-saudi.appspot.com/o/%d8%a7%d9%84%d9%88%d8%a7%d8%af%d9%8a.jpg?alt=media&token=29af9bc2-953f-48e5-a5ce-65a0ceeacdda',
-                      height: 75.h,
+                  Positioned(
+                    top: 10,
+                    left: 5,
+                    child: InkWell(
+                      focusColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                        controller.updateLoveState(shop);
+                        print('loved');
+                      },
+                      child: Icon(
+                        Icons.favorite,
+                        color: isLoved ? Colors.red : const Color(0xFFC6C6C6),
+                        size: 25.sp,
+                      ),
                     ),
                   ),
-                  SizedBox(height: 10.h),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'متجر الوادي',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 13.sp,
-                              fontWeight: FontWeight.w400,
-                            ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(50.r),
+                          child: Image.network(
+                            'https://firebasestorage.googleapis.com/v0/b/mataajer-saudi.appspot.com/o/%d8%a7%d9%84%d9%88%d8%a7%d8%af%d9%8a.jpg?alt=media&token=29af9bc2-953f-48e5-a5ce-65a0ceeacdda',
+                            height: 75.h,
                           ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            categoryString,
-                            style: TextStyle(
-                              color: MataajerTheme.mainColor,
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w400,
+                        ),
+                        SizedBox(height: 10.h),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  shop.name,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                SizedBox(height: 2.h),
+                                Text(
+                                  categoryString,
+                                  style: TextStyle(
+                                    color: MataajerTheme.mainColor,
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 5.w),
-                      Icon(
-                        Icons.info_outlined,
-                        color: Colors.grey.shade400,
-                      ),
-                    ],
+                            SizedBox(width: 5.w),
+                            Icon(
+                              Icons.info_outlined,
+                              color: Colors.grey.shade400,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 
   AppBar appBar() {
@@ -405,10 +411,11 @@ class HomeView extends GetView<HomeController> {
       shadowColor: Colors.transparent,
       foregroundColor: Colors.transparent,
       elevation: 0,
-      title: Text(
-        'الرئيسية',
-        style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500),
-      ),
+      title: _appBarTitle(),
+      // title: Text(
+      //   'الرئيسية',
+      //   style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500),
+      // ),
       leading: Builder(builder: (context) {
         return InkWell(
           focusColor: Colors.transparent,
@@ -465,6 +472,94 @@ class HomeView extends GetView<HomeController> {
         )
       ],
     );
+  }
+
+  Widget _appBarTitle() {
+    return GetBuilder<HomeController>(
+        id: '_appBarTitle',
+        builder: (_) {
+          if (controller.loading) {
+            return const CircularProgressIndicator();
+          }
+
+          if (controller.isSignedIn) {
+            if (controller.currentShop!.isSubscriptionExpired) {
+              return Container(
+                height: 40.h,
+                padding: EdgeInsets.all(10.sp),
+                margin: EdgeInsets.all(10.sp),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFF6145),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(Assets.renewVectorPNG),
+                    SizedBox(width: 5.w),
+                    Text(
+                      'تجديد الاشتراك',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return Container(
+                height: 40.h,
+                padding: EdgeInsets.all(10.sp),
+                margin: EdgeInsets.all(10.sp),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF4CCA5A),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(Assets.renewVectorPNG),
+                    SizedBox(width: 5.w),
+                    Text(
+                      'مفعل',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+          } else {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'متاجر',
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(width: 5.w),
+                Text(
+                  'سعودي',
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w500,
+                    color: MataajerTheme.mainColor,
+                  ),
+                ),
+              ],
+            );
+          }
+        });
   }
 
   BottomSheet _categoriesBottomSheet() {
@@ -532,7 +627,7 @@ class HomeView extends GetView<HomeController> {
                             ),
                             child: Center(
                               child: Text(
-                                controller.categoriesList[index],
+                                controller.categoriesList[index].name,
                                 style: TextStyle(
                                   color: isActive ? Colors.white : Colors.black,
                                   fontSize: 13.sp,

@@ -1,45 +1,84 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
+import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
+
+import 'package:mataajer_saudi/app/data/modules/category_module.dart';
+import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
+
 class ShopModule {
   String? uid;
   String name;
+  String? email;
   String description;
   String image;
   double? avgShippingPrice;
   String? avgShippingTime;
   String? cuponText;
   String? cuponCode;
+  List<String> categoriesUIDs = [];
+  List<SubscribtionModule> subscriptions = [];
   ShopModule({
     this.uid,
     required this.name,
+    this.email,
     required this.description,
     required this.image,
     this.avgShippingPrice,
     this.avgShippingTime,
     this.cuponText,
     this.cuponCode,
+    required this.categoriesUIDs,
+    this.subscriptions = const [],
   });
+
+  bool get isSubscriptionExpired {
+    if (subscriptions.isEmpty) return true;
+    final lastSub = subscriptions.last;
+    return isExpired(lastSub.from, lastSub.to);
+  }
+
+  bool isExpired(DateTime from, DateTime to) {
+    final now = DateTime.now();
+    return now.isBefore(from) || now.isAfter(to);
+  }
+
+  List<CategoryModule> get categories {
+    final maincategories = Get.find<MainSettingsController>().mainCategories;
+    final categories = maincategories
+        .where((element) => categoriesUIDs.contains(element.uid))
+        .toList();
+
+    return categories;
+  }
 
   ShopModule copyWith({
     String? uid,
     String? name,
+    String? email,
     String? description,
     String? image,
     double? avgShippingPrice,
     String? avgShippingTime,
     String? cuponText,
     String? cuponCode,
+    List<String>? categoriesUIDs,
+    List<SubscribtionModule>? subscriptions,
   }) {
     return ShopModule(
       uid: uid ?? this.uid,
       name: name ?? this.name,
+      email: email ?? this.email,
       description: description ?? this.description,
       image: image ?? this.image,
       avgShippingPrice: avgShippingPrice ?? this.avgShippingPrice,
       avgShippingTime: avgShippingTime ?? this.avgShippingTime,
       cuponText: cuponText ?? this.cuponText,
       cuponCode: cuponCode ?? this.cuponCode,
+      categoriesUIDs: categoriesUIDs ?? this.categoriesUIDs,
+      subscriptions: subscriptions ?? this.subscriptions,
     );
   }
 
@@ -47,19 +86,23 @@ class ShopModule {
     return <String, dynamic>{
       'uid': uid,
       'name': name,
+      'email': email,
       'description': description,
       'image': image,
       'avgShippingPrice': avgShippingPrice,
       'avgShippingTime': avgShippingTime,
       'cuponText': cuponText,
       'cuponCode': cuponCode,
+      'categoriesUIDs': categoriesUIDs,
+      'subscriptions': subscriptions.map((x) => x.toMap()).toList(),
     };
   }
 
-  factory ShopModule.fromMap(Map<String, dynamic> map) {
+  factory ShopModule.fromMap(Map<String, dynamic> map, String uid) {
     return ShopModule(
-      uid: map['uid'] != null ? map['uid'] as String : null,
+      uid: uid,
       name: map['name'] as String,
+      email: map['email'] != null ? map['email'] as String : null,
       description: map['description'] as String,
       image: map['image'] as String,
       avgShippingPrice: map['avgShippingPrice'] != null
@@ -70,17 +113,26 @@ class ShopModule {
           : null,
       cuponText: map['cuponText'] != null ? map['cuponText'] as String : null,
       cuponCode: map['cuponCode'] != null ? map['cuponCode'] as String : null,
+      categoriesUIDs: List<String>.from(
+        (map['categoriesUIDs'] as List<dynamic>)
+            .map<String>((x) => x as String),
+      ),
+      subscriptions: List<SubscribtionModule>.from(
+        (map['subscriptions'] as List<dynamic>).map<SubscribtionModule>(
+          (x) => SubscribtionModule.fromMap(x as Map<String, dynamic>),
+        ),
+      ),
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory ShopModule.fromJson(String source) =>
-      ShopModule.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ShopModule.fromJson(String source, String uid) =>
+      ShopModule.fromMap(json.decode(source) as Map<String, dynamic>, uid);
 
   @override
   String toString() {
-    return 'ShopModule(uid: $uid, name: $name, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode)';
+    return 'ShopModule(uid: $uid, name: $name, email: $email, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions)';
   }
 
   @override
@@ -89,23 +141,29 @@ class ShopModule {
 
     return other.uid == uid &&
         other.name == name &&
+        other.email == email &&
         other.description == description &&
         other.image == image &&
         other.avgShippingPrice == avgShippingPrice &&
         other.avgShippingTime == avgShippingTime &&
         other.cuponText == cuponText &&
-        other.cuponCode == cuponCode;
+        other.cuponCode == cuponCode &&
+        listEquals(other.categoriesUIDs, categoriesUIDs) &&
+        listEquals(other.subscriptions, subscriptions);
   }
 
   @override
   int get hashCode {
     return uid.hashCode ^
         name.hashCode ^
+        email.hashCode ^
         description.hashCode ^
         image.hashCode ^
         avgShippingPrice.hashCode ^
         avgShippingTime.hashCode ^
         cuponText.hashCode ^
-        cuponCode.hashCode;
+        cuponCode.hashCode ^
+        categoriesUIDs.hashCode ^
+        subscriptions.hashCode;
   }
 }

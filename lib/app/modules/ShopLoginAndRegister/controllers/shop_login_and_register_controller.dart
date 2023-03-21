@@ -1,36 +1,158 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
+import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
+import 'package:mataajer_saudi/app/data/modules/category_module.dart';
+import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
+import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
+import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ShopLoginAndRegisterController extends GetxController {
+  final mainSettingsController = Get.find<MainSettingsController>();
   final pageController = PageController();
   int pageIndex = 0;
 
+  List<CategoryModule> get categoriesList =>
+      mainSettingsController.mainCategories;
+
+  bool loading = false;
+
   bool showCategories = false;
+  bool showPricesTable = true;
 
   List<String> subTitles = ['تسجيل دخول', 'تسجيل اشتراك'];
 
   bool showPassword = false;
+
+  final formKey = GlobalKey<FormState>();
+
+  final loginEmailController = TextEditingController();
+  final loginPasswordController = TextEditingController();
 
   String? shopImageURL;
   final shopNameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final shopLinkController = TextEditingController();
-  List<String> choosedCategories = [];
+  List<CategoryModule> choosedCategories = [];
   final shopDescriptionController = TextEditingController();
+  final shopKeyWordsController = TextEditingController();
   List<String> keywords = [];
   int avgFromShippingPrice = 0;
   int avgToShippingPrice = 0;
   final avgShippingPriceController = TextEditingController();
   final cuponCodeController = TextEditingController();
+  final cuponCodeDetailsController = TextEditingController();
 
   int? shippingFrom;
   int? shippingTo;
+
+  Future<void> login() async {
+    loading = true;
+    update();
+
+    try {
+      if (loginEmailController.text.isEmpty ||
+          loginPasswordController.text.isEmpty) {
+        throw 'Please fill all fields';
+      }
+
+      final user = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: loginEmailController.text.trim(),
+        password: loginPasswordController.text,
+      );
+
+      if (user.user == null) {
+        throw 'Error while login';
+      }
+
+      if (!user.user!.emailVerified) {
+        throw 'Email not verified';
+      }
+
+      // await FirebaseFirestoreHelper.instance.getShopModule(user.user!.uid);
+      Get.offAndToNamed(Routes.HOME);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        // print('No user found for that email.');
+        throw 'لا يوجد حساب مسجل بهذا البريد الالكتروني';
+      } else if (e.code == 'wrong-password') {
+        // print('Wrong password provided for that user.');
+        throw 'كلمة المرور غير صحيحة';
+      }
+    } catch (e) {
+      print(e);
+      KSnackBar.error(e.toString().tr);
+    } finally {
+      loading = false;
+      update();
+    }
+  }
+
+  Future<void> register() async {
+    try {
+      if (shopImageURL == null) {
+        throw 'No image selected';
+      }
+      if (choosedCategories.isEmpty) {
+        throw 'No categories selected';
+      }
+
+      loading = true;
+      update();
+
+      final regResponse =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+      );
+
+      if (regResponse.user == null) {
+        throw 'Error while registering';
+      }
+
+      await regResponse.user!.sendEmailVerification();
+
+      final shopModule = ShopModule(
+        name: shopNameController.text,
+        email: emailController.text,
+        description: shopDescriptionController.text,
+        image: shopImageURL!,
+        avgShippingPrice: double.parse(avgShippingPriceController.text),
+        avgShippingTime: '$avgFromShippingPrice-$avgToShippingPrice',
+        cuponCode: cuponCodeController.text,
+        cuponText: cuponCodeDetailsController.text,
+        categoriesUIDs: choosedCategories.map((e) => e.uid!).toList(),
+      );
+
+      await FirebaseFirestoreHelper.instance
+          .addShop(shopModule, regResponse.user!.uid);
+
+      await Get.offAndToNamed(Routes.RESET_PASSWORD,
+          arguments: {'isEmailVerify': true});
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        // print('The password provided is too weak.');
+        throw 'كلمة المرور ضعيفة';
+      } else if (e.code == 'email-already-in-use') {
+        // print('The account already exists for that email.');
+        throw 'البريد الالكتروني مستخدم من قبل';
+      }
+    } catch (e) {
+      print(e);
+      KSnackBar.error(e.toString().tr);
+    } finally {
+      loading = false;
+      update();
+    }
+  }
 
   void pickImageAndUpload() async {
     try {
@@ -77,5 +199,26 @@ class ShopLoginAndRegisterController extends GetxController {
   void updateShowCategories() {
     showCategories = !showCategories;
     update(['showCategories']);
+  }
+
+  void ifUserGoToHome() {
+    if (FirebaseAuth.instance.currentUser != null) {
+      Get.offAllNamed(Routes.HOME);
+    }
+  }
+
+  @override
+  void onReady() {
+    ifUserGoToHome();
+    super.onReady();
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    if (kDebugMode) {
+      loginEmailController.text = 'karimo741842@gmail.com';
+      loginPasswordController.text = 'karim123';
+    }
   }
 }

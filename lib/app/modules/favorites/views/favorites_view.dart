@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
+import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
@@ -30,11 +31,14 @@ class FavoritesView extends GetView<FavoritesController> {
             ),
             SizedBox(height: 10.h),
             Expanded(
-              child: GridView.count(
-                crossAxisCount: 3,
-                scrollDirection: Axis.vertical,
-                children: List.generate(100, (index) => _favoriteCard(index)),
-              ),
+              child: GetBuilder<FavoritesController>(builder: (_) {
+                return GridView.count(
+                  crossAxisCount: 3,
+                  scrollDirection: Axis.vertical,
+                  children: List.generate(controller.favs.length,
+                      (index) => _favoriteCard(controller.favs[index])),
+                );
+              }),
             ),
           ],
         ),
@@ -42,10 +46,9 @@ class FavoritesView extends GetView<FavoritesController> {
     );
   }
 
-  Widget _favoriteCard(int index) {
-    bool isLoved = true;
-    String categoryString = controller
-        .categoriesList[Random().nextInt(controller.categoriesList.length)];
+  Widget _favoriteCard(ShopModule shop) {
+    bool isLoved = controller.favs.contains(shop);
+    String categoryString = shop.categories.first.name;
     return InkWell(
       onTap: () => Get.dialog(const PreviewShopDialog()),
       child: Container(
@@ -66,8 +69,7 @@ class FavoritesView extends GetView<FavoritesController> {
               left: 5,
               child: InkWell(
                 onTap: () {
-                  // controller.updateLoved(index);
-                  print('loved');
+                  controller.updateLoveState(shop);
                 },
                 child: Icon(
                   Icons.favorite,

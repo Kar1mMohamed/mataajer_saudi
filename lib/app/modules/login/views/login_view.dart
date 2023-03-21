@@ -40,7 +40,15 @@ class LoginView extends GetView<LoginController> {
                         controller.isShopOwner.value)),
                 SizedBox(height: 30.h),
                 RoundedButton(
-                    text: 'دخول', press: () => Get.toNamed(Routes.HOME)),
+                  text: 'دخول',
+                  press: () {
+                    if (controller.isShopOwner.value) {
+                      Get.offAndToNamed(Routes.SHOP_LOGIN_AND_REGISTER);
+                    } else {
+                      Get.offAndToNamed(Routes.HOME);
+                    }
+                  },
+                ),
               ],
             ),
           ),

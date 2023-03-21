@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
+import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 
 class MyDrawer extends StatelessWidget {
-  const MyDrawer({super.key});
+  const MyDrawer({super.key, required this.shops, required this.isShop});
+
+  final List<ShopModule> shops;
+  final bool isShop;
 
   @override
   Widget build(BuildContext context) {
@@ -56,19 +60,39 @@ class MyDrawer extends StatelessWidget {
                 ],
               ),
             ),
-            _drawerItem(Assets.plusIcon, 'اضف متجرك الالكتروني', Routes.HOME,
-                isActive: true),
-            _drawerItem(
-                Assets.addPackageIcon, 'عرض باقات الاشتراك', Routes.HOME),
-            _drawerItem(Assets.loveIcon, 'المتاجر المفضلة', Routes.FAVORITES),
+            if (isShop) _forShop() else _forUser(),
           ],
         ),
       ),
     );
   }
 
+  Widget _forShop() {
+    return Column(
+      children: [
+        _drawerItem(Assets.plusIcon, 'اضف متجرك الالكتروني', Routes.HOME,
+            isActive: true),
+        _drawerItem(Assets.addPackageIcon, 'عرض باقات الاشتراك', Routes.HOME),
+        _drawerItem(Assets.loveIcon, 'المتاجر المفضلة', Routes.FAVORITES,
+            arguments: {'shops': shops}),
+      ],
+    );
+  }
+
+  Widget _forUser() {
+    return Column(
+      children: [
+        _drawerItem(Assets.plusIcon, 'اضف متجرك الالكتروني', Routes.HOME,
+            isActive: true),
+        _drawerItem(Assets.addPackageIcon, 'عرض باقات الاشتراك', Routes.HOME),
+        _drawerItem(Assets.loveIcon, 'المتاجر المفضلة', Routes.FAVORITES,
+            arguments: {'shops': shops}),
+      ],
+    );
+  }
+
   Widget _drawerItem(String imageAsset, String text, String route,
-      {bool? isActive = false}) {
+      {bool? isActive = false, dynamic arguments}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -93,7 +117,7 @@ class MyDrawer extends StatelessWidget {
           hoverColor: Colors.transparent,
           focusColor: Colors.transparent,
           splashColor: Colors.transparent,
-          onTap: () => Get.toNamed(route),
+          onTap: () => Get.toNamed(route, arguments: arguments),
         ),
       ),
     );
