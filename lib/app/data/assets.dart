@@ -23,4 +23,9 @@ abstract class Assets {
   static const String rightCheck2PNG = 'assets/png/rightCheck2.png';
   static const String renewVectorPNG = 'assets/png/renewVector.png';
   static const String activeThndrVector = 'assets/png/activeThndrVector.png';
+
+  static const String notificationVector = 'assets/png/notificationVector.png';
+  static const String addAdVector = 'assets/png/addAdVector.png';
+  static const String personVector = 'assets/png/personVector.png';
+  static const String exitVector = 'assets/png/exitVector.png';
 }

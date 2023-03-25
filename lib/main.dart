@@ -76,8 +76,7 @@ class _InitialBindings extends Bindings {
     Get.put<MainSettingsController>(MainSettingsController(), permanent: true);
     Get.put<MainPermisionsController>(MainPermisionsController(),
         permanent: true);
-    Get.lazyPut<MainAccountController>(() => MainAccountController(),
-        fenix: true);
+    Get.put<MainAccountController>(MainAccountController(), permanent: true);
     Get.lazyPut<MainNotificationController>(() => MainNotificationController(),
         fenix: true);
   }

@@ -10,6 +10,8 @@ abstract class Routes {
   static const SHOP_LOGIN_AND_REGISTER = _Paths.SHOP_LOGIN_AND_REGISTER;
   static const RESET_PASSWORD = _Paths.RESET_PASSWORD;
   static const SPLASH = _Paths.SPLASH;
+  static const SHOP_ACCOUNT = _Paths.SHOP_ACCOUNT;
+  static const ADD_AD = _Paths.ADD_AD;
 }
 
 abstract class _Paths {
@@ -21,4 +23,6 @@ abstract class _Paths {
   static const SHOP_LOGIN_AND_REGISTER = '/shop-login-and-register';
   static const RESET_PASSWORD = '/reset-password';
   static const SPLASH = '/splash';
+  static const SHOP_ACCOUNT = '/shop-account';
+  static const ADD_AD = '/add-ad';
 }

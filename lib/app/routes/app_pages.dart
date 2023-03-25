@@ -1,7 +1,11 @@
 import 'package:get/get.dart';
 
+import '../modules/AddAd/bindings/add_ad_binding.dart';
+import '../modules/AddAd/views/add_ad_view.dart';
 import '../modules/ResetPassword/bindings/reset_password_binding.dart';
 import '../modules/ResetPassword/views/reset_password_view.dart';
+import '../modules/ShopAccount/bindings/shop_account_binding.dart';
+import '../modules/ShopAccount/views/shop_account_view.dart';
 import '../modules/ShopLoginAndRegister/bindings/shop_login_and_register_binding.dart';
 import '../modules/ShopLoginAndRegister/views/shop_login_and_register_view.dart';
 import '../modules/favorites/bindings/favorites_binding.dart';
@@ -57,6 +61,16 @@ class AppPages {
       name: _Paths.SPLASH,
       page: () => const SplashView(),
       binding: SplashBinding(),
+    ),
+    GetPage(
+      name: _Paths.SHOP_ACCOUNT,
+      page: () => const ShopAccountView(),
+      binding: ShopAccountBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADD_AD,
+      page: () => const AddAdView(),
+      binding: AddAdBinding(),
     ),
   ];
 }

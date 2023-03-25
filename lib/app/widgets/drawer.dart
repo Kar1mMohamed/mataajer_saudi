@@ -70,11 +70,26 @@ class MyDrawer extends StatelessWidget {
   Widget _forShop() {
     return Column(
       children: [
-        _drawerItem(Assets.plusIcon, 'اضف متجرك الالكتروني', Routes.HOME,
-            isActive: true),
-        _drawerItem(Assets.addPackageIcon, 'عرض باقات الاشتراك', Routes.HOME),
-        _drawerItem(Assets.loveIcon, 'المتاجر المفضلة', Routes.FAVORITES,
-            arguments: {'shops': shops}),
+        _drawerItem(Assets.plusIcon, 'اضف متجرك الالكتروني',
+            route: Routes.HOME),
+        _drawerItem(
+          Assets.notificationVector,
+          'اشعارات العملاء',
+        ),
+        _drawerItem(
+          Assets.addAdVector,
+          'اضف اعلانك',
+          route: Routes.ADD_AD,
+        ),
+        _drawerItem(
+          Assets.personIcon,
+          'حسابي',
+          route: Routes.SHOP_ACCOUNT,
+        ),
+        _drawerItem(
+          Assets.exitVector,
+          'تسجيل خروج',
+        ),
       ],
     );
   }
@@ -82,28 +97,40 @@ class MyDrawer extends StatelessWidget {
   Widget _forUser() {
     return Column(
       children: [
-        _drawerItem(Assets.plusIcon, 'اضف متجرك الالكتروني', Routes.HOME,
-            isActive: true),
-        _drawerItem(Assets.addPackageIcon, 'عرض باقات الاشتراك', Routes.HOME),
-        _drawerItem(Assets.loveIcon, 'المتاجر المفضلة', Routes.FAVORITES,
-            arguments: {'shops': shops}),
+        _drawerItem(Assets.plusIcon, 'اضف متجرك الالكتروني',
+            onTap: () => Get.toNamed(Routes.HOME)),
+        _drawerItem(Assets.addPackageIcon, 'عرض باقات الاشتراك',
+            onTap: () => Get.toNamed(Routes.HOME)),
+        _drawerItem(Assets.loveIcon, 'المتاجر المفضلة',
+            onTap: () => Get.toNamed(Routes.HOME, arguments: {'shops': shops})),
       ],
     );
   }
 
-  Widget _drawerItem(String imageAsset, String text, String route,
-      {bool? isActive = false, dynamic arguments}) {
+  Widget _drawerItem(String imageAsset, String text,
+      {String? route,
+      dynamic arguments,
+      Color? assetColor,
+      void Function()? onTap}) {
+    final bool isActive = route == Get.currentRoute;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
-          color: isActive! ? MataajerTheme.mainColorLighten : Colors.white,
-          borderRadius: BorderRadius.circular(16.r),
+          color: isActive ? MataajerTheme.mainColorLighten : Colors.white,
+          borderRadius: BorderRadius.circular(10.r),
         ),
         child: ListTile(
           title: Row(
             children: [
-              Image.asset(imageAsset, width: 20.w, height: 20.h),
+              Image.asset(
+                imageAsset,
+                width: 20.w,
+                height: 20.h,
+                color: isActive
+                    ? Colors.white
+                    : (assetColor ?? MataajerTheme.mainColor),
+              ),
               SizedBox(width: 5.w),
               Text(
                 text,
@@ -117,7 +144,13 @@ class MyDrawer extends StatelessWidget {
           hoverColor: Colors.transparent,
           focusColor: Colors.transparent,
           splashColor: Colors.transparent,
-          onTap: () => Get.toNamed(route, arguments: arguments),
+          onTap: () {
+            if (route != null) {
+              Get.toNamed(route, arguments: arguments);
+            } else {
+              if (onTap != null) onTap();
+            }
+          },
         ),
       ),
     );

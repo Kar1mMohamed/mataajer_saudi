@@ -5,7 +5,7 @@ import 'package:mataajer_saudi/database/shop_fav.dart';
 
 class MainAccountController extends GetxController {
   bool get isSignedIn => FirebaseAuth.instance.currentUser != null;
-  bool? isShopOwner;
+  bool isShopOwner = false;
 
   List<ShopModule> getFavShops(List<ShopModule> shops) {
     List<ShopFavHive> favShopsHive = ShopFavHive.box.values.toList();
