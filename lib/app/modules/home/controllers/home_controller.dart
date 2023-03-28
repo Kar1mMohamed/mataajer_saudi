@@ -11,7 +11,7 @@ import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 class HomeController extends GetxController {
   final mainAccountController = Get.find<MainAccountController>();
   final mainSettingsController = Get.find<MainSettingsController>();
-  bool get isShop => mainAccountController.isShopOwner ?? false;
+  bool get isShop => mainAccountController.isShopOwner;
   bool get isSignedIn => mainAccountController.isSignedIn && isShop;
 
   ShopModule? currentShop;

@@ -26,6 +26,8 @@ abstract class Assets {
 
   static const String notificationVector = 'assets/png/notificationVector.png';
   static const String addAdVector = 'assets/png/addAdVector.png';
+  static const String adVector = 'assets/png/addVector.png';
   static const String personVector = 'assets/png/personVector.png';
   static const String exitVector = 'assets/png/exitVector.png';
+  static const String adAddedVector = 'assets/png/adAddedVector.png';
 }
