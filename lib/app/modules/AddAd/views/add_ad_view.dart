@@ -17,7 +17,7 @@ class AddAdView extends GetView<AddAdController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: appBar(),
-      drawer: const MyDrawer(shops: [], isShop: true),
+      drawer: const MyDrawer(ads: [], isShop: true),
       body: GetBuilder<AddAdController>(builder: (_) {
         if (controller.loading) {
           return const Center(
@@ -59,8 +59,11 @@ class AddAdView extends GetView<AddAdController> {
                   RoundedButton(
                       text: 'ارسال',
                       press: () async {
-                        sucessDialog();
-                      }),
+                        final isOk = await controller.adAdd();
+                        if (isOk) {
+                          sucessDialog();
+                        }
+                      })
                 ],
               ),
             ),
@@ -291,6 +294,7 @@ class AddAdView extends GetView<AddAdController> {
           ),
         ),
       ),
+      barrierDismissible: false,
     );
   }
 }

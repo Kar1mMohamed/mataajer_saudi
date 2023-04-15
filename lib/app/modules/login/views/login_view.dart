@@ -11,6 +11,7 @@ class LoginView extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF5F5F5),
       resizeToAvoidBottomInset: false,
       body: GetBuilder<LoginController>(builder: (_) {
         return Center(
@@ -20,7 +21,7 @@ class LoginView extends GetView<LoginController> {
                 SizedBox(height: 50.h),
                 Image.asset(Assets.loginImage),
                 SizedBox(height: 10.h),
-                Text('اهل انت عميل ام صاحب متاجر؟!',
+                Text('هل انت زائر ام صاحب متاجر؟!',
                     style: TextStyle(fontSize: 17.sp)),
                 SizedBox(height: 10.h),
                 InkWell(
@@ -28,7 +29,7 @@ class LoginView extends GetView<LoginController> {
                       controller.isShopOwner.value = false;
                       controller.update();
                     },
-                    child: _chooseItem(Assets.groupIcon, 'عميل',
+                    child: _chooseItem(Assets.groupIcon, 'زائر',
                         !controller.isShopOwner.value)),
                 SizedBox(height: 20.h),
                 InkWell(

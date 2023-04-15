@@ -4,10 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
+import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
+import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
+import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
@@ -74,18 +78,27 @@ class ShopLoginAndRegisterController extends GetxController {
       }
 
       if (!user.user!.emailVerified) {
-        throw 'Email not verified';
+        // throw 'Email not verified';
+        print('Email not verified');
+        await Get.offAndToNamed(Routes.RESET_PASSWORD,
+            arguments: {'isEmailVerify': true});
       }
 
-      // await FirebaseFirestoreHelper.instance.getShopModule(user.user!.uid);
-      Get.offAndToNamed(Routes.HOME);
+      final userModule =
+          await FirebaseFirestoreHelper.instance.getShopModule(user.user!.uid);
+
+      print('userModule: $userModule');
+
+      await ifUserGoToHome();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         // print('No user found for that email.');
-        throw 'لا يوجد حساب مسجل بهذا البريد الالكتروني';
+        // throw 'لا يوجد حساب مسجل بهذا البريد الالكتروني';
+        KSnackBar.error('لا يوجد حساب مسجل بهذا البريد الالكتروني');
       } else if (e.code == 'wrong-password') {
         // print('Wrong password provided for that user.');
-        throw 'كلمة المرور غير صحيحة';
+        // throw 'كلمة المرور غير صحيحة';
+        KSnackBar.error('كلمة المرور غير صحيحة');
       }
     } catch (e) {
       print(e);
@@ -96,7 +109,7 @@ class ShopLoginAndRegisterController extends GetxController {
     }
   }
 
-  Future<void> register() async {
+  Future<void> register(ChooseSubscriptionModule sub) async {
     try {
       if (shopImageURL == null) {
         throw 'No image selected';
@@ -134,6 +147,20 @@ class ShopLoginAndRegisterController extends GetxController {
 
       await FirebaseFirestoreHelper.instance
           .addShop(shopModule, regResponse.user!.uid);
+
+      final subscriptionModule = SubscriptionModule(
+        from: DateTime.now(),
+        to: DateTime.now().add(Duration(days: sub.allowedDays!)),
+      );
+
+      await FirebaseFirestoreHelper.instance
+          .addSubscription(regResponse.user!.uid, subscriptionModule);
+
+      await FirebaseFirestore.instance
+          .collection('shops')
+          .doc(regResponse.user!.uid)
+          .collection('subscriptions')
+          .add(sub.toMap());
 
       await Get.offAndToNamed(Routes.RESET_PASSWORD,
           arguments: {'isEmailVerify': true});
@@ -201,23 +228,29 @@ class ShopLoginAndRegisterController extends GetxController {
     update(['showCategories']);
   }
 
-  void ifUserGoToHome() {
-    if (FirebaseAuth.instance.currentUser != null) {
-      Get.offAllNamed(Routes.HOME);
+  Future<void> ifUserGoToHome() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (currentUser != null && currentUser.emailVerified) {
+      final shopModule =
+          await FirebaseFirestoreHelper.instance.getShopModule(currentUser.uid);
+
+      if (shopModule.userCategory != null &&
+          shopModule.userCategory!.contains('admin')) {
+        Get.offAndToNamed(Routes.ADMIN_ACTIVE_USERS);
+      } else {
+        Get.offAndToNamed(Routes.HOME);
+      }
     }
   }
 
   @override
-  void onReady() {
-    ifUserGoToHome();
-    super.onReady();
-  }
-
-  @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
+    await ifUserGoToHome();
+
     if (kDebugMode) {
-      loginEmailController.text = 'karimo741842@gmail.com';
+      loginEmailController.text = 'karimo741852@gmail.com';
       loginPasswordController.text = 'karim123';
     }
   }

@@ -1,4 +1,6 @@
 abstract class Assets {
+  static const String loadingGIF = 'assets/images/loading_image.gif';
+
   static const String loginImage = 'assets/images/loginImage.png';
   static const String logo = 'assets/images/logo.png';
   static const String groupIcon = 'assets/png/Group.png';
@@ -30,4 +32,11 @@ abstract class Assets {
   static const String personVector = 'assets/png/personVector.png';
   static const String exitVector = 'assets/png/exitVector.png';
   static const String adAddedVector = 'assets/png/adAddedVector.png';
+
+  static const String bilNotificationVector =
+      'assets/images/BilNotificationVector.png';
+
+  static const String eyePNG = 'assets/png/eye.png';
+  static const String closedEypePNG = 'assets/png/closedeye.png';
+  static const String whiteCircle = 'assets/png/whiteCircle.png';
 }

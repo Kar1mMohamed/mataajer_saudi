@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
+import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
@@ -46,11 +47,11 @@ class FavoritesView extends GetView<FavoritesController> {
     );
   }
 
-  Widget _favoriteCard(ShopModule shop) {
-    bool isLoved = controller.favs.contains(shop);
-    String categoryString = shop.categories.first.name;
+  Widget _favoriteCard(AdModule ad) {
+    bool isLoved = controller.favs.contains(ad);
+    String categoryString = ad.categories.first.name;
     return InkWell(
-      onTap: () => Get.dialog(const PreviewShopDialog()),
+      onTap: () => Get.dialog(PreviewShopDialog(ad: ad)),
       child: Container(
         padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
         margin: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp, bottom: 5.0.sp),
@@ -69,7 +70,7 @@ class FavoritesView extends GetView<FavoritesController> {
               left: 5,
               child: InkWell(
                 onTap: () {
-                  controller.updateLoveState(shop);
+                  controller.updateLoveState(ad);
                 },
                 child: Icon(
                   Icons.favorite,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:mataajer_saudi/app/data/assets.dart';
 
 import '../controllers/splash_controller.dart';
 
@@ -9,10 +10,11 @@ class SplashView extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SplashController>(builder: (_) {
-      return const Scaffold(
+      return Scaffold(
+          backgroundColor: Colors.white,
           body: Center(
-        child: CircularProgressIndicator(),
-      ));
+            child: Image.asset(Assets.logo),
+          ));
     });
   }
 }

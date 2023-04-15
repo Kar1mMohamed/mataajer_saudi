@@ -1,15 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
+import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 
 class MyDrawer extends StatelessWidget {
-  const MyDrawer({super.key, required this.shops, required this.isShop});
+  const MyDrawer({super.key, required this.ads, required this.isShop});
 
-  final List<ShopModule> shops;
+  final List<AdModule> ads;
   final bool isShop;
 
   @override
@@ -75,6 +77,7 @@ class MyDrawer extends StatelessWidget {
         _drawerItem(
           Assets.notificationVector,
           'اشعارات العملاء',
+          route: Routes.SHOP_CUSTOMERS_NOTIFICATIONS,
         ),
         _drawerItem(
           Assets.addAdVector,
@@ -89,6 +92,13 @@ class MyDrawer extends StatelessWidget {
         _drawerItem(
           Assets.exitVector,
           'تسجيل خروج',
+          onTap: () async {
+            final currentUser = FirebaseAuth.instance.currentUser;
+            if (currentUser != null) {
+              await FirebaseAuth.instance.signOut();
+              Get.offAllNamed(Routes.SPLASH);
+            }
+          },
         ),
       ],
     );
@@ -97,12 +107,12 @@ class MyDrawer extends StatelessWidget {
   Widget _forUser() {
     return Column(
       children: [
-        _drawerItem(Assets.plusIcon, 'اضف متجرك الالكتروني',
-            onTap: () => Get.toNamed(Routes.HOME)),
-        _drawerItem(Assets.addPackageIcon, 'عرض باقات الاشتراك',
-            onTap: () => Get.toNamed(Routes.HOME)),
+        // _drawerItem(Assets.plusIcon, 'اضف متجرك الالكتروني',
+        //     route: Routes.HOME),
+        // _drawerItem(Assets.addPackageIcon, 'عرض باقات الاشتراك',
+        //     route: Routes.SPLASH),
         _drawerItem(Assets.loveIcon, 'المتاجر المفضلة',
-            onTap: () => Get.toNamed(Routes.HOME, arguments: {'shops': shops})),
+            route: Routes.FAVORITES, arguments: {'ads': ads}),
       ],
     );
   }
@@ -146,6 +156,11 @@ class MyDrawer extends StatelessWidget {
           splashColor: Colors.transparent,
           onTap: () {
             if (route != null) {
+              Get.back();
+              if (Get.previousRoute == route) {
+                Get.back();
+                return;
+              }
               Get.toNamed(route, arguments: arguments);
             } else {
               if (onTap != null) onTap();

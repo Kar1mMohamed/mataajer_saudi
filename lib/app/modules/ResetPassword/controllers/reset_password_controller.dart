@@ -21,6 +21,8 @@ class ResetPasswordController extends GetxController {
         await currentUser.reload();
         if (currentUser.emailVerified) {
           Get.offAllNamed(Routes.HOME);
+        } else {
+          KSnackBar.error('برجاء تأكيد البريد الالكتروني');
         }
       }
     } catch (e) {

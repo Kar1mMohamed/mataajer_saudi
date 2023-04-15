@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
+import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
@@ -15,7 +16,8 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      drawer: MyDrawer(shops: controller.shops, isShop: controller.isShop),
+      backgroundColor: const Color(0xFFF5F5F5),
+      drawer: MyDrawer(ads: controller.ads, isShop: controller.isShop),
       body: SingleChildScrollView(
         child: GetBuilder<HomeController>(builder: (_) {
           return Column(
@@ -78,7 +80,11 @@ class HomeView extends GetView<HomeController> {
                 child: _homeBanner(context),
               ),
               SizedBox(height: 20.h),
-              _shops(),
+              GetBuilder<HomeController>(
+                  id: 'ads',
+                  builder: (context) {
+                    return _ads();
+                  }),
             ],
           );
         }),
@@ -97,9 +103,7 @@ class HomeView extends GetView<HomeController> {
             borderRadius: BorderRadius.circular(20.0.r),
             image: DecorationImage(
               fit: BoxFit.cover,
-              image: AssetImage(
-                Assets.homeBanner,
-              ),
+              image: AssetImage(Assets.homeBanner),
             ),
           ),
           child: Container(
@@ -146,20 +150,19 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _shops() {
+  Widget _ads() {
     return Column(
       children: [
-        _shopItem('متاجر مثبتة', Icons.keyboard_arrow_up, controller.shops, 1),
-        _shopItem(
-            'الاكثر زيارة', Icons.remove_red_eye_outlined, controller.shops, 2),
-        _shopItem('الاكثر عروضا', Icons.percent, controller.shops, 2),
-        _shopItem(
-            'متاجر اخرى', Icons.maps_home_work_outlined, controller.shops, 2),
+        _adItem('متاجر مثبتة', Icons.keyboard_arrow_up, controller.ads, 1),
+        _adItem(
+            'الاكثر زيارة', Icons.remove_red_eye_outlined, controller.ads, 2),
+        _adItem('الاكثر عروضا', Icons.percent, controller.ads, 2),
+        _adItem('متاجر اخرى', Icons.maps_home_work_outlined, controller.ads, 2),
       ],
     );
   }
 
-  Widget _shopItem(String text, IconData icon, List list, int crossCount) {
+  Widget _adItem(String text, IconData icon, List list, int crossCount) {
     double height = crossCount == 1 ? 170.h : (170.h * 2);
     return Column(
       children: [
@@ -206,7 +209,7 @@ class HomeView extends GetView<HomeController> {
                 //   itemCount: controller.categoriesList.length,
                 //   shrinkWrap: true,
                 //   itemBuilder: (context, index) {
-                //     return _shopCard(index);
+                //     return _adCard(index);
                 //   },
                 // );
                 return GridView.count(
@@ -214,7 +217,7 @@ class HomeView extends GetView<HomeController> {
                   childAspectRatio: 1.4,
                   scrollDirection: Axis.horizontal,
                   children: List.generate(
-                      list.length, (index) => _shopCard(list[index])),
+                      list.length, (index) => _adCard(list[index])),
                 );
               }),
         ),
@@ -302,18 +305,29 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _shopCard(ShopModule shop) {
+  Widget _adCard(AdModule ad) {
     return GetBuilder<HomeController>(
-        id: 'shopCard-${shop.uid}',
+        id: 'shopCard-${ad.uid}',
         builder: (_) {
-          bool isLoved = controller.favShops.contains(shop);
-          String categoryString = shop.categories.first.name;
+          if (controller.adsLoading) {
+            return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25.r),
+                image: const DecorationImage(
+                  image: AssetImage(Assets.loadingGIF),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            );
+          }
+          bool isLoved = controller.favAds.contains(ad);
+          String categoryString = ad.categories.first.name;
           return InkWell(
             focusColor: Colors.transparent,
             highlightColor: Colors.transparent,
             hoverColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: () => Get.dialog(const PreviewShopDialog()),
+            onTap: () => Get.dialog(PreviewShopDialog(ad: ad)),
             child: Container(
               padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
               margin:
@@ -337,7 +351,7 @@ class HomeView extends GetView<HomeController> {
                       hoverColor: Colors.transparent,
                       splashColor: Colors.transparent,
                       onTap: () {
-                        controller.updateLoveState(shop);
+                        controller.updateLoveState(ad);
                         print('loved');
                       },
                       child: Icon(
@@ -353,12 +367,9 @@ class HomeView extends GetView<HomeController> {
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(50.r),
-                          child: Image.network(
-                            'https://firebasestorage.googleapis.com/v0/b/mataajer-saudi.appspot.com/o/%d8%a7%d9%84%d9%88%d8%a7%d8%af%d9%8a.jpg?alt=media&token=29af9bc2-953f-48e5-a5ce-65a0ceeacdda',
-                            height: 75.h,
-                          ),
+                        CircleAvatar(
+                          radius: 40.r,
+                          backgroundImage: NetworkImage(ad.imageURL),
                         ),
                         SizedBox(height: 10.h),
                         Row(
@@ -368,7 +379,7 @@ class HomeView extends GetView<HomeController> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  shop.name,
+                                  ad.name,
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 13.sp,
@@ -481,6 +492,31 @@ class HomeView extends GetView<HomeController> {
           }
 
           if (controller.isSignedIn) {
+            if (controller.currentShop == null) {
+              return Container(
+                height: 40.h,
+                padding: EdgeInsets.all(10.sp),
+                margin: EdgeInsets.all(10.sp),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFF6145),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'حدث خطأ ما',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
             if (controller.currentShop!.isSubscriptionExpired) {
               return Container(
                 height: 40.h,

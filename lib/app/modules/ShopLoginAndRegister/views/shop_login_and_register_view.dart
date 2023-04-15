@@ -6,10 +6,15 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/data/constants.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
+import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
+import 'package:mataajer_saudi/app/extensions/show_up_animation.dart';
+import 'package:mataajer_saudi/app/modules/ChooseSubscription/views/choose_subscription_view.dart';
+import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/image_loading.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 import 'package:mataajer_saudi/utils/input_format.dart';
+import 'package:mataajer_saudi/utils/ksnackbar.dart';
 
 import '../controllers/shop_login_and_register_controller.dart';
 
@@ -190,12 +195,18 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
                   ),
                 ),
                 SizedBox(width: 5.w),
-                const Text(
-                  'استعدها',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: MataajerTheme.mainColor,
+                InkWell(
+                  onTap: () {
+                    Get.toNamed(Routes.RESET_PASSWORD,
+                        arguments: {'isEmailVerify': true});
+                  },
+                  child: const Text(
+                    'استعدها',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: MataajerTheme.mainColor,
+                    ),
                   ),
                 ),
               ],
@@ -302,7 +313,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
                               underline: Container(),
                               value: controller.shippingFrom,
                               items: List.generate(
-                                5,
+                                10,
                                 (index) {
                                   final value = index + 1;
 
@@ -341,7 +352,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
                               ),
                               underline: Container(),
                               value: controller.shippingTo,
-                              items: List.generate(5, (index) {
+                              items: List.generate(10, (index) {
                                 final value = index + 1;
                                 return DropdownMenuItem(
                                   value: value,
@@ -419,7 +430,22 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
             SizedBox(height: 40.h),
             RoundedButton(
               text: 'تسجيل اشتراك',
-              press: () => controller.register(),
+              // press: () => controller.register(),
+              press: () async {
+                final res = await Get.dialog(
+                  ChooseSubscriptionView(),
+                  barrierDismissible: false,
+                );
+
+                if (res['status'] == 'success') {
+                  final sub = res['data'] as ChooseSubscriptionModule;
+                  controller.register(sub);
+                } else if (res['status'] == 'cancel') {
+                  KSnackBar.error('عفواً لم يتم تسجيل الاشتراك');
+                } else {
+                  KSnackBar.error('حدث خطأ ما');
+                }
+              },
             ),
           ],
         ),
@@ -633,9 +659,9 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
               Row(
                 children: [
                   Text('الباقة العادية', style: _pricesHeaderTextStyle()),
-                  SizedBox(width: 10.w),
+                  SizedBox(width: 30.w),
                   Text('الباقة الفضية', style: _pricesHeaderTextStyle()),
-                  SizedBox(width: 10.w),
+                  SizedBox(width: 30.w),
                   Text('الباقة الذهبية', style: _pricesHeaderTextStyle()),
                 ],
               ),
@@ -659,17 +685,11 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
                         style: _pricesHeaderTextStyle(fontSize: 14.sp)),
                     Row(
                       children: [
-                        Text('6.5 ريال',
-                            style: _pricesHeaderTextStyle(
-                                weight: FontWeight.w700)),
-                        SizedBox(width: 50.w),
-                        Text('11 ريال',
-                            style: _pricesHeaderTextStyle(
-                                weight: FontWeight.w700)),
-                        SizedBox(width: 50.w),
-                        Text('23.5 ريال',
-                            style: _pricesHeaderTextStyle(
-                                weight: FontWeight.w700)),
+                        _priceColumn(6.5, 12),
+                        SizedBox(width: 25.w),
+                        _priceColumn(12.5, 24),
+                        SizedBox(width: 25.w),
+                        _priceColumn(18.5, 36),
                       ],
                     ),
                   ],
@@ -680,19 +700,43 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
                 color: Colors.white,
                 child: Column(
                   children: [
-                    _pricesRow('نشر الموقع', true, true, true),
-                    _pricesRow('تثبيت الموقع ', false, true, true,
+                    _pricesDetailsRow('نشر الموقع', true, true, true),
+                    _pricesDetailsRow('تثبيت الموقع ', false, true, true,
                         isWhite: true),
-                    _pricesRow('2اعلان منبثق شهريا', false, true, true),
-                    _pricesRow('4اعلان منبثق شهريا', false, false, true,
+                    _pricesDetailsRow('2اعلان منبثق شهريا', false, true, true),
+                    _pricesDetailsRow('4اعلان منبثق شهريا', false, false, true,
                         isWhite: true),
-                    _pricesRow('ارسال اشعارات', false, false, true),
+                    _pricesDetailsRow('ارسال اشعارات', false, false, true),
                   ],
                 ),
               ),
             ],
           ),
         )
+      ],
+    );
+  }
+
+  Widget _priceColumn(double monthPrice, double yearPrice) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: () {
+            print('month price: $monthPrice');
+          },
+          child: Text('شهري $monthPrice ريال',
+              style: _pricesHeaderTextStyle(
+                  weight: FontWeight.w500, fontSize: 12)),
+        ),
+        SizedBox(height: 10.h),
+        InkWell(
+          onTap: () {
+            print('year price: $yearPrice');
+          },
+          child: Text('سنوي $yearPrice ريال',
+              style: _pricesHeaderTextStyle(
+                  weight: FontWeight.w500, fontSize: 12)),
+        ),
       ],
     );
   }
@@ -804,13 +848,13 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
   TextStyle _pricesHeaderTextStyle(
           {double? fontSize, Color? color, FontWeight? weight}) =>
       TextStyle(
-        fontSize: fontSize ?? 13.sp,
+        fontSize: fontSize ?? 13,
         fontWeight: weight ?? FontWeight.w500,
         fontFamily: 'Tajawal',
         color: color ?? Colors.white,
       );
 
-  Widget _pricesRow(
+  Widget _pricesDetailsRow(
       String title, bool firstRight, bool secondRight, bool thirdRgiht,
       {bool? isWhite}) {
     const fontColor = Colors.black;

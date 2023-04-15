@@ -12,6 +12,7 @@ class NotificationsView extends GetView<NotificationsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
+      backgroundColor: Color(0xFFF5F5F5),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.0.sp),
         child: SingleChildScrollView(

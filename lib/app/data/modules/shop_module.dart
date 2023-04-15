@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 
+import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 
@@ -19,7 +19,11 @@ class ShopModule {
   String? cuponText;
   String? cuponCode;
   List<String> categoriesUIDs = [];
-  List<SubscribtionModule> subscriptions = [];
+  List<SubscriptionModule> subscriptions = [];
+  String? shopLink;
+  List<String>? keywords = [];
+  bool? isVisible;
+  String? userCategory;
   ShopModule({
     this.uid,
     required this.name,
@@ -32,6 +36,10 @@ class ShopModule {
     this.cuponCode,
     required this.categoriesUIDs,
     this.subscriptions = const [],
+    this.shopLink,
+    this.keywords,
+    this.isVisible,
+    this.userCategory,
   });
 
   bool get isSubscriptionExpired {
@@ -65,7 +73,11 @@ class ShopModule {
     String? cuponText,
     String? cuponCode,
     List<String>? categoriesUIDs,
-    List<SubscribtionModule>? subscriptions,
+    List<SubscriptionModule>? subscriptions,
+    String? shopLink,
+    List<String>? keywords,
+    bool? isVisible,
+    String? userCategory,
   }) {
     return ShopModule(
       uid: uid ?? this.uid,
@@ -79,12 +91,16 @@ class ShopModule {
       cuponCode: cuponCode ?? this.cuponCode,
       categoriesUIDs: categoriesUIDs ?? this.categoriesUIDs,
       subscriptions: subscriptions ?? this.subscriptions,
+      shopLink: shopLink ?? this.shopLink,
+      keywords: keywords ?? this.keywords,
+      isVisible: isVisible ?? this.isVisible,
+      userCategory: userCategory ?? this.userCategory,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'uid': uid,
+      // 'uid': uid,
       'name': name,
       'email': email,
       'description': description,
@@ -95,6 +111,10 @@ class ShopModule {
       'cuponCode': cuponCode,
       'categoriesUIDs': categoriesUIDs,
       'subscriptions': subscriptions.map((x) => x.toMap()).toList(),
+      'shopLink': shopLink,
+      'keywords': keywords,
+      'isVisible': isVisible,
+      if (userCategory != null) 'userCategory': userCategory,
     };
   }
 
@@ -117,11 +137,21 @@ class ShopModule {
         (map['categoriesUIDs'] as List<dynamic>)
             .map<String>((x) => x as String),
       ),
-      subscriptions: List<SubscribtionModule>.from(
-        (map['subscriptions'] as List<dynamic>).map<SubscribtionModule>(
-          (x) => SubscribtionModule.fromMap(x as Map<String, dynamic>),
+      subscriptions: List<SubscriptionModule>.from(
+        (map['subscriptions'] as List<dynamic>).map<SubscriptionModule>(
+          (x) => SubscriptionModule.fromMap(x as Map<String, dynamic>),
         ),
       ),
+      shopLink: map['shopLink'] != null ? map['shopLink'] as String : null,
+      keywords: map['keywords'] != null
+          ? List<String>.from(
+              (map['keywords'] as List<dynamic>)
+                  .map<String>((x) => x as String),
+            )
+          : [],
+      isVisible: map['isVisible'] != null ? map['isVisible'] as bool : false,
+      userCategory:
+          map['userCategory'] != null ? map['userCategory'] as String : null,
     );
   }
 
@@ -132,7 +162,7 @@ class ShopModule {
 
   @override
   String toString() {
-    return 'ShopModule(uid: $uid, name: $name, email: $email, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions)';
+    return 'ShopModule(uid: $uid, name: $name, email: $email, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions, shopLink: $shopLink, keywords: $keywords, isVisible: $isVisible, userCategory: $userCategory)';
   }
 
   @override
@@ -149,7 +179,11 @@ class ShopModule {
         other.cuponText == cuponText &&
         other.cuponCode == cuponCode &&
         listEquals(other.categoriesUIDs, categoriesUIDs) &&
-        listEquals(other.subscriptions, subscriptions);
+        listEquals(other.subscriptions, subscriptions) &&
+        other.shopLink == shopLink &&
+        listEquals(other.keywords, keywords) &&
+        other.isVisible == isVisible &&
+        other.userCategory == userCategory;
   }
 
   @override
@@ -164,6 +198,10 @@ class ShopModule {
         cuponText.hashCode ^
         cuponCode.hashCode ^
         categoriesUIDs.hashCode ^
-        subscriptions.hashCode;
+        subscriptions.hashCode ^
+        shopLink.hashCode ^
+        keywords.hashCode ^
+        isVisible.hashCode ^
+        userCategory.hashCode;
   }
 }

@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
@@ -21,8 +22,11 @@ class ShopAccountView extends GetView<ShopAccountController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: appBar(),
-      drawer: MyDrawer(shops: const [], isShop: controller.isShop),
+      drawer: MyDrawer(ads: const [], isShop: controller.isShop),
       body: GetBuilder<ShopAccountController>(builder: (_) {
+        if (controller.loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
         return Padding(
           padding: const EdgeInsets.all(12.0),
           child: SingleChildScrollView(
@@ -33,13 +37,13 @@ class ShopAccountView extends GetView<ShopAccountController> {
                 Directionality(
                   textDirection: TextDirection.ltr,
                   child: CupertinoSwitch(
-                    value: controller.showShop,
+                    value: controller.isVisible,
                     onChanged: (v) {
-                      controller.showShop = v;
+                      controller.isVisible = v;
                       controller.update();
                     },
-                    activeColor: Color(0xFF4CAF50),
-                    thumbColor: Color(0xFFE8F5E9),
+                    activeColor: const Color(0xFF4CAF50),
+                    thumbColor: const Color(0xFFE8F5E9),
                   ),
                 ),
                 SizedBox(height: 5.h),
@@ -47,7 +51,7 @@ class ShopAccountView extends GetView<ShopAccountController> {
                   'اضهار المتجر',
                   style: TextStyle(
                     fontSize: 13.sp,
-                    color: Color(0xFF5E5E5E),
+                    color: const Color(0xFF5E5E5E),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -68,10 +72,7 @@ class ShopAccountView extends GetView<ShopAccountController> {
                   height: 100.h,
                 ),
                 SizedBox(height: 20.h),
-                _fieldItem(
-                  'كلمات مفتاحية',
-                  controller.shopKeyWordsController,
-                ),
+                _fieldItem('كلمات مفتاحية', controller.shopKeyWordsController),
                 SizedBox(height: 20.h),
                 SizedBox(
                   height: 80.h,
@@ -103,9 +104,10 @@ class ShopAccountView extends GetView<ShopAccountController> {
                                   hint: Text(
                                     'من',
                                     style: TextStyle(
-                                        fontSize: 13.sp,
-                                        fontFamily: 'Tajawal',
-                                        fontWeight: FontWeight.w400),
+                                      fontSize: 13.sp,
+                                      fontFamily: 'Tajawal',
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
                                   underline: Container(),
                                   value: controller.shippingFrom,
@@ -119,9 +121,10 @@ class ShopAccountView extends GetView<ShopAccountController> {
                                         child: Text(
                                           value.toString(),
                                           style: TextStyle(
-                                              fontSize: 13.sp,
-                                              fontFamily: 'Tajawal',
-                                              fontWeight: FontWeight.w400),
+                                            fontSize: 13.sp,
+                                            fontFamily: 'Tajawal',
+                                            fontWeight: FontWeight.w400,
+                                          ),
                                         ),
                                       );
                                     },
@@ -226,7 +229,10 @@ class ShopAccountView extends GetView<ShopAccountController> {
                 SizedBox(height: 20.h),
                 RoundedButton(
                   text: 'حفظ',
-                  press: () => {},
+                  press: () async {
+                    log('save shop');
+                    await controller.updateShop();
+                  },
                 ),
               ],
             ),
@@ -237,48 +243,52 @@ class ShopAccountView extends GetView<ShopAccountController> {
   }
 
   Widget shopImage() {
-    return Container(
-      height: 100,
-      width: 100,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(360),
-        gradient: const LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.center,
-          colors: [
-            Color(0xffF9F9F9),
-            Color.fromARGB(255, 0, 0, 0),
-          ],
-        ),
-        image: DecorationImage(
-          image: NetworkImage(
-              'https://mir-s3-cdn-cf.behance.net/projects/404/1cb86469753415.Y3JvcCwxMTUwLDg5OSwxMzc1LDY0Mw.jpg'),
-          fit: BoxFit.cover,
-        ),
-      ),
+    return InkWell(
+      onTap: () => controller.updateProfileImage(),
       child: Container(
-        height: 50,
+        height: 100,
+        width: 100,
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.6),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(360),
+          gradient: const LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.center,
             colors: [
-              Color.fromARGB(255, 0, 0, 0).withOpacity(0.01),
+              Color(0xffF9F9F9),
               Color.fromARGB(255, 0, 0, 0),
             ],
           ),
-          borderRadius: BorderRadius.circular(360),
+          image: DecorationImage(
+            image: NetworkImage(
+              controller.currentShop!.image,
+            ),
+            fit: BoxFit.fitHeight,
+          ),
         ),
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(
-              Icons.camera_alt,
-              size: 30.sp,
-              color: Colors.white,
+        child: Container(
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.6),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                const Color.fromARGB(255, 0, 0, 0).withOpacity(0.01),
+                const Color.fromARGB(255, 0, 0, 0),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(360),
+          ),
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Icon(
+                Icons.camera_alt,
+                size: 30.sp,
+                color: Colors.white,
+              ),
             ),
           ),
         ),

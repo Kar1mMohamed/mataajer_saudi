@@ -1,22 +1,22 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-class SubscribtionModule {
-  final String uid;
+class SubscriptionModule {
+  final String? uid;
   final DateTime from;
   final DateTime to;
-  SubscribtionModule({
-    required this.uid,
+  SubscriptionModule({
+    this.uid,
     required this.from,
     required this.to,
   });
 
-  SubscribtionModule copyWith({
+  SubscriptionModule copyWith({
     String? uid,
     DateTime? from,
     DateTime? to,
   }) {
-    return SubscribtionModule(
+    return SubscriptionModule(
       uid: uid ?? this.uid,
       from: from ?? this.from,
       to: to ?? this.to,
@@ -31,9 +31,9 @@ class SubscribtionModule {
     };
   }
 
-  factory SubscribtionModule.fromMap(Map<String, dynamic> map) {
-    return SubscribtionModule(
-      uid: map['uid'] as String,
+  factory SubscriptionModule.fromMap(Map<String, dynamic> map) {
+    return SubscriptionModule(
+      uid: map['uid'] != null ? map['uid'] as String : null,
       from: DateTime.fromMillisecondsSinceEpoch(map['from'] as int),
       to: DateTime.fromMillisecondsSinceEpoch(map['to'] as int),
     );
@@ -41,14 +41,14 @@ class SubscribtionModule {
 
   String toJson() => json.encode(toMap());
 
-  factory SubscribtionModule.fromJson(String source) =>
-      SubscribtionModule.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory SubscriptionModule.fromJson(String source) =>
+      SubscriptionModule.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() => 'SubscribtionModule(uid: $uid, from: $from, to: $to)';
+  String toString() => 'SubscriptionModule(uid: $uid, from: $from, to: $to)';
 
   @override
-  bool operator ==(covariant SubscribtionModule other) {
+  bool operator ==(covariant SubscriptionModule other) {
     if (identical(this, other)) return true;
 
     return other.uid == uid && other.from == from && other.to == to;

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/constants.dart';
+import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/modules/home/controllers/home_controller.dart';
@@ -9,23 +10,23 @@ import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/database/shop_fav.dart';
 
 class FavoritesController extends GetxController {
-  final List<ShopModule> shops = Get.arguments?['shops'] ?? [];
+  final List<AdModule> ads = Get.arguments?['ads'] ?? [];
   final mainAccountController = Get.find<MainAccountController>();
   List<CategoryModule> get categoriesList =>
       Get.find<MainSettingsController>().mainCategories;
 
-  List<ShopModule> favs = [];
+  List<AdModule> favs = [];
 
-  void updateLoveState(ShopModule shop) {
-    mainAccountController.removeShopFromFav(shop);
-    favs.remove(shop);
+  void updateLoveState(AdModule ad) {
+    mainAccountController.removeShopFromFav(ad);
+    favs.remove(ad);
     update();
     Get.find<HomeController>().update();
   }
 
   Future<void> prepareFavs() async {
-    log('shops: ${shops.length}');
-    favs = mainAccountController.getFavShops(shops);
+    log('ads: ${ads.length}');
+    favs = mainAccountController.getFavShops(ads);
     update();
   }
 

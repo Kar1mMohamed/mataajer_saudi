@@ -72,7 +72,7 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
                 TextButton(
                   onPressed: () => controller.resendEmailVerification(),
                   child: Text(
-                    'أعد إرسال الرمز',
+                    'أعد إرسال البريد الالكتروني',
                     style: TextStyle(
                       fontFamily: 'Tajawal',
                       fontSize: 14.sp,

@@ -12,7 +12,7 @@ class SplashController extends GetxController {
     try {
       updateLoading();
       await mainSettingsController.getCategories();
-
+      await mainSettingsController.getSubscriptions();
       Get.offAndToNamed(Routes.LOGIN); // REAL INITAL ROUTE
     } catch (e) {
       print(e);

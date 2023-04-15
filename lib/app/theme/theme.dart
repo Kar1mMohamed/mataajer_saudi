@@ -178,10 +178,11 @@ class MataajerTheme {
           ),
         ),
         colorScheme: ColorScheme.fromSwatch(primarySwatch: mainColorSwatch)
-            .copyWith(background: Colors.transparent),
+            .copyWith(background: Colors.transparent)
+            .copyWith(background: Colors.white),
       );
 
-  static const Color mainBackgroundColor = Color(0xFFF5F5F5);
+  static const Color mainBackgroundColor = Color(0xFFFFFFFF);
 
   static const Color yellowColor = Color(0xFFFF9900);
   static const Color orangeColor = Color(0xFFE29336);
