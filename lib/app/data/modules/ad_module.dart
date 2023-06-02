@@ -1,10 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 
@@ -19,6 +16,7 @@ class AdModule {
   final String? cuponCode;
   final String imageURL;
   int? hits;
+  DateTime? validTill;
 
   List<CategoryModule> get categories => Get.find<MainSettingsController>()
       .mainCategories
@@ -36,6 +34,7 @@ class AdModule {
     this.cuponCode,
     required this.imageURL,
     this.hits,
+    this.validTill,
   });
 
   AdModule copyWith({
@@ -49,6 +48,7 @@ class AdModule {
     String? cuponCode,
     String? imageURL,
     int? hits,
+    DateTime? validTill,
   }) {
     return AdModule(
       uid: uid ?? this.uid,
@@ -61,6 +61,7 @@ class AdModule {
       cuponCode: cuponCode ?? this.cuponCode,
       imageURL: imageURL ?? this.imageURL,
       hits: hits ?? this.hits,
+      validTill: validTill ?? this.validTill,
     );
   }
 
@@ -76,6 +77,7 @@ class AdModule {
       'cuponCode': cuponCode,
       'imageURL': imageURL,
       'hits': hits,
+      'validTill': validTill,
     };
   }
 
@@ -95,6 +97,9 @@ class AdModule {
       cuponCode: map['cuponCode'] != null ? map['cuponCode'] as String : null,
       imageURL: map['imageURL'] as String,
       hits: map['hits'] != null ? map['hits'] as int : null,
+      validTill: map['validTill'] != null
+          ? DateTime.parse(map['validTill'] as String)
+          : null,
     );
   }
 
@@ -105,7 +110,7 @@ class AdModule {
 
   @override
   String toString() {
-    return 'AdModule(uid: $uid, shopUID: $shopUID, name: $name, categoryUIDs: $categoryUIDs, description: $description, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponCode: $cuponCode, imageURL: $imageURL, hits: $hits)';
+    return 'AdModule(uid: $uid, shopUID: $shopUID, name: $name, categoryUIDs: $categoryUIDs, description: $description, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponCode: $cuponCode, imageURL: $imageURL, hits: $hits, validTill: $validTill)';
   }
 
   @override
@@ -121,7 +126,8 @@ class AdModule {
         other.avgShippingTime == avgShippingTime &&
         other.cuponCode == cuponCode &&
         other.imageURL == imageURL &&
-        other.hits == hits;
+        other.hits == hits &&
+        other.validTill == validTill;
   }
 
   @override
@@ -135,6 +141,7 @@ class AdModule {
         avgShippingTime.hashCode ^
         cuponCode.hashCode ^
         imageURL.hashCode ^
-        hits.hashCode;
+        hits.hashCode ^
+        validTill.hashCode;
   }
 }

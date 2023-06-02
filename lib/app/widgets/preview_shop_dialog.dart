@@ -1,6 +1,5 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/preview_dialog_controller.dart';
@@ -14,7 +13,7 @@ class PreviewShopDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PreviewDialogController controller =
-        Get.put(PreviewDialogController(adUID: ad.uid!));
+        Get.put(PreviewDialogController(adModule: ad));
     return GetBuilder<PreviewDialogController>(builder: (context) {
       return Dialog(
         insetPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 35.h),
@@ -210,51 +209,64 @@ class PreviewShopDialog extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20.h),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Container(
-                        height: 35.h,
-                        width: Get.context!.width * 0.3,
-                        decoration: const BoxDecoration(
-                          color: MataajerTheme.mainColorLighten,
-                        ),
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'نسخ الكود',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w700,
+                InkWell(
+                  onTap: () {
+                    // set clippboard
+                    Clipboard.setData(ClipboardData(text: ad.cuponCode ?? ''));
+                    Get.snackbar(
+                      'نسخ الكود',
+                      'تم نسخ الكود بنجاح',
+                      snackPosition: SnackPosition.TOP,
+                      backgroundColor: Colors.green,
+                      colorText: Colors.white,
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Container(
+                          height: 35.h,
+                          width: Get.context!.width * 0.3,
+                          decoration: const BoxDecoration(
+                            color: MataajerTheme.mainColorLighten,
+                          ),
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'نسخ الكود',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Container(
-                        height: 35.h,
-                        width: Get.context!.width * 0.5,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                        ),
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'خصم 20% على جميع المنتجات',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w500,
+                        Container(
+                          height: 35.h,
+                          width: Get.context!.width * 0.5,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade300,
+                          ),
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                ad.description,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12.sp,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(height: 20.h),
@@ -276,32 +288,11 @@ class PreviewShopDialog extends StatelessWidget {
                     height: Get.context!.height * 0.18,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) => InkWell(
-                        focusColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        splashColor: Colors.transparent,
-                        onTap: () {
-                          Get.back();
-                          Get.dialog(PreviewShopDialog(ad: ad));
-                        },
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(50.r),
-                              child: Image.network(
-                                'https://firebasestorage.googleapis.com/v0/b/mataajer-saudi.appspot.com/o/%D8%A7%D9%84%D9%88%D8%A7%D8%AF%D9%8A.jpg?alt=media&token=29 af9bc2-953f-48e5-a5ce-65a0ceeacdda',
-                                height: 75.h,
-                              ),
-                            ),
-                            SizedBox(height: 10.h),
-                            const Text('متجر مشابه'),
-                          ],
-                        ),
-                      ),
+                      itemBuilder: (context, index) =>
+                          _similarAdCard(controller.similarAds[index]),
                       separatorBuilder: (context, index) =>
                           SizedBox(width: 20.w),
-                      itemCount: 5,
+                      itemCount: controller.similarAds.length,
                       shrinkWrap: true,
                     ),
                   ),
@@ -312,5 +303,38 @@ class PreviewShopDialog extends StatelessWidget {
         ),
       );
     });
+  }
+
+  Widget _similarAdCard(AdModule ad) {
+    return InkWell(
+      focusColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      onTap: () {
+        Get.back(closeOverlays: true);
+        Get.dialog(PreviewShopDialog(ad: ad));
+      },
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 40.r,
+            backgroundImage: NetworkImage(
+              ad.imageURL,
+              // height: 75,
+              // width: 75,
+            ),
+          ),
+          SizedBox(height: 10.h),
+          Text(
+            ad.name,
+            style: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

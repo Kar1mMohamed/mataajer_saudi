@@ -4,7 +4,7 @@ part of 'app_pages.dart';
 abstract class Routes {
   Routes._();
   static const HOME = _Paths.HOME;
-  static const LOGIN = _Paths.LOGIN;
+  static const ON_BARDING = _Paths.ON_BARDING;
   static const NOTIFICATIONS = _Paths.NOTIFICATIONS;
   static const FAVORITES = _Paths.FAVORITES;
   static const SHOP_LOGIN_AND_REGISTER = _Paths.SHOP_LOGIN_AND_REGISTER;
@@ -16,12 +16,13 @@ abstract class Routes {
       _Paths.SHOP_CUSTOMERS_NOTIFICATIONS;
   static const ADMIN_ACTIVE_USERS = _Paths.ADMIN_ACTIVE_USERS;
   static const CHOOSE_SUBSCRIPTION = _Paths.CHOOSE_SUBSCRIPTION;
+  static const ADMIN_NOTIFICATION = _Paths.ADMIN_NOTIFICATION;
 }
 
 abstract class _Paths {
   _Paths._();
   static const HOME = '/home';
-  static const LOGIN = '/login';
+  static const ON_BARDING = '/on-barding';
   static const NOTIFICATIONS = '/notifications';
   static const FAVORITES = '/favorites';
   static const SHOP_LOGIN_AND_REGISTER = '/shop-login-and-register';
@@ -32,4 +33,5 @@ abstract class _Paths {
   static const SHOP_CUSTOMERS_NOTIFICATIONS = '/shop-customers-notifications';
   static const ADMIN_ACTIVE_USERS = '/admin-active-users';
   static const CHOOSE_SUBSCRIPTION = '/choose-subscription';
+  static const ADMIN_NOTIFICATION = '/admin-notification';
 }

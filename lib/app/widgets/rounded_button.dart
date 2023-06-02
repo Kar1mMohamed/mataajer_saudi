@@ -73,7 +73,7 @@ class RoundedButton extends StatelessWidget {
                         ? Colors.white
                         : (textColor ?? MataajerTheme.mainColor),
                     fontWeight: FontWeight.w500,
-                    fontSize: 16.sp,
+                    fontSize: 16,
                   ),
             ),
           ],

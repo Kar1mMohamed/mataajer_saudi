@@ -4,16 +4,16 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
-import '../controllers/login_controller.dart';
+import '../controllers/on_boarding_controller.dart';
 
-class LoginView extends GetView<LoginController> {
-  const LoginView({Key? key}) : super(key: key);
+class OnBoardingView extends GetView<OnBoardingController> {
+  const OnBoardingView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFFF5F5F5),
       resizeToAvoidBottomInset: false,
-      body: GetBuilder<LoginController>(builder: (_) {
+      body: GetBuilder<OnBoardingController>(builder: (_) {
         return Center(
           child: SingleChildScrollView(
             child: Column(
@@ -22,7 +22,7 @@ class LoginView extends GetView<LoginController> {
                 Image.asset(Assets.loginImage),
                 SizedBox(height: 10.h),
                 Text('هل انت زائر ام صاحب متاجر؟!',
-                    style: TextStyle(fontSize: 17.sp)),
+                    style: TextStyle(fontSize: 17)),
                 SizedBox(height: 10.h),
                 InkWell(
                     onTap: () {
@@ -85,8 +85,7 @@ class LoginView extends GetView<LoginController> {
                 SizedBox(width: 5.w),
                 Text(
                   text,
-                  style:
-                      TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ],
             ),

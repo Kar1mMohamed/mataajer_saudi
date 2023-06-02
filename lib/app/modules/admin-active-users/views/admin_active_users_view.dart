@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/custom_switch.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
+import 'package:mataajer_saudi/database/notification.dart';
 import '../controllers/admin_active_users_controller.dart';
 
 class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
@@ -16,7 +19,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
     return Scaffold(
       appBar: appBar(),
       backgroundColor: const Color(0xFFF5F5F5),
-      drawer: const MyDrawer(ads: [], isShop: false),
+      drawer: const MyDrawer(ads: [], isShop: false, isAdmin: true),
       body: GetBuilder<AdminActiveUsersController>(builder: (_) {
         return Column(
           children: [
@@ -94,63 +97,68 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
   }
 
   Widget _shopCard(ShopModule shop, int indedx) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 35.r,
-                  backgroundColor: Colors.grey,
-                  backgroundImage: const NetworkImage(
-                      'https://www.woolha.com/media/2020/03/eevee.png'),
-                ),
-                SizedBox(width: 10.w),
-                Column(
-                  children: [
-                    Text(
-                      shop.name,
-                      style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                    ),
-                    Text(
-                      shop.categories.first.name,
-                      style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w400,
-                          color: MataajerTheme.mainColor),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                CustomSwitch(
-                  value: shop.isVisible!,
-                  onChanged: (v) {
-                    shop.isVisible = v;
-                    controller.updateShopVisibility(shop, indedx);
-                  },
-                ),
-                SizedBox(width: 10.w),
-                IconButton(
-                  onPressed: () => controller.deleteShop(shop),
-                  icon: Icon(
-                    Icons.delete,
-                    color: Colors.red,
+    return InkWell(
+      onTap: () async {
+        await Get.toNamed(Routes.SHOP_ACCOUNT, arguments: shop);
+        controller.getAllShops();
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 35.r,
+                    backgroundColor: Colors.grey,
+                    backgroundImage: NetworkImage(shop.image),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  SizedBox(width: 10.w),
+                  Column(
+                    children: [
+                      Text(
+                        shop.name,
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w400),
+                      ),
+                      Text(
+                        shop.categories.first.name,
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400,
+                            color: MataajerTheme.mainColor),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  CustomSwitch(
+                    value: shop.isVisible!,
+                    onChanged: (v) {
+                      shop.isVisible = v;
+                      controller.updateShopVisibility(shop, indedx);
+                    },
+                  ),
+                  SizedBox(width: 10.w),
+                  IconButton(
+                    onPressed: () => controller.deleteShop(shop),
+                    icon: Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -161,6 +169,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
       backgroundColor: Colors.transparent,
       shadowColor: Colors.transparent,
       foregroundColor: Colors.transparent,
+      leadingWidth: 50.w,
       elevation: 0,
       title: Text('لوحة الأدمن',
           style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500)),
@@ -181,47 +190,57 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
         );
       }),
       actions: [
-        IconButton(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          onPressed: () => Get.toNamed(Routes.NOTIFICATIONS),
-          icon: Stack(
-            children: [
-              Icon(
-                Icons.notifications,
-                size: 30.h,
-              ),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Container(
-                  padding: const EdgeInsets.all(4.0),
-                  margin: EdgeInsets.only(left: 10.w),
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                    border: Border.fromBorderSide(
-                      BorderSide(
-                        color: Colors.white,
-                        width: 2,
+        ValueListenableBuilder<Box<NotificationModule>>(
+            valueListenable: NotificationModule.hiveBox.listenable(),
+            builder: (context, box, widget) {
+              var length = 0;
+              if (box.isNotEmpty) {
+                length = box.values
+                    .where((element) =>
+                        element.isRead == null || element.isRead == false)
+                    .length;
+              }
+              return IconButton(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                onPressed: () => Get.toNamed(Routes.NOTIFICATIONS),
+                icon: Stack(
+                  children: [
+                    Icon(
+                      Icons.notifications,
+                      size: 30.h,
+                    ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(4.0),
+                        margin: EdgeInsets.only(left: 10.w),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                          border: Border.fromBorderSide(
+                            BorderSide(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          '$length',
+                          style: TextStyle(
+                            fontSize: 8.5.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  child: Text(
-                    '2',
-                    style: TextStyle(
-                      fontSize: 8.5.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-        )
+              );
+            })
       ],
-      leadingWidth: 50.w,
     );
   }
 
@@ -305,6 +324,10 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
+        controller: controller.searchTextController,
+        onChanged: (v) {
+          controller.search(v);
+        },
         style: TextStyle(
           fontSize: 13.sp,
           color: const Color.fromARGB(255, 119, 119, 119),

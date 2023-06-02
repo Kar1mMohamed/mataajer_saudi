@@ -2,10 +2,10 @@ name: mataajer_saudi
 version: 1.0.0+1
 publish_to: none
 description: Mataajer Saudi.
-environment: 
-  sdk: '>=2.19.2 <3.0.0'
+environment:
+  sdk: ">=2.19.2 <3.10.0"
 
-dependencies: 
+dependencies:
   cupertino_icons: ^1.0.2
   get: ^4.6.5
   firebase_core: ^2.7.0
@@ -26,27 +26,27 @@ dependencies:
   path: ^1.8.2
   dio: ^5.1.1
   show_up_animation: ^2.0.0
-  flutter: 
+  flutter:
     sdk: flutter
+  flutter_advanced_avatar: ^1.5.0
 
-dev_dependencies: 
+dev_dependencies:
   flutter_lints: ^2.0.0
   hive_generator: ^2.0.0
   build_runner: ^2.3.3
-  flutter_test: 
+  flutter_test:
     sdk: flutter
 
-flutter: 
-  assets: 
+flutter:
+  assets:
     - assets/
     - assets/png/
     - assets/images/
-  fonts: 
+  fonts:
     - family: Tajawal
-      fonts: 
+      fonts:
         - asset: assets/fonts/Tajawal-Light.ttf
         - asset: assets/fonts/Tajawal-Regular.ttf
         - asset: assets/fonts/Tajawal-Medium.ttf
         - asset: assets/fonts/Tajawal-Bold.ttf
   uses-material-design: true
-

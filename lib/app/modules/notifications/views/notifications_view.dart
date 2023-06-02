@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
+import 'package:mataajer_saudi/app/widgets/image_loading.dart';
+import 'package:mataajer_saudi/database/notification.dart';
 
 import '../controllers/notifications_controller.dart';
 
@@ -12,26 +14,41 @@ class NotificationsView extends GetView<NotificationsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      backgroundColor: Color(0xFFF5F5F5),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.0.sp),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 20.h),
-              notificationSection('اليوم', true),
-              SizedBox(height: 20.h),
-              notificationSection('الامس', false),
-              SizedBox(height: 20.h),
-              notificationSection('اخرى', false),
-            ],
+      backgroundColor: const Color(0xFFF5F5F5),
+      body: GetBuilder<NotificationsController>(builder: (_) {
+        if (controller.loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (controller.isThereNoNotifications) {
+          return const Center(child: Text('لا يوجد اشعارات'));
+        }
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.0.sp),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 20.h),
+                notificationSection(
+                    'اليوم', true, controller.todayNotifications),
+                SizedBox(height: 20.h),
+                notificationSection(
+                    'الامس', false, controller.yesterdayNotifications),
+                SizedBox(height: 20.h),
+                notificationSection(
+                    'اخرى', false, controller.otherNotifications),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
-  Widget notificationSection(String text, bool isToday) {
+  Widget notificationSection(
+      String text, bool isToday, List<NotificationModule> list) {
+    if (list.isEmpty) {
+      return Container();
+    }
     return Column(
       children: [
         Align(
@@ -49,16 +66,17 @@ class NotificationsView extends GetView<NotificationsController> {
         SizedBox(height: 10.h),
         ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index) => _notificationCard(),
+          itemBuilder: (context, index) => _notificationCard(list[index]),
           separatorBuilder: (context, index) => SizedBox(height: 10.h),
-          itemCount: 10,
+          itemCount: list.length,
           shrinkWrap: true,
         ),
       ],
     );
   }
 
-  Widget _notificationCard() {
+  Widget _notificationCard(NotificationModule notification) {
+    String? image = notification.data?['image'];
     return Container(
       height: 95.h,
       decoration: BoxDecoration(
@@ -71,12 +89,11 @@ class NotificationsView extends GetView<NotificationsController> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(50.r),
-              child: Image.network(
-                'https://firebasestorage.googleapis.com/v0/b/mataajer-saudi.appspot.com/o/%D8%A7%D9%84%D9%88%D8%A7%D8%AF%D9%8A.jpg?alt=media&token=29 af9bc2-953f-48e5-a5ce-65a0ceeacdda',
+              child: LoadingImage(
+                src: image,
                 height: 65.h,
                 width: 65.w,
                 fit: BoxFit.cover,
-                isAntiAlias: true,
               ),
             ),
             SizedBox(width: 10.w),
@@ -87,7 +104,7 @@ class NotificationsView extends GetView<NotificationsController> {
                   Row(
                     children: [
                       Text(
-                        'متجر',
+                        '${notification.title}',
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w700,
@@ -95,7 +112,7 @@ class NotificationsView extends GetView<NotificationsController> {
                       ),
                       SizedBox(width: 10.w),
                       Text(
-                        '10:00مساء',
+                        notification.timeString,
                         style: TextStyle(
                           color: const Color(0xFFB4B4B4),
                           fontSize: 11.sp,
@@ -106,6 +123,7 @@ class NotificationsView extends GetView<NotificationsController> {
                   ),
                   Text(
                     """ تسوق منتجاتك المفضلة من أزياء وإلكترونيات ومنتجات المنزل والجمال ومنتجات """,
+                    // '${notification.body}',
                     style:
                         TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
                   ),

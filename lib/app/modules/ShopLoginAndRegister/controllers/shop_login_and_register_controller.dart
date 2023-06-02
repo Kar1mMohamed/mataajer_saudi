@@ -1,17 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
-import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
@@ -19,7 +16,15 @@ import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ShopLoginAndRegisterController extends GetxController {
+  /// Usally called from the drawer
+  bool get isNavigateToRegister =>
+      Get.arguments?['isNavigateToRegister'] ?? false;
+
   final mainSettingsController = Get.find<MainSettingsController>();
+
+  List<double> get pricesFromSubscriptions =>
+      mainSettingsController.subscriptions.map((e) => e.yearlyPrice!).toList();
+
   final pageController = PageController();
   int pageIndex = 0;
 
@@ -77,12 +82,12 @@ class ShopLoginAndRegisterController extends GetxController {
         throw 'Error while login';
       }
 
-      if (!user.user!.emailVerified) {
-        // throw 'Email not verified';
-        print('Email not verified');
-        await Get.offAndToNamed(Routes.RESET_PASSWORD,
-            arguments: {'isEmailVerify': true});
-      }
+      // if (!user.user!.emailVerified) {
+      //   // throw 'Email not verified';
+      //   print('Email not verified');
+      //   await Get.offAndToNamed(Routes.RESET_PASSWORD,
+      //       arguments: {'isEmailVerify': true});
+      // }
 
       final userModule =
           await FirebaseFirestoreHelper.instance.getShopModule(user.user!.uid);
@@ -156,12 +161,6 @@ class ShopLoginAndRegisterController extends GetxController {
       await FirebaseFirestoreHelper.instance
           .addSubscription(regResponse.user!.uid, subscriptionModule);
 
-      await FirebaseFirestore.instance
-          .collection('shops')
-          .doc(regResponse.user!.uid)
-          .collection('subscriptions')
-          .add(sub.toMap());
-
       await Get.offAndToNamed(Routes.RESET_PASSWORD,
           arguments: {'isEmailVerify': true});
     } on FirebaseAuthException catch (e) {
@@ -231,7 +230,7 @@ class ShopLoginAndRegisterController extends GetxController {
   Future<void> ifUserGoToHome() async {
     final currentUser = FirebaseAuth.instance.currentUser;
 
-    if (currentUser != null && currentUser.emailVerified) {
+    if (currentUser != null) {
       final shopModule =
           await FirebaseFirestoreHelper.instance.getShopModule(currentUser.uid);
 
@@ -248,6 +247,11 @@ class ShopLoginAndRegisterController extends GetxController {
   void onInit() async {
     super.onInit();
     await ifUserGoToHome();
+
+    if (isNavigateToRegister) {
+      await Future.delayed(const Duration(milliseconds: 50));
+      changePageIndex(1);
+    }
 
     if (kDebugMode) {
       loginEmailController.text = 'karimo741852@gmail.com';

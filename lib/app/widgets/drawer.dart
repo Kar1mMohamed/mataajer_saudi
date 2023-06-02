@@ -4,15 +4,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
-import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 
 class MyDrawer extends StatelessWidget {
-  const MyDrawer({super.key, required this.ads, required this.isShop});
+  const MyDrawer(
+      {super.key, required this.ads, required this.isShop, this.isAdmin});
 
   final List<AdModule> ads;
   final bool isShop;
+  final bool? isAdmin;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +63,12 @@ class MyDrawer extends StatelessWidget {
                 ],
               ),
             ),
-            if (isShop) _forShop() else _forUser(),
+            if (isAdmin ?? false)
+              _forAdmin()
+            else if (isShop)
+              _forShop()
+            else
+              _forGuest(),
           ],
         ),
       ),
@@ -104,15 +110,31 @@ class MyDrawer extends StatelessWidget {
     );
   }
 
-  Widget _forUser() {
+  Widget _forGuest() {
+    return Column(
+      children: [
+        _drawerItem(Assets.plusIcon, 'اضف متجرك الالكتروني',
+            route: Routes.SHOP_LOGIN_AND_REGISTER,
+            arguments: {'isNavigateToRegister': true}),
+        _drawerItem(Assets.addPackageIcon, 'عرض باقات الاشتراك',
+            route: Routes.SPLASH),
+        _drawerItem(Assets.loveIcon, 'المتاجر المفضلة',
+            route: Routes.FAVORITES, arguments: {'ads': ads}),
+      ],
+    );
+  }
+
+  Widget _forAdmin() {
     return Column(
       children: [
         // _drawerItem(Assets.plusIcon, 'اضف متجرك الالكتروني',
         //     route: Routes.HOME),
         // _drawerItem(Assets.addPackageIcon, 'عرض باقات الاشتراك',
         //     route: Routes.SPLASH),
-        _drawerItem(Assets.loveIcon, 'المتاجر المفضلة',
-            route: Routes.FAVORITES, arguments: {'ads': ads}),
+        _drawerItem('', 'الاشعارات المستقبلة',
+            route: Routes.ADMIN_NOTIFICATION,
+            customIcon:
+                Icon(Icons.notifications, color: MataajerTheme.mainColor)),
       ],
     );
   }
@@ -121,7 +143,8 @@ class MyDrawer extends StatelessWidget {
       {String? route,
       dynamic arguments,
       Color? assetColor,
-      void Function()? onTap}) {
+      void Function()? onTap,
+      Widget? customIcon}) {
     final bool isActive = route == Get.currentRoute;
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -133,14 +156,17 @@ class MyDrawer extends StatelessWidget {
         child: ListTile(
           title: Row(
             children: [
-              Image.asset(
-                imageAsset,
-                width: 20.w,
-                height: 20.h,
-                color: isActive
-                    ? Colors.white
-                    : (assetColor ?? MataajerTheme.mainColor),
-              ),
+              if (customIcon != null)
+                customIcon
+              else
+                Image.asset(
+                  imageAsset,
+                  width: 20.w,
+                  height: 20.h,
+                  color: isActive
+                      ? Colors.white
+                      : (assetColor ?? MataajerTheme.mainColor),
+                ),
               SizedBox(width: 5.w),
               Text(
                 text,

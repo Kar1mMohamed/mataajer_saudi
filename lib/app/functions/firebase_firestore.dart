@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
-import 'package:mataajer_saudi/app/data/modules/send_notification_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
+import 'package:mataajer_saudi/database/notification.dart';
 
 class FirebaseFirestoreHelper {
   FirebaseFirestoreHelper._();
@@ -158,7 +158,25 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<void> sendNotificationToFirebase(SendNotifictaionModule module) async {
+  Future<List<NotificationModule>> getAllNotifications(
+      {bool? statusNotActive}) async {
+    try {
+      final res = await FirebaseFirestore.instance
+          .collection('notifications')
+          .where('isActive', isEqualTo: statusNotActive ?? false)
+          .get()
+          .then((value) => value.docs
+              .map((e) => NotificationModule.fromMap(e.data()))
+              .toList());
+
+      return res;
+    } catch (e) {
+      log(e);
+      throw e.toString();
+    }
+  }
+
+  Future<void> sendNotificationToFirebase(NotificationModule module) async {
     try {
       await FirebaseFirestore.instance
           .collection('notifications')

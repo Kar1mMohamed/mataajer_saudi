@@ -13,7 +13,7 @@ class SplashController extends GetxController {
       updateLoading();
       await mainSettingsController.getCategories();
       await mainSettingsController.getSubscriptions();
-      Get.offAndToNamed(Routes.LOGIN); // REAL INITAL ROUTE
+      Get.offAndToNamed(Routes.ON_BARDING); // REAL INITAL ROUTE
     } catch (e) {
       print(e);
       KSnackBar.error('حدث خطأ أثناء تحميل البيانات');

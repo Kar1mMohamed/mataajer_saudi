@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mataajer_saudi/database/notification.dart';
 import 'package:mataajer_saudi/database/shop_fav.dart';
 
 class HiveHelper {
@@ -15,9 +16,11 @@ class HiveHelper {
 
   void registerAdapters() {
     Hive.registerAdapter<ShopFavHive>(ShopFavHiveAdapter());
+    Hive.registerAdapter<NotificationModule>(NotificationModuleAdapter());
   }
 
   Future<void> openBoxes() async {
     await ShopFavHive.openBox;
+    await NotificationModule.openBox;
   }
 }

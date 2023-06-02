@@ -45,4 +45,9 @@ class MainSettingsController extends GetxController {
       print(e);
     }
   }
+
+  @override
+  void onInit() async {
+    super.onInit();
+  }
 }

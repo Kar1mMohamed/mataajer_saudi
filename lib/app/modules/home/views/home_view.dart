@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
-import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
 import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
+import 'package:mataajer_saudi/database/notification.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -76,7 +77,7 @@ class HomeView extends GetView<HomeController> {
               ),
               SizedBox(height: 20.h),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.0.sp),
                 child: _homeBanner(context),
               ),
               SizedBox(height: 20.h),
@@ -96,14 +97,15 @@ class HomeView extends GetView<HomeController> {
     return Stack(
       children: [
         Container(
-          height: 100.0.h,
+          height: context.isTablet ? context.height * 0.24 : 100.h,
           width: context.width,
           decoration: BoxDecoration(
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(20.0.r),
-            image: DecorationImage(
+            image: const DecorationImage(
               fit: BoxFit.cover,
               image: AssetImage(Assets.homeBanner),
+              filterQuality: FilterQuality.high,
             ),
           ),
           child: Container(
@@ -114,14 +116,14 @@ class HomeView extends GetView<HomeController> {
               gradient: LinearGradient(
                 begin: FractionalOffset.topLeft,
                 end: FractionalOffset.topRight,
+                stops: [0.5, double.infinity],
                 colors: [
                   MataajerTheme.mainColor.withOpacity(0.7),
                   Colors.white.withOpacity(0.1),
                 ],
               ),
             ),
-            child: Padding(
-              padding: EdgeInsets.only(right: 150.0.sp),
+            child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,17 +131,33 @@ class HomeView extends GetView<HomeController> {
                   Text(
                     'عروض الجمعة الخضراء',
                     style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700),
+                      fontSize: 16.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.2),
+                          offset: const Offset(0, 1),
+                          blurRadius: 1.r,
+                        ),
+                      ],
+                    ),
                   ),
                   Text(
                     """احصل على خصومات على منتجات
-مختارة تصل الى 60%""",
+            مختارة تصل الى 60%""",
                     style: TextStyle(
-                        fontSize: 13.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500),
+                      fontSize: 13.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.2),
+                          offset: const Offset(0, 1),
+                          blurRadius: 1.r,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -151,11 +169,14 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _ads() {
+    List<AdModule> mostViewed = [];
+    mostViewed.addAll(controller.ads);
+    mostViewed.sort((a, b) => (b.hits ?? 0).compareTo(a.hits ?? 0));
+
     return Column(
       children: [
         _adItem('متاجر مثبتة', Icons.keyboard_arrow_up, controller.ads, 1),
-        _adItem(
-            'الاكثر زيارة', Icons.remove_red_eye_outlined, controller.ads, 2),
+        _adItem('الاكثر زيارة', Icons.remove_red_eye_outlined, mostViewed, 2),
         _adItem('الاكثر عروضا', Icons.percent, controller.ads, 2),
         _adItem('متاجر اخرى', Icons.maps_home_work_outlined, controller.ads, 2),
       ],
@@ -227,6 +248,7 @@ class HomeView extends GetView<HomeController> {
 
   Widget _search() {
     return TextField(
+      onChanged: controller.search,
       style: TextStyle(
         fontSize: 13.sp,
         color: const Color.fromARGB(255, 119, 119, 119),
@@ -242,8 +264,8 @@ class HomeView extends GetView<HomeController> {
           child: Image.asset(Assets.searchIcon),
         ),
         prefixIconConstraints: BoxConstraints(
-          minWidth: 30.w,
-          minHeight: 30.h,
+          minWidth: 30.spMin,
+          minHeight: 30.spMax,
         ),
         fillColor: Colors.grey[200],
         hintText: '  ابحث عن المتاجر',
@@ -255,7 +277,7 @@ class HomeView extends GetView<HomeController> {
         enabledBorder: OutlineInputBorder(
           borderSide: const BorderSide(
               color: Color.fromARGB(255, 219, 219, 219), width: 1.0),
-          borderRadius: BorderRadius.circular(30.0),
+          borderRadius: BorderRadius.circular(30.0.r),
         ),
       ),
     );
@@ -270,6 +292,7 @@ class HomeView extends GetView<HomeController> {
       splashColor: Colors.transparent,
       onTap: () {
         controller.updateCategorySelectedIndex(index);
+        controller.changeAdsForCategory(controller.categoriesList[index]);
       },
       child: Container(
         margin: EdgeInsets.only(right: index != 0 ? 10.w : 0.00),
@@ -352,11 +375,13 @@ class HomeView extends GetView<HomeController> {
                       splashColor: Colors.transparent,
                       onTap: () {
                         controller.updateLoveState(ad);
-                        print('loved');
+                        print('loved ${ad.uid}');
                       },
                       child: Icon(
                         Icons.favorite,
-                        color: isLoved ? Colors.red : const Color(0xFFC6C6C6),
+                        color: isLoved
+                            ? Colors.red.shade600
+                            : const Color(0xFFC6C6C6),
                         size: 25.sp,
                       ),
                     ),
@@ -370,32 +395,36 @@ class HomeView extends GetView<HomeController> {
                         CircleAvatar(
                           radius: 40.r,
                           backgroundImage: NetworkImage(ad.imageURL),
+                          backgroundColor: Colors.transparent,
                         ),
                         SizedBox(height: 10.h),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  ad.name,
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 13.sp,
-                                    fontWeight: FontWeight.w400,
+                            Flexible(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    ad.name,
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 13.sp,
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
-                                ),
-                                SizedBox(height: 2.h),
-                                Text(
-                                  categoryString,
-                                  style: TextStyle(
-                                    color: MataajerTheme.mainColor,
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w400,
+                                  SizedBox(height: 2.h),
+                                  Text(
+                                    categoryString,
+                                    style: TextStyle(
+                                      color: MataajerTheme.mainColor,
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             SizedBox(width: 5.w),
                             Icon(
@@ -421,10 +450,6 @@ class HomeView extends GetView<HomeController> {
       foregroundColor: Colors.transparent,
       elevation: 0,
       title: _appBarTitle(),
-      // title: Text(
-      //   'الرئيسية',
-      //   style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500),
-      // ),
       leading: Builder(builder: (context) {
         return InkWell(
           focusColor: Colors.transparent,
@@ -440,44 +465,57 @@ class HomeView extends GetView<HomeController> {
         );
       }),
       actions: [
-        IconButton(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          onPressed: () => Get.toNamed(Routes.NOTIFICATIONS),
-          icon: Stack(
-            children: [
-              Icon(
-                Icons.notifications,
-                size: 30.h,
-              ),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Container(
-                  padding: const EdgeInsets.all(4.0),
-                  margin: EdgeInsets.only(left: 10.w),
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                    border: Border.fromBorderSide(
-                      BorderSide(
-                        color: Colors.white,
-                        width: 2,
+        ValueListenableBuilder<Box<NotificationModule>>(
+          valueListenable: NotificationModule.hiveBox.listenable(),
+          builder: (context, box, widget) {
+            var length = 0;
+            if (box.isNotEmpty) {
+              length = box.values
+                  .where((element) =>
+                      element.isRead == null || element.isRead == false)
+                  .length;
+            }
+
+            return IconButton(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              onPressed: () => Get.toNamed(Routes.NOTIFICATIONS),
+              icon: Stack(
+                children: [
+                  Icon(
+                    Icons.notifications,
+                    size: 30.h,
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4.0),
+                      margin: EdgeInsets.only(left: 10.w),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                        border: Border.fromBorderSide(
+                          BorderSide(
+                            color: Colors.white,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        '$length',
+                        style: TextStyle(
+                          fontSize: 8.5.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
-                  child: Text(
-                    '2',
-                    style: TextStyle(
-                      fontSize: 8.5.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         )
       ],
     );
@@ -580,8 +618,7 @@ class HomeView extends GetView<HomeController> {
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w500,
                   ),
-                ),
-                SizedBox(width: 5.w),
+                ).marginAll(4.sp),
                 Text(
                   'سعودي',
                   style: TextStyle(
@@ -645,6 +682,8 @@ class HomeView extends GetView<HomeController> {
                           splashColor: Colors.transparent,
                           onTap: () {
                             controller.updateCategorySelectedIndex(index);
+                            controller.changeAdsForCategory(
+                                controller.categoriesList[index]);
                           },
                           child: Container(
                             margin: EdgeInsets.all(5.0.sp),

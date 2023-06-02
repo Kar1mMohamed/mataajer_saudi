@@ -14,12 +14,14 @@ import '../modules/ShopLoginAndRegister/bindings/shop_login_and_register_binding
 import '../modules/ShopLoginAndRegister/views/shop_login_and_register_view.dart';
 import '../modules/admin-active-users/bindings/admin_active_users_binding.dart';
 import '../modules/admin-active-users/views/admin_active_users_view.dart';
+import '../modules/admin_notification/bindings/admin_notification_binding.dart';
+import '../modules/admin_notification/views/admin_notification_view.dart';
 import '../modules/favorites/bindings/favorites_binding.dart';
 import '../modules/favorites/views/favorites_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
-import '../modules/login/bindings/login_binding.dart';
-import '../modules/login/views/login_view.dart';
+import '../modules/OnBoarding/bindings/on_boarding_binding.dart';
+import '../modules/OnBoarding/views/on_boarding_view.dart';
 import '../modules/notifications/bindings/notifications_binding.dart';
 import '../modules/notifications/views/notifications_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
@@ -39,14 +41,16 @@ class AppPages {
       binding: HomeBinding(),
     ),
     GetPage(
-      name: _Paths.LOGIN,
-      page: () => const LoginView(),
-      binding: LoginBinding(),
+      name: _Paths.ON_BARDING,
+      page: () => const OnBoardingView(),
+      binding: OnBoardingBinding(),
+      transition: Transition.fadeIn,
     ),
     GetPage(
       name: _Paths.NOTIFICATIONS,
       page: () => const NotificationsView(),
       binding: NotificationsBinding(),
+      transition: Transition.cupertino,
     ),
     GetPage(
       name: _Paths.FAVORITES,
@@ -92,6 +96,11 @@ class AppPages {
       name: _Paths.CHOOSE_SUBSCRIPTION,
       page: () => ChooseSubscriptionView(),
       binding: ChooseSubscriptionBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADMIN_NOTIFICATION,
+      page: () => const AdminNotificationView(),
+      binding: AdminNotificationBinding(),
     ),
   ];
 }

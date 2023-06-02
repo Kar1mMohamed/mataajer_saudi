@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -9,11 +8,11 @@ import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_notification_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
-import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
 import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
-import 'package:mataajer_saudi/app/functions/hive.dart';
+import 'package:mataajer_saudi/database/helper/hive_helper.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/translation/tr.dart';
+import 'package:mataajer_saudi/database/notification.dart';
 import 'package:mataajer_saudi/firebase_options.dart';
 import 'app/routes/app_pages.dart';
 
@@ -24,6 +23,15 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // await Firebase.initializeApp();
 
   print("Handling a background message: ${message.messageId}");
+  await NotificationModule.openBox;
+  final notificationModule = NotificationModule(
+    title: message.notification?.title ?? '',
+    body: message.notification?.body ?? '',
+    data: message.data,
+    date: DateTime.now(),
+  );
+  await NotificationModule.hiveBox.add(notificationModule);
+  print('added notificationModule: ${notificationModule.toMap()}');
 }
 
 void main() async {
@@ -41,6 +49,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
+      designSize: const Size(360, 690),
+      minTextAdapt: true,
       builder: (context, child) => GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: "Mataajer",
@@ -74,22 +84,63 @@ class MyApp extends StatelessWidget {
           // --------------- //
 
           await FirebaseAuth.instance.signOut();
-          // for (var i = 1; i < 4; i++) {
-          //   final model = ChooseSubscriptionModule(
-          //     name: i == 1
-          //         ? 'العادية'
-          //         : i == 2
-          //             ? 'الفضية'
-          //             : 'الذهبية',
-          //     monthlyPrice: 12,
-          //     yearlyPrice: 120,
-          //   );
 
+          // final first = ChooseSubscriptionModule(
+          //   name: 'العادية',
+          //   yearlyPrice: 100,
+          //   monthlyPrice: 10,
+          //   isPublishable: true,
+          //   isStatic: false,
+          //   isTwoPopUpAdsMonthly: false,
+          //   isFourPopUpAdsMonthly: false,
+          //   isCanSendNotification: false,
+          // );
+          // final second = ChooseSubscriptionModule(
+          //   name: 'الفضية',
+          //   yearlyPrice: 100,
+          //   monthlyPrice: 10,
+          //   isPublishable: true,
+          //   isStatic: true,
+          //   isTwoPopUpAdsMonthly: true,
+          //   isFourPopUpAdsMonthly: false,
+          //   isCanSendNotification: false,
+          // );
+          // final third = ChooseSubscriptionModule(
+          //   name: 'الذهبية',
+          //   yearlyPrice: 100,
+          //   monthlyPrice: 10,
+          //   isPublishable: true,
+          //   isStatic: true,
+          //   isTwoPopUpAdsMonthly: true,
+          //   isFourPopUpAdsMonthly: true,
+          //   isCanSendNotification: true,
+          // );
+          // final models = [first, second, third];
+          // for (var i = 0; i < 3; i++) {
+          //   var count = i + 1;
+          //   print('add subscription index: $i');
           //   await FirebaseFirestore.instance
           //       .collection('subscriptions')
-          //       .doc('$i')
-          //       .set(model.toMap());
+          //       .doc('$count')
+          //       .set(models[i].toMap());
           // }
+
+          // --------------- //
+
+          // List<NotificationModule> notifications = List.generate(
+          //   10,
+          //   (index) {
+          //     print('add notification index: $index');
+          //     return NotificationModule(
+          //       title: 'title $index',
+          //       body: 'body $index',
+          //       data: {'data': 'data $index'},
+          //       date: DateTime.now(),
+          //     );
+          //   },
+          // );
+
+          // await NotificationModule.hiveBox.addAll(notifications);
         },
       ),
     );

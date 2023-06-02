@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 
 class CustomBackButton extends StatelessWidget {
@@ -22,6 +21,10 @@ class CustomBackButton extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: IconButton(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+          focusColor: Colors.transparent,
           color: const Color(0xFF626262),
           icon: const Icon(Icons.arrow_back),
           onPressed: () {

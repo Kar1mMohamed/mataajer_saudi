@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
-import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
-import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/database/shop_fav.dart';
 
 class MainAccountController extends GetxController {
@@ -11,26 +10,20 @@ class MainAccountController extends GetxController {
   bool isShopOwner = false;
 
   List<AdModule> getFavShops(List<AdModule> ads) {
-    List<ShopFavHive> favShopsHive = ShopFavHive.box.values.toList();
-
-    List<AdModule> favAds = [];
-
-    for (var e in favShopsHive) {
-      if (ads.any((element) => element.shopUID == e.uid)) {
-        final ad = ads.firstWhere((element) => element.shopUID == e.uid);
-
-        favAds.add(ad);
-      }
-    }
-
+    List<ShopFavHive> favShopsHive = ShopFavHive.hiveBox.values.toList();
+    final favAds = favShopsHive
+        .map((e) => ads.firstWhere((element) => element.uid == e.uid))
+        .toList();
     return favAds;
   }
 
-  void addShopToFav(AdModule shop) {
-    ShopFavHive.box.put(shop.uid, ShopFavHive(shop.uid!, shop.name));
+  void addAdToFav(AdModule ad) {
+    ShopFavHive.hiveBox.put(ad.uid!, ShopFavHive(ad.uid!, ad.name));
+    log('added to fav: ${ad.uid}');
   }
 
-  void removeShopFromFav(AdModule shop) {
-    ShopFavHive.box.delete(shop.uid);
+  void removeAdFromFav(AdModule ad) {
+    ShopFavHive.hiveBox.delete(ad.uid!);
+    log('removed from fav: ${ad.name}');
   }
 }

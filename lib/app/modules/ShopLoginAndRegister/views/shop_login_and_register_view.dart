@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
-import 'package:mataajer_saudi/app/data/constants.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
-import 'package:mataajer_saudi/app/extensions/show_up_animation.dart';
 import 'package:mataajer_saudi/app/modules/ChooseSubscription/views/choose_subscription_view.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
@@ -15,7 +12,6 @@ import 'package:mataajer_saudi/app/widgets/image_loading.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 import 'package:mataajer_saudi/utils/input_format.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
-
 import '../controllers/shop_login_and_register_controller.dart';
 
 class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
@@ -48,7 +44,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
       height: 280.h,
       width: double.infinity,
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: MataajerTheme.mainColor,
           image: DecorationImage(
             image: AssetImage(Assets.loginRegisterImage),
@@ -659,10 +655,11 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
               Row(
                 children: [
                   Text('الباقة العادية', style: _pricesHeaderTextStyle()),
-                  SizedBox(width: 30.w),
+                  SizedBox(width: Get.context!.isTablet ? 50.w : 30.w),
                   Text('الباقة الفضية', style: _pricesHeaderTextStyle()),
-                  SizedBox(width: 30.w),
+                  SizedBox(width: Get.context!.isTablet ? 50.w : 30.w),
                   Text('الباقة الذهبية', style: _pricesHeaderTextStyle()),
+                  SizedBox(width: Get.context!.isTablet ? 20.w : 10.w),
                 ],
               ),
             ],
@@ -685,11 +682,12 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
                         style: _pricesHeaderTextStyle(fontSize: 14.sp)),
                     Row(
                       children: [
-                        _priceColumn(6.5, 12),
-                        SizedBox(width: 25.w),
-                        _priceColumn(12.5, 24),
-                        SizedBox(width: 25.w),
-                        _priceColumn(18.5, 36),
+                        _priceText(controller.pricesFromSubscriptions[0]),
+                        SizedBox(width: Get.context!.isTablet ? 56.w : 50.w),
+                        _priceText(controller.pricesFromSubscriptions[1]),
+                        SizedBox(width: Get.context!.isTablet ? 56.w : 50.w),
+                        _priceText(controller.pricesFromSubscriptions[2]),
+                        SizedBox(width: Get.context!.isTablet ? 20.w : 10.w),
                       ],
                     ),
                   ],
@@ -717,27 +715,18 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
     );
   }
 
-  Widget _priceColumn(double monthPrice, double yearPrice) {
-    return Column(
-      children: [
-        InkWell(
-          onTap: () {
-            print('month price: $monthPrice');
-          },
-          child: Text('شهري $monthPrice ريال',
-              style: _pricesHeaderTextStyle(
-                  weight: FontWeight.w500, fontSize: 12)),
+  Widget _priceText(double yearPrice) {
+    return InkWell(
+      onTap: () {
+        print('year price: $yearPrice');
+      },
+      child: Text(
+        '$yearPrice ريال',
+        style: _pricesHeaderTextStyle(
+          weight: FontWeight.w500,
+          fontSize: 12.sp,
         ),
-        SizedBox(height: 10.h),
-        InkWell(
-          onTap: () {
-            print('year price: $yearPrice');
-          },
-          child: Text('سنوي $yearPrice ريال',
-              style: _pricesHeaderTextStyle(
-                  weight: FontWeight.w500, fontSize: 12)),
-        ),
-      ],
+      ),
     );
   }
 
@@ -848,7 +837,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
   TextStyle _pricesHeaderTextStyle(
           {double? fontSize, Color? color, FontWeight? weight}) =>
       TextStyle(
-        fontSize: fontSize ?? 13,
+        fontSize: fontSize ?? 12,
         fontWeight: weight ?? FontWeight.w500,
         fontFamily: 'Tajawal',
         color: color ?? Colors.white,
@@ -865,9 +854,13 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
-            child: Text(title,
-                style:
-                    _pricesHeaderTextStyle(fontSize: 12.sp, color: fontColor)),
+            child: Text(
+              title,
+              style: _pricesHeaderTextStyle(
+                fontSize: 12.sp,
+                color: fontColor,
+              ),
+            ),
           ),
           Row(
             children: [

@@ -98,7 +98,7 @@ class ShopModule {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({bool? forSignUp}) {
     return <String, dynamic>{
       // 'uid': uid,
       'name': name,
@@ -110,7 +110,9 @@ class ShopModule {
       'cuponText': cuponText,
       'cuponCode': cuponCode,
       'categoriesUIDs': categoriesUIDs,
-      'subscriptions': subscriptions.map((x) => x.toMap()).toList(),
+      'subscriptions': (forSignUp ?? false)
+          ? []
+          : subscriptions.map((x) => x.toMap()).toList(),
       'shopLink': shopLink,
       'keywords': keywords,
       'isVisible': isVisible,

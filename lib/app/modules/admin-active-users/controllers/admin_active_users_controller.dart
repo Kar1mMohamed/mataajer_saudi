@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mataajer_saudi/app/controllers/main_notification_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 
 class AdminActiveUsersController extends GetxController {
+  RxInt get notificationCount =>
+      Get.find<MainNotificationController>().notificationCount;
+
   bool loading = false;
 
   int pageIndex = 0;
   final pageController = PageController();
+  final searchTextController = TextEditingController();
 
   List<ShopModule> allShops = [];
   List<ShopModule> activeShops = [];
@@ -61,6 +66,7 @@ class AdminActiveUsersController extends GetxController {
     isCurrentPageAllShops
         ? updateAllShopsCard(index)
         : updateActiveShopsCard(index);
+
     try {
       await FirebaseFirestoreHelper.instance.updateShopVisiblity(module);
     } catch (e) {
@@ -95,6 +101,30 @@ class AdminActiveUsersController extends GetxController {
       loading = false;
       isCurrentPageAllShops ? updateAllShops() : updateActiveShops();
     }
+  }
+
+  void search(String text) {
+    if (text.isEmpty) {
+      isCurrentPageAllShops ? getAllShops() : getActiveShops();
+    } else {
+      isCurrentPageAllShops ? _searchAllShops(text) : _searchActiveShops(text);
+    }
+  }
+
+  void _searchAllShops(String text) {
+    allShops = allShops
+        .where((element) =>
+            element.name.toLowerCase().contains(text.toLowerCase()))
+        .toList();
+    updateAllShops();
+  }
+
+  void _searchActiveShops(String text) {
+    activeShops = activeShops
+        .where((element) =>
+            element.name.toLowerCase().contains(text.toLowerCase()))
+        .toList();
+    updateActiveShops();
   }
 
   @override

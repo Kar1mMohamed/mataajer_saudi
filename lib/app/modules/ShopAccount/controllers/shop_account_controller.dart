@@ -15,7 +15,7 @@ import 'package:permission_handler/permission_handler.dart';
 class ShopAccountController extends GetxController {
   final mainAccountController = Get.find<MainAccountController>();
   final mainSettingsController = Get.find<MainSettingsController>();
-  ShopModule? currentShop;
+  ShopModule? currentShop = Get.arguments;
   bool get isShop => mainAccountController.isShopOwner;
   bool loading = false;
 
@@ -50,6 +50,7 @@ class ShopAccountController extends GetxController {
       mainSettingsController.mainCategories;
 
   Future<void> getShop() async {
+    if (currentShop != null) return; // if shop is already setted return
     loading = true;
     update();
     try {

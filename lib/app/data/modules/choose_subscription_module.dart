@@ -4,16 +4,28 @@ import 'dart:convert';
 class ChooseSubscriptionModule {
   final String? uid;
   String? name;
-  int? allowedDays;
+  int? allowedDays = 365; // default
   double? monthlyPrice;
   double? yearlyPrice;
+  bool? isPublishable = true;
+  bool? isStatic = false;
+  bool? isTwoPopUpAdsMonthly = false;
+  bool? isFourPopUpAdsMonthly = false;
+  bool? isCanSendNotification = false;
+
+  double? get getPriceByDays => allowedDays == 30 ? monthlyPrice : yearlyPrice;
 
   ChooseSubscriptionModule({
     this.uid,
     this.name,
-    this.allowedDays,
+    this.allowedDays = 365, // default
     this.monthlyPrice,
     this.yearlyPrice,
+    this.isPublishable,
+    this.isStatic,
+    this.isTwoPopUpAdsMonthly,
+    this.isFourPopUpAdsMonthly,
+    this.isCanSendNotification,
   });
 
   ChooseSubscriptionModule copyWith({
@@ -22,6 +34,11 @@ class ChooseSubscriptionModule {
     int? allowedDays,
     double? monthlyPrice,
     double? yearlyPrice,
+    bool? isPublishable,
+    bool? isStatic,
+    bool? isTwoPopUpAdsMonthly,
+    bool? isFourPopUpAdsMonthly,
+    bool? isCanSendNotification,
   }) {
     return ChooseSubscriptionModule(
       uid: uid ?? this.uid,
@@ -29,33 +46,57 @@ class ChooseSubscriptionModule {
       allowedDays: allowedDays ?? this.allowedDays,
       monthlyPrice: monthlyPrice ?? this.monthlyPrice,
       yearlyPrice: yearlyPrice ?? this.yearlyPrice,
+      isPublishable: isPublishable ?? this.isPublishable,
+      isStatic: isStatic ?? this.isStatic,
+      isTwoPopUpAdsMonthly: isTwoPopUpAdsMonthly ?? this.isTwoPopUpAdsMonthly,
+      isFourPopUpAdsMonthly:
+          isFourPopUpAdsMonthly ?? this.isFourPopUpAdsMonthly,
+      isCanSendNotification:
+          isCanSendNotification ?? this.isCanSendNotification,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      // 'uid': uid,
-      if (name != null) 'name': name,
-      if (allowedDays != null) 'allowedDays': allowedDays,
-      if (monthlyPrice != null) 'monthlyPrice': monthlyPrice,
-      if (yearlyPrice != null) 'yearlyPrice': yearlyPrice,
+      'uid': uid,
+      'name': name,
+      'allowedDays': allowedDays,
+      'monthlyPrice': monthlyPrice,
+      'yearlyPrice': yearlyPrice,
+      'isPublishable': isPublishable,
+      'isStatic': isStatic,
+      'isTwoPopUpAdsMonthly': isTwoPopUpAdsMonthly,
+      'isFourPopUpAdsMonthly': isFourPopUpAdsMonthly,
+      'isCanSendNotification': isCanSendNotification,
     };
   }
 
   factory ChooseSubscriptionModule.fromMap(Map<String, dynamic> map,
       {String? uid}) {
     return ChooseSubscriptionModule(
-      uid: uid,
+      uid: uid ?? map['uid'] as String?,
       name: map['name'] != null ? map['name'] as String : null,
       allowedDays:
           map['allowedDays'] != null ? map['allowedDays'] as int : null,
       monthlyPrice:
           map['monthlyPrice'] != null ? map['monthlyPrice'] as double : null,
-      yearlyPrice:
-          map['yearlyPrice'] != null ? map['yearlyPrice'] as double : null,
+      yearlyPrice: map['yearlyPrice'] != null
+          ? (map['yearlyPrice'] as num).toDouble()
+          : null,
+      isPublishable:
+          map['isPublishable'] != null ? map['isPublishable'] as bool : null,
+      isStatic: map['isStatic'] != null ? map['isStatic'] as bool : null,
+      isTwoPopUpAdsMonthly: map['isTwoPopUpAdsMonthly'] != null
+          ? map['isTwoPopUpAdsMonthly'] as bool
+          : null,
+      isFourPopUpAdsMonthly: map['isFourPopUpAdsMonthly'] != null
+          ? map['isFourPopUpAdsMonthly'] as bool
+          : null,
+      isCanSendNotification: map['isCanSendNotification'] != null
+          ? map['isCanSendNotification'] as bool
+          : null,
     );
   }
-
   String toJson() => json.encode(toMap());
 
   factory ChooseSubscriptionModule.fromJson(String source) =>
@@ -64,7 +105,7 @@ class ChooseSubscriptionModule {
 
   @override
   String toString() {
-    return 'ChooseSubscriptionModule(uid: $uid, name: $name, allowedDays: $allowedDays, monthlyPrice: $monthlyPrice, yearlyPrice: $yearlyPrice)';
+    return 'ChooseSubscriptionModule(uid: $uid, name: $name, allowedDays: $allowedDays, monthlyPrice: $monthlyPrice, yearlyPrice: $yearlyPrice, isPublishable: $isPublishable, isStatic: $isStatic, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendNotification: $isCanSendNotification)';
   }
 
   @override
@@ -75,7 +116,12 @@ class ChooseSubscriptionModule {
         other.name == name &&
         other.allowedDays == allowedDays &&
         other.monthlyPrice == monthlyPrice &&
-        other.yearlyPrice == yearlyPrice;
+        other.yearlyPrice == yearlyPrice &&
+        other.isPublishable == isPublishable &&
+        other.isStatic == isStatic &&
+        other.isTwoPopUpAdsMonthly == isTwoPopUpAdsMonthly &&
+        other.isFourPopUpAdsMonthly == isFourPopUpAdsMonthly &&
+        other.isCanSendNotification == isCanSendNotification;
   }
 
   @override
@@ -84,6 +130,11 @@ class ChooseSubscriptionModule {
         name.hashCode ^
         allowedDays.hashCode ^
         monthlyPrice.hashCode ^
-        yearlyPrice.hashCode;
+        yearlyPrice.hashCode ^
+        isPublishable.hashCode ^
+        isStatic.hashCode ^
+        isTwoPopUpAdsMonthly.hashCode ^
+        isFourPopUpAdsMonthly.hashCode ^
+        isCanSendNotification.hashCode;
   }
 }
