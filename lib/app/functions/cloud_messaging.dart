@@ -66,6 +66,7 @@ class CloudMessaging {
       final now = DateTime.now();
       final userUID = FirebaseAuth.instance.currentUser!.uid;
       final currentDateUID = '${now.year}-${now.month}';
+
       var isHasLimit = await FirebaseFirestore.instance
           .collection('shops')
           .doc(userUID)
@@ -74,26 +75,26 @@ class CloudMessaging {
           .get()
           .then((value) {
         if (!value.exists) {
-          return true;
+          return true; // if it's not exist so it's the first time to send
         }
 
         final data = value.data();
         if (data == null) {
-          return true;
+          return true; // if it's not exist so it's the first time to send
         }
 
         final limit = data['sent'];
         if (limit == null) {
-          return true;
+          return true; // if it's not exist so it's the first time to send
         }
 
         if (limit > 3) {
-          return false;
+          return false; // if it's > 3 so he has no limit to send
         } else if (limit < 3) {
-          return true;
+          return true; // if it's < 3 so he has limit to send
         }
 
-        return false;
+        return false; // by anything else so he has no limit to send
       });
 
       return isHasLimit;

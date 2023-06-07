@@ -39,4 +39,6 @@ abstract class Assets {
   static const String eyePNG = 'assets/png/eye.png';
   static const String closedEypePNG = 'assets/png/closedeye.png';
   static const String whiteCircle = 'assets/png/whiteCircle.png';
+
+  static const String riveLoadingShop = 'assets/shop_loading.riv';
 }

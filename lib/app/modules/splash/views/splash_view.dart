@@ -11,10 +11,11 @@ class SplashView extends GetView<SplashController> {
   Widget build(BuildContext context) {
     return GetBuilder<SplashController>(builder: (_) {
       return Scaffold(
-          backgroundColor: Colors.white,
-          body: Center(
-            child: Image.asset(Assets.logo),
-          ));
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Image.asset(Assets.logo),
+        ),
+      );
     });
   }
 }

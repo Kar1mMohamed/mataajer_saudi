@@ -390,14 +390,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_advanced_avatar:
-    dependency: "direct main"
-    description:
-      name: flutter_advanced_avatar
-      sha256: "29f5d1586075a2ee5ce462fe25b9aa7179a157697260f542a05c5293a5bda8cc"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.5.0"
   flutter_blurhash:
     dependency: transitive
     description:
@@ -454,14 +446,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.2.0"
-  flutter_svg:
-    dependency: "direct main"
-    description:
-      name: flutter_svg
-      sha256: "6ff8c902c8056af9736de2689f63f81c42e2d642b9f4c79dbf8790ae48b63012"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.6"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -688,14 +672,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.3"
-  path_parsing:
-    dependency: transitive
-    description:
-      name: path_parsing
-      sha256: e3e67b1629e6f7e8100b367d3db6ba6af4b1f0bb80f64db18ef1fbabd2fa9ccf
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.1"
   path_provider:
     dependency: transitive
     description:
@@ -792,14 +768,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.2"
-  petitparser:
-    dependency: transitive
-    description:
-      name: petitparser
-      sha256: cb3798bef7fc021ac45b308f4b51208a152792445cce0448c9a4ba5879dd8750
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.4.0"
   platform:
     dependency: transitive
     description:
@@ -848,6 +816,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.3"
+  rive:
+    dependency: "direct main"
+    description:
+      name: rive
+      sha256: bb7a16bc6a88484fe3136890030b71776ffea368edd2a8368fe99d6430e4a802
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.11.2"
+  rive_common:
+    dependency: transitive
+    description:
+      name: rive_common
+      sha256: "5a0dbf689527c51ee5430608181d81460c9c45ab6cc3bd52dd9bbb3d8c4455b6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.9"
   rxdart:
     dependency: transitive
     description:
@@ -1005,30 +989,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
-  vector_graphics:
-    dependency: transitive
-    description:
-      name: vector_graphics
-      sha256: b96f10cbdfcbd03a65758633a43e7d04574438f059b1043104b5d61b23d38a4f
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.6"
-  vector_graphics_codec:
-    dependency: transitive
-    description:
-      name: vector_graphics_codec
-      sha256: "57a8e6e24662a3bdfe3b3d61257db91768700c0b8f844e235877b56480f31c69"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.6"
-  vector_graphics_compiler:
-    dependency: transitive
-    description:
-      name: vector_graphics_compiler
-      sha256: "7430f5d834d0db4560d7b19863362cd892f1e52b43838553a3c5cdfc9ab28e5b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.6"
   vector_math:
     dependency: transitive
     description:
@@ -1069,14 +1029,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
-  xml:
-    dependency: transitive
-    description:
-      name: xml
-      sha256: "5bc72e1e45e941d825fd7468b9b4cc3b9327942649aeb6fc5cdbf135f0a86e84"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.3.0"
   yaml:
     dependency: transitive
     description:

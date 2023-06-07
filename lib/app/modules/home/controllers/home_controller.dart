@@ -44,6 +44,7 @@ class HomeController extends GetxController {
           description: 'description$index',
           imageURL:
               'https://c8.alamy.com/comp/H3D3H0/small-indian-shop-sells-merchandise-per-single-unit-H3D3H0.jpg',
+          validTill: DateTime.now().add(Duration(days: index)),
         ),
       );
 

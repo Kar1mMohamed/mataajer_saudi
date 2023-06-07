@@ -90,8 +90,14 @@ class FirebaseFirestoreHelper {
 
   Future<List<AdModule>> getAds() async {
     try {
-      final ads = await FirebaseFirestore.instance.collection('ads').get().then(
-          (value) => value.docs
+      final ads = await FirebaseFirestore.instance
+          .collection('ads')
+          .where(
+            'validTill',
+            isGreaterThanOrEqualTo: DateTime.now(),
+          )
+          .get()
+          .then((value) => value.docs
               .map((e) => AdModule.fromMap(e.data()..['uid'] = e.id))
               .toList());
 

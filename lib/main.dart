@@ -62,6 +62,12 @@ class MyApp extends StatelessWidget {
         translations: Translation(),
         locale: const Locale('ar', 'SA'),
         onInit: () async {
+          // --------------- //
+
+          await FirebaseAuth.instance.signOut();
+
+          // --------------- //
+
           // final subScription = SubscriptionModule(
           //     uid: 'dsfr23rjkndfg',
           //     from: DateTime.now(),
@@ -80,10 +86,6 @@ class MyApp extends StatelessWidget {
           //       .collection('categories')
           //       .add(category.toMap());
           // }
-
-          // --------------- //
-
-          await FirebaseAuth.instance.signOut();
 
           // final first = ChooseSubscriptionModule(
           //   name: 'العادية',
