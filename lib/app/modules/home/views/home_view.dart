@@ -9,6 +9,7 @@ import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
 import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
 import 'package:mataajer_saudi/database/notification.dart';
+import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -169,16 +170,25 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _ads() {
+    List<AdModule> staticAds =
+        controller.ads.where((element) => element.isStaticAd ?? false).toList();
+
     List<AdModule> mostViewed = [];
     mostViewed.addAll(controller.ads);
     mostViewed.sort((a, b) => (b.hits ?? 0).compareTo(a.hits ?? 0));
 
+    List<AdModule> mostOffers =
+        controller.ads.where((element) => element.isMostOffers).toList();
+
+    List<AdModule> others =
+        controller.ads.where((element) => element.isOtherAd).toList();
+
     return Column(
       children: [
-        _adItem('متاجر مثبتة', Icons.keyboard_arrow_up, controller.ads, 1),
+        _adItem('متاجر مثبتة', Icons.keyboard_arrow_up, staticAds, 1),
         _adItem('الاكثر زيارة', Icons.remove_red_eye_outlined, mostViewed, 2),
-        _adItem('الاكثر عروضا', Icons.percent, controller.ads, 2),
-        _adItem('متاجر اخرى', Icons.maps_home_work_outlined, controller.ads, 2),
+        _adItem('الاكثر عروضا', Icons.percent, mostOffers, 2),
+        _adItem('متاجر اخرى', Icons.maps_home_work_outlined, others, 2),
       ],
     );
   }
@@ -221,7 +231,7 @@ class HomeView extends GetView<HomeController> {
           height: height,
           width: double.infinity,
           child: GetBuilder<HomeController>(
-              id: 'shops',
+              id: 'ads',
               builder: (_) {
                 // return GridView.builder(
                 //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -531,104 +541,15 @@ class HomeView extends GetView<HomeController> {
 
           if (controller.isSignedIn) {
             if (controller.currentShop == null) {
-              return Container(
-                height: 40.h,
-                padding: EdgeInsets.all(10.sp),
-                margin: EdgeInsets.all(10.sp),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF6145),
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'حدث خطأ ما',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              );
+              return _errorTitleAppBar;
             }
             if (controller.currentShop!.isSubscriptionExpired) {
-              return Container(
-                height: 40.h,
-                padding: EdgeInsets.all(10.sp),
-                margin: EdgeInsets.all(10.sp),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF6145),
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(Assets.renewVectorPNG),
-                    SizedBox(width: 5.w),
-                    Text(
-                      'تجديد الاشتراك',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              );
+              return _expitedTitleAppBar;
             } else {
-              return Container(
-                height: 40.h,
-                padding: EdgeInsets.all(10.sp),
-                margin: EdgeInsets.all(10.sp),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF4CCA5A),
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(Assets.renewVectorPNG),
-                    SizedBox(width: 5.w),
-                    Text(
-                      'مفعل',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              );
+              return _activeTitleAppBar;
             }
           } else {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'متاجر',
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ).marginAll(4.sp),
-                Text(
-                  'سعودي',
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w500,
-                    color: MataajerTheme.mainColor,
-                  ),
-                ),
-              ],
-            );
+            return _guestTitleAppBar;
           }
         });
   }
@@ -720,289 +641,133 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // Dialog _shopPreviewDialog() {
-  //   return Dialog(
-  //     insetPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 35.h),
-  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-  //     child: Container(
-  //       height: double.infinity,
-  //       width: double.infinity,
-  //       decoration: BoxDecoration(
-  //         color: Colors.white,
-  //         borderRadius: BorderRadius.circular(50.r),
-  //       ),
-  //       child: SingleChildScrollView(
-  //         child: Column(
-  //           children: [
-  //             Container(
-  //               height: 90.h,
-  //               width: double.infinity,
-  //               decoration:
-  //                   const BoxDecoration(color: MataajerTheme.mainColorLighten),
-  //               child: Padding(
-  //                 padding: const EdgeInsets.all(8.0),
-  //                 child: Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //                   children: [
-  //                     Container(
-  //                       height: 75,
-  //                       width: 75,
-  //                       padding: const EdgeInsets.all(4),
-  //                       decoration: const BoxDecoration(
-  //                         color: Colors.white,
-  //                         shape: BoxShape.circle,
-  //                       ),
-  //                       child: ClipOval(
-  //                         child: SizedBox.fromSize(
-  //                           size: const Size.fromRadius(48),
-  //                           child: Image.network(
-  //                             'https://mir-s3-cdn-cf.behance.net/projects/404/1cb86469753415.Y3JvcCwxMTUwLDg5OSwxMzc1LDY0Mw.jpg',
-  //                             fit: BoxFit.cover,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                     Column(
-  //                       mainAxisAlignment: MainAxisAlignment.center,
-  //                       children: [
-  //                         Text(
-  //                           'متجر نون',
-  //                           style: TextStyle(
-  //                             color: Colors.white,
-  //                             fontSize: 15.sp,
-  //                             fontWeight: FontWeight.w400,
-  //                           ),
-  //                         ),
-  //                         Text(
-  //                           'تسوق منتجات',
-  //                           style: TextStyle(
-  //                             color: Colors.white,
-  //                             fontSize: 13.sp,
-  //                             fontWeight: FontWeight.w400,
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                     Container(
-  //                       decoration: BoxDecoration(
-  //                         color: Colors.white.withOpacity(0.4),
-  //                         borderRadius: BorderRadius.circular(50.r),
-  //                       ),
-  //                       child: Padding(
-  //                         padding: EdgeInsets.all(8.0.sp),
-  //                         child: Text(
-  //                           'عدد الزيارات  ${Random().nextInt(100) + 1547}',
-  //                           style: TextStyle(
-  //                             color: Colors.white,
-  //                             fontSize: 13.sp,
-  //                             fontWeight: FontWeight.w500,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ),
-  //             ),
-  //             SizedBox(height: 10.0.h),
-  //             Padding(
-  //               padding: const EdgeInsets.all(8.0),
-  //               child: Column(
-  //                 mainAxisAlignment: MainAxisAlignment.start,
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 children: [
-  //                   Text(
-  //                     'وصف المتجر',
-  //                     style: TextStyle(
-  //                       fontSize: 15.sp,
-  //                       fontWeight: FontWeight.w500,
-  //                     ),
-  //                   ),
-  //                   SizedBox(height: 5.0.h),
-  //                   Text(
-  //                     """نون منصة التسوق الإلكتروني الرائدة في الشرق الأوسط. تسوق منتجاتك المفضلة من أزياء وإلكترونيات ومنتجات المنزل والجمال ومنتجات الأطفال أونلاين في السعودية.""",
-  //                     style: TextStyle(
-  //                       color: Colors.black.withOpacity(0.7),
-  //                       fontSize: 15.sp,
-  //                       fontWeight: FontWeight.w500,
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //             SizedBox(height: 20.h),
-  //             Padding(
-  //               padding: const EdgeInsets.all(12.0),
-  //               child: Row(
-  //                 children: [
-  //                   Column(
-  //                     children: [
-  //                       Text(
-  //                         'متوسط سعر \n الشحن',
-  //                         textAlign: TextAlign.center,
-  //                         style: TextStyle(
-  //                             fontSize: 12.0.sp, fontWeight: FontWeight.w500),
-  //                       ),
-  //                       Container(
-  //                         padding: const EdgeInsets.all(25.0),
-  //                         decoration: const BoxDecoration(
-  //                           color: MataajerTheme.mainColor,
-  //                           shape: BoxShape.circle,
-  //                         ),
-  //                         child: Column(
-  //                           children: [
-  //                             Text(
-  //                               '25',
-  //                               style: TextStyle(
-  //                                 color: Colors.white,
-  //                                 fontSize: 16.sp,
-  //                                 fontWeight: FontWeight.w500,
-  //                               ),
-  //                             ),
-  //                             Text(
-  //                               'ريال',
-  //                               style: TextStyle(
-  //                                 color: Colors.white,
-  //                                 fontSize: 15.sp,
-  //                                 fontWeight: FontWeight.w500,
-  //                               ),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                   SizedBox(width: 40.w),
-  //                   Column(
-  //                     children: [
-  //                       Text(
-  //                         'متوسط مدة \n الشحن',
-  //                         textAlign: TextAlign.center,
-  //                         style: TextStyle(
-  //                             fontSize: 12.0.sp, fontWeight: FontWeight.w500),
-  //                       ),
-  //                       Container(
-  //                         padding: const EdgeInsets.all(25.0),
-  //                         decoration: const BoxDecoration(
-  //                           color: MataajerTheme.mainColor,
-  //                           shape: BoxShape.circle,
-  //                         ),
-  //                         child: Column(
-  //                           children: [
-  //                             Text(
-  //                               '2-5',
-  //                               style: TextStyle(
-  //                                 color: Colors.white,
-  //                                 fontSize: 16.sp,
-  //                                 fontWeight: FontWeight.w500,
-  //                               ),
-  //                             ),
-  //                             Text(
-  //                               'ايام',
-  //                               style: TextStyle(
-  //                                 color: Colors.white,
-  //                                 fontSize: 15.sp,
-  //                                 fontWeight: FontWeight.w500,
-  //                               ),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //             SizedBox(height: 20.h),
-  //             Padding(
-  //               padding: const EdgeInsets.all(8.0),
-  //               child: Row(
-  //                 children: [
-  //                   Container(
-  //                     height: 35.h,
-  //                     width: Get.context!.width * 0.3,
-  //                     decoration: const BoxDecoration(
-  //                       color: MataajerTheme.mainColorLighten,
-  //                     ),
-  //                     child: Center(
-  //                       child: Padding(
-  //                         padding: const EdgeInsets.all(8.0),
-  //                         child: Text(
-  //                           'نسخ الكود',
-  //                           style: TextStyle(
-  //                             color: Colors.white,
-  //                             fontSize: 12.sp,
-  //                             fontWeight: FontWeight.w700,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   Container(
-  //                     height: 35.h,
-  //                     width: Get.context!.width * 0.5,
-  //                     decoration: BoxDecoration(
-  //                       color: Colors.grey.shade300,
-  //                     ),
-  //                     child: Center(
-  //                       child: Padding(
-  //                         padding: const EdgeInsets.all(8.0),
-  //                         child: Text(
-  //                           'خصم 20% على جميع المنتجات',
-  //                           style: TextStyle(
-  //                             color: Colors.black,
-  //                             fontSize: 12.sp,
-  //                             fontWeight: FontWeight.w500,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //             SizedBox(height: 20.h),
-  //             Padding(
-  //               padding: const EdgeInsets.symmetric(horizontal: 22.0),
-  //               child: Align(
-  //                 alignment: Alignment.centerRight,
-  //                 child: Text(
-  //                   'متاجر مشابهة',
-  //                   style:
-  //                       TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
-  //                 ),
-  //               ),
-  //             ),
-  //             SizedBox(height: 10.h),
-  //             Padding(
-  //               padding: const EdgeInsets.all(16.0),
-  //               child: SizedBox(
-  //                 height: 100.h,
-  //                 child: ListView.separated(
-  //                   scrollDirection: Axis.horizontal,
-  //                   itemBuilder: (context, index) => Column(
-  //                     children: [
-  //                       ClipRRect(
-  //                         borderRadius: BorderRadius.circular(50.r),
-  //                         child: Image.network(
-  //                           'https://firebasestorage.googleapis.com/v0/b/mataajer-saudi.appspot.com/o/%D8%A7%D9%84%D9%88%D8%A7%D8%AF%D9%8A.jpg?alt=media&token=29 af9bc2-953f-48e5-a5ce-65a0ceeacdda',
-  //                           height: 75.h,
-  //                         ),
-  //                       ),
-  //                       SizedBox(height: 10.h),
-  //                       const Text('متجر مشابه'),
-  //                     ],
-  //                   ),
-  //                   separatorBuilder: (context, index) => SizedBox(width: 20.w),
-  //                   itemCount: 5,
-  //                   shrinkWrap: true,
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+  Widget get _errorTitleAppBar {
+    return InkWell(
+      onTap: () {
+        KSnackBar.error('برجاء اعادة فتح التطبيق مره اخرى');
+      },
+      child: Container(
+        height: 40.h,
+        padding: EdgeInsets.all(10.sp),
+        margin: EdgeInsets.all(10.sp),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFF6145),
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'حدث خطأ ما',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget get _expitedTitleAppBar {
+    return InkWell(
+      onTap: () async {
+        final res = await controller.currentShop?.renewSubscription();
+        if (res == null) {
+          KSnackBar.error('عفوا لم يتم تجديد الاشتراك');
+          return;
+        }
+
+        KSnackBar.success('تم تجديد الاشتراك بنجاح برجاء الدخول مره اخرى');
+        await Future.delayed(const Duration(seconds: 2));
+
+        Get.offAndToNamed(Routes.ON_BARDING);
+      },
+      child: Container(
+        height: 40.h,
+        padding: EdgeInsets.all(10.sp),
+        margin: EdgeInsets.all(10.sp),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFF6145),
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(Assets.renewVectorPNG),
+            SizedBox(width: 5.w),
+            Text(
+              'تجديد الاشتراك',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget get _activeTitleAppBar {
+    return InkWell(
+      onTap: () {
+        KSnackBar.success(
+            'يبدو ان الاشتراك مفعل بالفعل، نحن سعداء باشتراكك معنا');
+      },
+      child: Container(
+        height: 40.h,
+        padding: EdgeInsets.all(10.sp),
+        margin: EdgeInsets.all(10.sp),
+        decoration: BoxDecoration(
+          color: const Color(0xFF4CCA5A),
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(Assets.renewVectorPNG),
+            SizedBox(width: 5.w),
+            Text(
+              'مفعل',
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget get _guestTitleAppBar {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'متاجر',
+          style: TextStyle(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w500,
+          ),
+        ).marginAll(4.sp),
+        Text(
+          'سعودي',
+          style: TextStyle(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w500,
+            color: MataajerTheme.mainColor,
+          ),
+        ),
+      ],
+    );
+  }
 }

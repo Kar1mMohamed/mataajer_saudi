@@ -60,6 +60,8 @@ class FirebaseFirestoreHelper {
           .doc(userUID)
           .collection('subscriptions')
           .add(subModule.toMap());
+
+      log('add subscription to $userUID, ${subModule.toJson()}');
     } catch (e) {
       print(e);
     }
@@ -92,14 +94,15 @@ class FirebaseFirestoreHelper {
     try {
       final ads = await FirebaseFirestore.instance
           .collection('ads')
-          .where(
-            'validTill',
-            isGreaterThanOrEqualTo: DateTime.now(),
-          )
+          .where('isVisible', isEqualTo: true)
+          .where('validTill',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
           .get()
           .then((value) => value.docs
               .map((e) => AdModule.fromMap(e.data()..['uid'] = e.id))
               .toList());
+
+      log('ads: ${ads.length}');
 
       return ads;
     } catch (e) {

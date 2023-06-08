@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
+import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 
@@ -20,7 +21,7 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
         child: SingleChildScrollView(
           child: GetBuilder<ResetPasswordController>(builder: (_) {
             if (controller.loading) {
-              return const Center(child: CircularProgressIndicator());
+              return MataajerTheme.loadingWidget;
             }
             return Column(
               children: [

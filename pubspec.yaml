@@ -27,6 +27,7 @@ dependencies:
   dio: ^5.1.1
   show_up_animation: ^2.0.0
   rive: ^0.11.2
+  typing_animation: ^0.0.1
   flutter:
     sdk: flutter
 

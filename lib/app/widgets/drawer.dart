@@ -151,7 +151,7 @@ class MyDrawer extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
-          color: isActive ? MataajerTheme.mainColorLighten : Colors.white,
+          color: isActive ? MataajerTheme.mainColorLighten : Colors.transparent,
           borderRadius: BorderRadius.circular(10.r),
         ),
         child: ListTile(

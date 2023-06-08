@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
@@ -17,11 +18,37 @@ class AdModule {
   final String imageURL;
   int? hits;
   DateTime? validTill;
+  bool? isStaticAd;
+  bool? isVisible;
+
+  bool get isMostVisitAd {
+    return true; // Temprory true untill do it as logic
+  }
+
+  bool get isMostOffers {
+    return true; // Temprory true untill do it as logic
+  }
+
+  bool get isOtherAd {
+    if ((isStaticAd ?? false) || isMostOffers || isMostOffers) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   List<CategoryModule> get categories => Get.find<MainSettingsController>()
       .mainCategories
       .where((e) => categoryUIDs.contains(e.uid))
       .toList();
+
+  bool get isValidAdDate {
+    if (validTill == null) {
+      return false;
+    }
+
+    return validTill!.isAfter(DateTime.now());
+  }
 
   AdModule({
     this.uid,
@@ -35,6 +62,8 @@ class AdModule {
     required this.imageURL,
     this.hits,
     this.validTill,
+    this.isStaticAd,
+    this.isVisible,
   });
 
   AdModule copyWith({
@@ -49,6 +78,8 @@ class AdModule {
     String? imageURL,
     int? hits,
     DateTime? validTill,
+    bool? isStaticAd,
+    bool? isVisible,
   }) {
     return AdModule(
       uid: uid ?? this.uid,
@@ -62,6 +93,8 @@ class AdModule {
       imageURL: imageURL ?? this.imageURL,
       hits: hits ?? this.hits,
       validTill: validTill ?? this.validTill,
+      isStaticAd: isStaticAd ?? this.isStaticAd,
+      isVisible: isVisible ?? this.isVisible,
     );
   }
 
@@ -77,7 +110,9 @@ class AdModule {
       'cuponCode': cuponCode,
       'imageURL': imageURL,
       'hits': hits,
-      'validTill': validTill,
+      if (validTill != null) 'validTill': Timestamp.fromDate(validTill!),
+      'isStaticAd': isStaticAd,
+      'isVisible': isVisible,
     };
   }
 
@@ -98,8 +133,10 @@ class AdModule {
       imageURL: map['imageURL'] as String,
       hits: map['hits'] != null ? map['hits'] as int : null,
       validTill: map['validTill'] != null
-          ? DateTime.parse(map['validTill'] as String)
+          ? (map['validTill'] as Timestamp).toDate()
           : null,
+      isStaticAd: map['isStaticAd'] != null ? map['isStaticAd'] as bool : null,
+      isVisible: map['isVisible'] != null ? map['isVisible'] as bool : null,
     );
   }
 
@@ -110,7 +147,7 @@ class AdModule {
 
   @override
   String toString() {
-    return 'AdModule(uid: $uid, shopUID: $shopUID, name: $name, categoryUIDs: $categoryUIDs, description: $description, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponCode: $cuponCode, imageURL: $imageURL, hits: $hits, validTill: $validTill)';
+    return 'AdModule(uid: $uid, shopUID: $shopUID, name: $name, categoryUIDs: $categoryUIDs, description: $description, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponCode: $cuponCode, imageURL: $imageURL, hits: $hits, validTill: $validTill, isStaticAd: $isStaticAd, isVisible: $isVisible)';
   }
 
   @override
@@ -127,7 +164,9 @@ class AdModule {
         other.cuponCode == cuponCode &&
         other.imageURL == imageURL &&
         other.hits == hits &&
-        other.validTill == validTill;
+        other.validTill == validTill &&
+        other.isStaticAd == isStaticAd &&
+        other.isVisible == isVisible;
   }
 
   @override
@@ -142,6 +181,8 @@ class AdModule {
         cuponCode.hashCode ^
         imageURL.hashCode ^
         hits.hashCode ^
-        validTill.hashCode;
+        validTill.hashCode ^
+        isStaticAd.hashCode ^
+        isVisible.hashCode;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:mataajer_saudi/app/widgets/shop_animated_widget.dart';
 
 class MataajerTheme {
   static TextStyle tajawalTextStyle = const TextStyle(fontFamily: 'Tajawal');
@@ -8,8 +9,11 @@ class MataajerTheme {
     fontWeight: FontWeight.w500,
     color: mainColor,
   );
-  static Widget loadingWidget({double? size}) =>
-      SpinKitCircle(color: mainColor, size: size ?? 75);
+  // static Widget loadingWidget({double? size}) =>
+  //     SpinKitCircle(color: mainColor, size: size ?? 75);
+
+  static Widget get loadingWidget => const ShopAnimatedWidget();
+
   static TextStyle introTextStyle = tajawalTextStyle.copyWith(
     fontSize: 15,
     color: const Color(0xFF6c757d),
@@ -21,60 +25,6 @@ class MataajerTheme {
     fontWeight: FontWeight.w700,
   );
   static TextStyle bahijTextStyle = const TextStyle(fontFamily: 'Bahij');
-  static TextTheme darkTextTheme = TextTheme(
-    bodyLarge: tajawalTextStyle.copyWith(
-      fontSize: 15.0,
-      fontWeight: FontWeight.w600,
-      color: Colors.white,
-    ),
-    bodyMedium: tajawalTextStyle.copyWith(
-      fontSize: 15.0,
-      fontWeight: FontWeight.normal,
-      color: Colors.white,
-    ),
-    titleMedium: tajawalTextStyle.copyWith(
-      fontSize: 15.0,
-      fontWeight: FontWeight.w700,
-      color: Colors.white,
-    ),
-    titleSmall: tajawalTextStyle.copyWith(
-      fontSize: 17.0,
-      color: Colors.white,
-    ),
-    displayLarge: tajawalTextStyle.copyWith(
-      fontSize: 31.0,
-      fontWeight: FontWeight.bold,
-      color: Colors.white,
-    ),
-    displayMedium: tajawalTextStyle.copyWith(
-      fontSize: 20.0,
-      fontWeight: FontWeight.w700,
-      color: Colors.white,
-    ),
-    displaySmall: tajawalTextStyle.copyWith(
-      fontSize: 19.0,
-      fontWeight: FontWeight.w600,
-      color: Colors.white,
-      decoration: TextDecoration.none,
-    ),
-    headlineMedium: tajawalTextStyle.copyWith(
-      fontSize: 22.0,
-      fontWeight: FontWeight.w700,
-      color: Colors.white,
-      decoration: TextDecoration.none,
-    ),
-    headlineSmall: tajawalTextStyle.copyWith(
-      fontSize: 19.0,
-      fontWeight: FontWeight.w700,
-      color: Colors.white,
-      decoration: TextDecoration.none,
-    ),
-    titleLarge: tajawalTextStyle.copyWith(
-      fontSize: 19.0,
-      fontWeight: FontWeight.w600,
-      color: Colors.white,
-    ),
-  );
   static TextTheme lightTextTheme = TextTheme(
     bodyLarge: tajawalTextStyle.copyWith(
       fontSize: 15.0,

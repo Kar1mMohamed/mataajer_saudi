@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
+import 'package:mataajer_saudi/app/widgets/image_loading.dart';
 import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
 import '../controllers/favorites_controller.dart';
 
@@ -12,6 +13,7 @@ class FavoritesView extends GetView<FavoritesController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: appBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -28,11 +30,17 @@ class FavoritesView extends GetView<FavoritesController> {
             SizedBox(height: 10.h),
             Expanded(
               child: GetBuilder<FavoritesController>(builder: (_) {
-                return GridView.count(
-                  crossAxisCount: 3,
+                return GridView.builder(
+                  itemCount: controller.favs.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 0.7,
+                    crossAxisSpacing: 1.0.sp,
+                    mainAxisSpacing: 1.0.sp,
+                  ),
                   scrollDirection: Axis.vertical,
-                  children: List.generate(controller.favs.length,
-                      (index) => _favoriteCard(controller.favs[index])),
+                  itemBuilder: (context, index) =>
+                      _favoriteCard(controller.favs[index]),
                 );
               }),
             ),
@@ -79,12 +87,10 @@ class FavoritesView extends GetView<FavoritesController> {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(50.r),
-                    child: Image.network(
-                      'https://firebasestorage.googleapis.com/v0/b/mataajer-saudi.appspot.com/o/%D8%A7%D9%84%D9%88%D8%A7%D8%AF%D9%8A.jpg?alt=media&token=29 af9bc2-953f-48e5-a5ce-65a0ceeacdda',
-                      height: 50.h,
-                    ),
+                  CircleAvatar(
+                    radius: 40.r,
+                    backgroundImage: NetworkImage(ad.imageURL),
+                    backgroundColor: Colors.transparent,
                   ),
                   SizedBox(height: 10.h),
                   Row(
@@ -95,7 +101,7 @@ class FavoritesView extends GetView<FavoritesController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'متجر الوادي',
+                            ad.name,
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 12.sp,

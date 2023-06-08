@@ -24,7 +24,7 @@ class ShopAccountView extends GetView<ShopAccountController> {
       drawer: MyDrawer(ads: const [], isShop: controller.isShop),
       body: GetBuilder<ShopAccountController>(builder: (_) {
         if (controller.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return MataajerTheme.loadingWidget;
         }
         return Padding(
           padding: const EdgeInsets.all(12.0),

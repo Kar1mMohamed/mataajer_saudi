@@ -12,7 +12,10 @@ class ChooseSubscriptionController extends GetxController {
   ChooseSubscriptionModule currentSub = ChooseSubscriptionModule();
 
   @override
-  void onInit() {
-    super.onInit();
+  void onClose() {
+    loading = false;
+    stage = 1;
+    currentSub = ChooseSubscriptionModule();
+    super.onClose();
   }
 }

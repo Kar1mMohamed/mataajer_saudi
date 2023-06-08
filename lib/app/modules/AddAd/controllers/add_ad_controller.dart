@@ -8,6 +8,7 @@ import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
+import 'package:mataajer_saudi/app/widgets/shop_animated_widget.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -36,9 +37,7 @@ class AddAdController extends GetxController {
         throw 'No image selected';
       }
       Get.dialog(
-        const Center(
-          child: CircularProgressIndicator(),
-        ),
+        ShopAnimatedWidget(),
         barrierDismissible: false,
       );
       imageURL = await FirebaseStorageFunctions.uploadImage(image);

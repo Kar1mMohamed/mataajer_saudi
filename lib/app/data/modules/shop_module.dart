@@ -1,12 +1,17 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
+import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
+
+import '../../modules/ChooseSubscription/views/choose_subscription_view.dart';
+import 'choose_subscription_module.dart';
 
 class ShopModule {
   String? uid;
@@ -19,7 +24,7 @@ class ShopModule {
   String? cuponText;
   String? cuponCode;
   List<String> categoriesUIDs = [];
-  List<SubscriptionModule> subscriptions = [];
+  List<SubscriptionModule>? subscriptions;
   String? shopLink;
   List<String>? keywords = [];
   bool? isVisible;
@@ -35,7 +40,7 @@ class ShopModule {
     this.cuponText,
     this.cuponCode,
     required this.categoriesUIDs,
-    this.subscriptions = const [],
+    this.subscriptions,
     this.shopLink,
     this.keywords,
     this.isVisible,
@@ -43,8 +48,8 @@ class ShopModule {
   });
 
   bool get isSubscriptionExpired {
-    if (subscriptions.isEmpty) return true;
-    final lastSub = subscriptions.last;
+    if (subscriptions == null || subscriptions!.isEmpty) return true;
+    final lastSub = subscriptions!.last;
     return isExpired(lastSub.from, lastSub.to);
   }
 
@@ -60,6 +65,87 @@ class ShopModule {
         .toList();
 
     return categories;
+  }
+
+  bool get canSendNotification {
+    if (subscriptions == null || subscriptions!.isEmpty) {
+      log('subscriptions is null or empty');
+      return false;
+    }
+
+    final lastSub = subscriptions!.last;
+    if (isExpired(lastSub.from, lastSub.to)) {
+      log('subscription is expired');
+      return false;
+    }
+
+    final lastSubscriptionUID = lastSub.subscriptionUID;
+    final subscription = MainSettingsController.find.subscriptions
+        .firstWhereOrNull((element) => element.uid == lastSubscriptionUID);
+
+    if (subscription == null) {
+      log('subscription is null');
+      return false;
+    }
+
+    final isSubscriptionCanSendNotification =
+        subscription.isCanSendNotification;
+
+    log('isSubscriptionCanSendNotification: $isSubscriptionCanSendNotification');
+
+    return isSubscriptionCanSendNotification ?? false;
+  }
+
+  Future<ChooseSubscriptionModule?> renewSubscription() async {
+    try {
+      final res = await Get.dialog(
+        ChooseSubscriptionView(),
+        barrierDismissible: false,
+      );
+
+      if (res is Map && res['status'] == 'success') {
+        log('res from sub: $res');
+        final resData = res['data'] as ChooseSubscriptionModule;
+
+        await FirebaseFirestoreHelper.instance.addSubscription(
+          uid!,
+          SubscriptionModule(
+            from: DateTime.now(),
+            to: DateTime.now().add(Duration(days: resData.allowedDays!)),
+            subscriptionUID: resData.uid!,
+          ),
+        );
+
+        return resData;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      log(e);
+      return null;
+    }
+  }
+
+  Future<void> changeAllAdsVisibility(bool isVisible) async {
+    try {
+      final ads = await FirebaseFirestore.instance
+          .collection('ads')
+          .where('shopUID', isEqualTo: uid)
+          .get();
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      for (var e in ads.docs) {
+        log('update visible for ad ${e.id}');
+        batch.update(e.reference, {'isVisible': isVisible});
+      }
+
+      await batch.commit();
+
+      log('updated visibility $isVisible for all ads $uid');
+    } catch (e) {
+      rethrow;
+    }
   }
 
   ShopModule copyWith({
@@ -110,9 +196,11 @@ class ShopModule {
       'cuponText': cuponText,
       'cuponCode': cuponCode,
       'categoriesUIDs': categoriesUIDs,
-      'subscriptions': (forSignUp ?? false)
-          ? []
-          : subscriptions.map((x) => x.toMap()).toList(),
+
+      /// DONT POST SUBSCRIPTIONS TO SHOP DOCUMENT
+      // 'subscriptions': (forSignUp ?? false)
+      //     ? []
+      //     : subscriptions.map((x) => x.toMap()).toList(),
       'shopLink': shopLink,
       'keywords': keywords,
       'isVisible': isVisible,

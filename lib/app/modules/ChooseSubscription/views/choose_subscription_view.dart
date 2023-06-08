@@ -38,7 +38,7 @@ class ChooseSubscriptionView extends GetView<ChooseSubscriptionController> {
             if (controller.loading) {
               return const Center(child: LinearProgressIndicator());
             }
-            return stages[controller.stage] ?? Container();
+            return stages[controller.stage]!;
           }),
         ),
       ),
@@ -246,7 +246,7 @@ class ChooseSubscriptionView extends GetView<ChooseSubscriptionController> {
             ),
             _button('الغاء', onTap: () {
               controller.stage = 1;
-              // controller.update();
+              controller.update();
               Get.back(result: {'status': 'cancel'});
             }),
           ],

@@ -3,10 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
+import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
-
 import '../controllers/shop_customers_notifications_controller.dart';
 
 class ShopCustomersNotificationsView
@@ -17,12 +17,9 @@ class ShopCustomersNotificationsView
     return Scaffold(
       appBar: appBar(),
       drawer: MyDrawer(ads: const [], isShop: controller.isShop),
-      body:
-          GetBuilder<ShopCustomersNotificationsController>(builder: (context) {
+      body: GetBuilder<ShopCustomersNotificationsController>(builder: (_) {
         if (controller.loading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return MataajerTheme.loadingWidget;
         }
         return SingleChildScrollView(
           child: Center(
@@ -38,7 +35,7 @@ class ShopCustomersNotificationsView
                   ),
                   SizedBox(height: 7.h),
                   const Text(
-                    "يمكن ارسال 3اشعارات شهريا",
+                    "يمكن ارسال 3 اشعارات شهريا",
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
@@ -52,8 +49,9 @@ class ShopCustomersNotificationsView
                   ),
                   SizedBox(height: 40.h),
                   RoundedButton(
-                      text: 'ارسال',
-                      press: () => controller.sendNotification()),
+                    text: 'ارسال',
+                    press: () => controller.sendNotification(),
+                  ),
                 ],
               ),
             ),

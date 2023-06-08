@@ -52,20 +52,20 @@ class HomeController extends GetxController {
 
   List<AdModule> ads = <AdModule>[];
 
-  List<AdModule> get favAds => mainAccountController.getFavShops(_ads);
+  List<AdModule> get favAds => mainAccountController.getFavAds(_ads);
 
-  Future<void> getShops() async {
+  Future<void> getAds() async {
     try {
       adsLoading = true;
       update(['ads']);
       final adsList = await FirebaseFirestoreHelper.instance.getAds();
       _ads = adsList;
-      _ads.addAll(_dumpAds);
-      ads = _ads;
+      // _ads.addAll(_dumpAds);
       log('ads: ${_ads.length}');
     } catch (e) {
       print(e);
     } finally {
+      ads = _ads;
       adsLoading = false;
       update(['ads']);
     }
@@ -149,7 +149,7 @@ class HomeController extends GetxController {
     if (isSignedIn) {
       await getCurrentShop();
     }
-    await getShops();
+    await getAds();
 
     super.onInit();
   }

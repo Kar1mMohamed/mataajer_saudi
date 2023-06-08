@@ -6,7 +6,6 @@ import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
 import 'package:mataajer_saudi/app/widgets/image_loading.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
-import 'package:path/path.dart';
 
 import '../../../widgets/back_button.dart';
 import '../controllers/admin_notification_controller.dart';

@@ -20,9 +20,7 @@ class AddAdView extends GetView<AddAdController> {
       drawer: const MyDrawer(ads: [], isShop: true),
       body: GetBuilder<AddAdController>(builder: (_) {
         if (controller.loading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return MataajerTheme.loadingWidget;
         }
         return SingleChildScrollView(
           child: Center(

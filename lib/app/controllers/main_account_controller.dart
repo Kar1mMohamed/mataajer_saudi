@@ -9,11 +9,11 @@ class MainAccountController extends GetxController {
   bool get isSignedIn => FirebaseAuth.instance.currentUser != null;
   bool isShopOwner = false;
 
-  List<AdModule> getFavShops(List<AdModule> ads) {
-    List<ShopFavHive> favShopsHive = ShopFavHive.hiveBox.values.toList();
-    final favAds = favShopsHive
-        .map((e) => ads.firstWhere((element) => element.uid == e.uid))
-        .toList();
+  List<AdModule> getFavAds(List<AdModule> ads) {
+    var favShopsHive = ShopFavHive.hiveBox.values;
+    final favAds =
+        ads.where((ad) => favShopsHive.any((e) => e.uid == ad.uid)).toList();
+
     return favAds;
   }
 

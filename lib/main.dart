@@ -61,10 +61,14 @@ class MyApp extends StatelessWidget {
         initialBinding: _InitialBindings(),
         translations: Translation(),
         locale: const Locale('ar', 'SA'),
+        smartManagement: SmartManagement.full,
         onInit: () async {
+          print('current date: ${DateTime.now().millisecondsSinceEpoch}');
+          print(
+              'current date +12: ${DateTime.now().add(Duration(days: 12)).millisecondsSinceEpoch}');
           // --------------- //
 
-          await FirebaseAuth.instance.signOut();
+          // await FirebaseAuth.instance.signOut();
 
           // --------------- //
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
+import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/image_loading.dart';
 import 'package:mataajer_saudi/database/notification.dart';
@@ -17,7 +18,7 @@ class NotificationsView extends GetView<NotificationsController> {
       backgroundColor: const Color(0xFFF5F5F5),
       body: GetBuilder<NotificationsController>(builder: (_) {
         if (controller.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return MataajerTheme.loadingWidget;
         }
         if (controller.isThereNoNotifications) {
           return const Center(child: Text('لا يوجد اشعارات'));

@@ -159,7 +159,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
 
   Widget login(BuildContext context) {
     if (controller.loading) {
-      return const Center(child: CircularProgressIndicator());
+      return MataajerTheme.loadingWidget;
     }
     return SingleChildScrollView(
       child: Column(
@@ -221,7 +221,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
 
   Widget register(BuildContext context) {
     if (controller.loading) {
-      return const Center(child: CircularProgressIndicator());
+      return MataajerTheme.loadingWidget;
     }
     return SingleChildScrollView(
       child: Form(

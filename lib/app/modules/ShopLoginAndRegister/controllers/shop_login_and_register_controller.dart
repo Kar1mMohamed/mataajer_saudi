@@ -12,6 +12,7 @@ import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
+import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -70,7 +71,7 @@ class ShopLoginAndRegisterController extends GetxController {
     try {
       if (loginEmailController.text.isEmpty ||
           loginPasswordController.text.isEmpty) {
-        throw 'Please fill all fields';
+        throw 'Please fill all fields'.tr;
       }
 
       final user = await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -79,7 +80,7 @@ class ShopLoginAndRegisterController extends GetxController {
       );
 
       if (user.user == null) {
-        throw 'Error while login';
+        throw 'Error while login'.tr;
       }
 
       // if (!user.user!.emailVerified) {
@@ -94,7 +95,7 @@ class ShopLoginAndRegisterController extends GetxController {
 
       print('userModule: $userModule');
 
-      await ifUserGoToHome();
+      await goHomeForShop();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         // print('No user found for that email.');
@@ -156,6 +157,7 @@ class ShopLoginAndRegisterController extends GetxController {
       final subscriptionModule = SubscriptionModule(
         from: DateTime.now(),
         to: DateTime.now().add(Duration(days: sub.allowedDays!)),
+        subscriptionUID: sub.uid!,
       );
 
       await FirebaseFirestoreHelper.instance
@@ -195,9 +197,7 @@ class ShopLoginAndRegisterController extends GetxController {
         throw 'No image selected';
       }
       Get.dialog(
-        const Center(
-          child: CircularProgressIndicator(),
-        ),
+        MataajerTheme.loadingWidget,
         barrierDismissible: false,
       );
       final url = await FirebaseStorageFunctions.uploadImage(image);
@@ -227,10 +227,13 @@ class ShopLoginAndRegisterController extends GetxController {
     update(['showCategories']);
   }
 
-  Future<void> ifUserGoToHome() async {
+  Future<void> goHomeForShop() async {
     final currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser != null) {
+      loading = true;
+      update();
+
       final shopModule =
           await FirebaseFirestoreHelper.instance.getShopModule(currentUser.uid);
 
@@ -240,13 +243,16 @@ class ShopLoginAndRegisterController extends GetxController {
       } else {
         Get.offAndToNamed(Routes.HOME);
       }
+
+      loading = false;
+      update();
     }
   }
 
   @override
   void onInit() async {
     super.onInit();
-    await ifUserGoToHome();
+    await goHomeForShop();
 
     if (isNavigateToRegister) {
       await Future.delayed(const Duration(milliseconds: 50));

@@ -23,7 +23,7 @@ class FavoritesController extends GetxController {
 
   Future<void> prepareFavs() async {
     log('ads: ${ads.length}');
-    // favs = mainAccountController.getFavShops(ads);
+    favs = mainAccountController.getFavAds(ads);
     update();
   }
 

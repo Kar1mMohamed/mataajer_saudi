@@ -7,6 +7,7 @@ class OnBoardingBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<OnBoardingController>(
       () => OnBoardingController(),
+      fenix: true,
     );
   }
 }

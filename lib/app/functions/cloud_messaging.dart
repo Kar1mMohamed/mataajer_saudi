@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:mataajer_saudi/app/data/modules/send_notification_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
 
 class CloudMessaging {
   CloudMessaging._();
@@ -104,10 +105,9 @@ class CloudMessaging {
     }
   }
 
-  static Future<void> increaseSentNumber() async {
+  static Future<void> increaseSentNumber(String userUID) async {
     try {
       final now = DateTime.now();
-      final userUID = FirebaseAuth.instance.currentUser!.uid;
       final currentDateUID = '${now.year}-${now.month}';
       await FirebaseFirestore.instance
           .collection('shops')
@@ -146,10 +146,9 @@ class CloudMessaging {
       );
 
       if (response.statusCode == 200) {
-        await increaseSentNumber();
-        print('Notification sent successfully');
+        log('Notification sent successfully, token: ${module.token}');
       } else {
-        print('Notification sent failed');
+        log('Notification sent failed');
       }
     } catch (e) {
       print(e);

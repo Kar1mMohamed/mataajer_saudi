@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
+import '../../../widgets/shop_animated_widget.dart';
 import '../controllers/on_boarding_controller.dart';
 
 class OnBoardingView extends GetView<OnBoardingController> {
