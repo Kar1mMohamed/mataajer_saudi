@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:mataajer_saudi/app/data/assets.dart';
+import 'package:mataajer_saudi/app/modules/admin_notification/bindings/admin_notification_binding.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
-import 'package:mataajer_saudi/app/widgets/image_loading.dart';
+import 'package:mataajer_saudi/app/widgets/loading_image.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 
 import '../../../widgets/back_button.dart';
@@ -19,14 +22,19 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
       backgroundColor: const Color(0xFFF5F5F5),
       drawer: const MyDrawer(ads: [], isShop: false, isAdmin: true),
       body: GetBuilder<AdminNotificationController>(builder: (_) {
-        if (controller.loadng) {
-          return const Center(child: CircularProgressIndicator());
+        if (controller.loading) {
+          return MataajerTheme.loadingWidget;
+        }
+        if (controller.notifications.isEmpty) {
+          return const Center(
+            child: Text('لا يوجد اشعارات'),
+          );
         }
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.0.sp),
           child: ListView.builder(
             physics: const BouncingScrollPhysics(),
-            itemCount: 1,
+            itemCount: controller.notifications.length,
             itemBuilder: (context, index) => _notificationCard(context, index),
           ),
         );
@@ -35,76 +43,108 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
   }
 
   Widget _notificationCard(BuildContext context, int index) {
-    // final notification = controller.notifications[index];
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10.0.sp, horizontal: 10.0.sp),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25.r),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(50.r),
-                child: LoadingImage(
-                  src: 'https://i.stack.imgur.com/l60Hf.png',
-                  height: 75.h,
-                  width: 75.w,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              SizedBox(width: 10.w),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('متجر نون',
-                      style: MataajerTheme.tajawalTextStyle.copyWith(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: MataajerTheme.mainColor,
-                      )),
-                  Text('تسوق منتجات',
-                      style: MataajerTheme.tajawalTextStyle.copyWith(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.grey,
-                      )),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'احدث عروض شهر رمضان – عروض رمضان 2023 – نوفر لكم أحدث عروض شهر رمضان الكريم في المملكة العربية السعودية فى كل الاسواق والهايبرماركت',
-            style: MataajerTheme.tajawalTextStyle
-                .copyWith(fontSize: 13, fontWeight: FontWeight.w400),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              RoundedButton(
-                text: 'قبول',
-                press: () {},
-                color: Colors.green,
-                width: 140.w,
-                verticalPadding: 10.h,
-              ),
-              RoundedButton(
-                text: 'رفض',
-                press: () {},
-                color: Colors.red,
-                width: 140.w,
-                verticalPadding: 10.h,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+    return GetBuilder<AdminNotificationController>(
+        id: '$index',
+        builder: (_) {
+          final notification = controller.notifications[index];
+          final image = controller.getSenderUserImage(notification);
+          return Container(
+            padding:
+                EdgeInsets.symmetric(vertical: 10.0.sp, horizontal: 10.0.sp),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25.r),
+            ),
+            child: controller.loading
+                ? Center(
+                    child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const CircularProgressIndicator(),
+                        SizedBox(height: 15.h),
+                        Text(
+                          notification.sendingText,
+                          style: MataajerTheme.tajawalTextStyle.copyWith(
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w400,
+                            color: MataajerTheme.mainColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ))
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 40.r,
+                            backgroundColor: Colors.white,
+                            backgroundImage: image != null
+                                ? NetworkImage(image)
+                                : const AssetImage(Assets.noImg)
+                                    as ImageProvider,
+                          ),
+                          SizedBox(width: 10.w),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(notification.title ?? 'عنوان فارغ',
+                                  style:
+                                      MataajerTheme.tajawalTextStyle.copyWith(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: MataajerTheme.mainColor,
+                                  )),
+                              Text(
+                                notification.formateDate,
+                                style: MataajerTheme.tajawalTextStyle.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        notification.body ?? 'نص فارغ',
+                        style: MataajerTheme.tajawalTextStyle.copyWith(
+                            fontSize: 13, fontWeight: FontWeight.w400),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          RoundedButton(
+                            text: 'قبول',
+                            press: () {
+                              controller.accept(notification, index);
+                            },
+                            color: Colors.green,
+                            width: 140.w,
+                            verticalPadding: 10.h,
+                          ),
+                          RoundedButton(
+                            text: 'رفض',
+                            press: () {
+                              controller.cancel(notification, index);
+                            },
+                            color: Colors.red,
+                            width: 140.w,
+                            verticalPadding: 10.h,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+          );
+        });
   }
 
   AppBar appBar() {

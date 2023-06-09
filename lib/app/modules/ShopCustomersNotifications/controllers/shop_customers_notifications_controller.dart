@@ -3,11 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
-import 'package:mataajer_saudi/app/data/modules/send_notification_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
-import 'package:mataajer_saudi/app/utils/log.dart';
+import 'package:mataajer_saudi/database/notification.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 
 class ShopCustomersNotificationsController extends GetxController {
@@ -44,36 +43,19 @@ class ShopCustomersNotificationsController extends GetxController {
         return;
       }
 
-      List<String> allFCMTokens =
-          await FirebaseFirestoreHelper.instance.getAllFCMTokens();
-      log('allFCMTokens: $allFCMTokens');
+      final notificationModule = NotificationModule(
+        title: 'اشعار من ${currentShop!.name}',
+        body: notTitleController.text,
+        data: {},
+        date: DateTime.now(),
+        isActive: false,
+        senderUserUID: FirebaseAuth.instance.currentUser!.uid,
+        senderUserImage: currentShop!.image,
+      );
 
-      if (allFCMTokens.isEmpty) {
-        log('allFCMTokens is empty');
-      }
+      firestore.collection('notifications').add(notificationModule.toMap());
 
-      List<SendNotifictaionModule> sendModules = allFCMTokens.map((e) {
-        return SendNotifictaionModule(
-          title: 'اشعار من ${currentShop!.name}',
-          body: notTitleController.text,
-          token: 'for-all-fcm-tokens',
-        );
-      }).toList();
-
-      final batch = firestore.batch();
-
-      for (var i = 0; i < sendModules.length; i++) {
-        batch.set(
-          firestore.collection('notifications').doc(),
-          sendModules[i].toMap(),
-        );
-      }
-
-      await batch.commit();
-      await CloudMessaging.increaseSentNumber(
-          FirebaseAuth.instance.currentUser!.uid);
-
-      KSnackBar.success('تم ارسال الاشعارات بنجاح');
+      KSnackBar.success('تم ارسال الاشعار بنجاح سيتم مراجعتة من قبل الادارة');
     } catch (e) {
       print(e);
     } finally {

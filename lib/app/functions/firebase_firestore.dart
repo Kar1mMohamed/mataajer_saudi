@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
+import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/database/notification.dart';
 
@@ -143,9 +144,13 @@ class FirebaseFirestoreHelper {
   }
 
   Future<void> sendFCMToken(String token) async {
+    bool isAlreadySent = CloudMessaging.sentData['isSent'] ?? false;
+
     try {
       bool isUser = FirebaseAuth.instance.currentUser != null;
-      if (isUser) {
+      if (isAlreadySent) {
+        log('token already sent');
+      } else if (isUser) {
         final userUID = FirebaseAuth.instance.currentUser!.uid;
 
         await FirebaseFirestore.instance
@@ -155,11 +160,20 @@ class FirebaseFirestoreHelper {
           'token': token,
           'createdAt': DateTime.now().toIso8601String(),
         });
+        CloudMessaging.sentData['isSent'] = true;
+        CloudMessaging.sentData['sentDate'] = DateTime.now().toIso8601String();
+        CloudMessaging.sentData['token'] = token;
+        CloudMessaging.sentData['docUID'] = 'user_$userUID';
       } else {
-        await FirebaseFirestore.instance.collection('fcm_tokens').add({
+        final res =
+            await FirebaseFirestore.instance.collection('fcm_tokens').add({
           'token': token,
           'createdAt': DateTime.now().toIso8601String(),
         });
+        CloudMessaging.sentData['isSent'] = true;
+        CloudMessaging.sentData['sentDate'] = DateTime.now().toIso8601String();
+        CloudMessaging.sentData['token'] = token;
+        CloudMessaging.sentData['docUID'] = res.id;
       }
     } catch (e) {
       print(e);
@@ -167,16 +181,17 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<List<NotificationModule>> getAllNotifications(
-      {bool? statusNotActive}) async {
+  Future<List<NotificationModule>> getAllNotifications({bool? isActive}) async {
     try {
       final res = await FirebaseFirestore.instance
           .collection('notifications')
-          .where('isActive', isEqualTo: statusNotActive ?? false)
+          .where('isActive', isEqualTo: isActive ?? true)
           .get()
           .then((value) => value.docs
-              .map((e) => NotificationModule.fromMap(e.data()))
+              .map((e) => NotificationModule.fromMap(e.data(), docUID: e.id))
               .toList());
+
+      log('notifications: ${res.length}');
 
       return res;
     } catch (e) {
@@ -231,6 +246,48 @@ class FirebaseFirestoreHelper {
     } catch (e) {
       print(e);
       rethrow;
+    }
+  }
+
+  Future<void> deleteNotifications(NotificationModule module) async {
+    try {
+      if (module.docUID == null) {
+        throw 'docUID is null';
+      }
+      await FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(module.docUID)
+          .delete();
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  Future<void> updateNotification(NotificationModule module) async {
+    try {
+      if (module.docUID == null) {
+        throw 'docUID is null';
+      }
+      await FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(module.docUID)
+          .update(module.toMap());
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  Future<void> acceptNotification(NotificationModule module) async {
+    try {
+      if (module.docUID == null) {
+        throw 'docUID is null';
+      }
+      await FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(module.docUID)
+          .update({'isActive': true});
+    } catch (e) {
+      log(e);
     }
   }
 }

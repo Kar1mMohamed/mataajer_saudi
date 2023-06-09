@@ -38,7 +38,11 @@ class NotificationModule extends HiveObject {
       .length
       .obs;
 
-  String get timeString => Constants.convertDateToTimeString(date);
+  String? get timeString =>
+      date != null ? Constants.convertDateToTimeString(date!) : null;
+
+  String get formateDate =>
+      date != null ? Constants.convertDateToDateString(date!) : '';
 
   @HiveField(0)
   int? index;
@@ -50,7 +54,7 @@ class NotificationModule extends HiveObject {
   String? body;
   Map<String, dynamic>? data;
   @HiveField(4)
-  DateTime date;
+  DateTime? date;
   @HiveField(5)
 
   /// equal null if the notification is not read
@@ -59,6 +63,14 @@ class NotificationModule extends HiveObject {
   bool? isActive;
   @HiveField(7)
   String? senderUserUID;
+
+  @HiveField(8)
+  String? senderUserImage;
+
+  String? docUID;
+
+  /// this variable used when admin send notification to users to count the number of users that received the notification
+  String sendingText = '';
 
   NotificationModule({
     this.index,
@@ -70,6 +82,8 @@ class NotificationModule extends HiveObject {
     this.isRead,
     this.isActive,
     this.senderUserUID,
+    this.senderUserImage,
+    this.docUID,
   });
 
   NotificationModule copyWith({
@@ -82,6 +96,7 @@ class NotificationModule extends HiveObject {
     bool? isRead,
     bool? isActive,
     String? senderUserUID,
+    String? docUID,
   }) {
     return NotificationModule(
       index: index ?? this.index,
@@ -93,6 +108,7 @@ class NotificationModule extends HiveObject {
       isRead: isRead ?? this.isRead,
       isActive: isActive ?? this.isActive,
       senderUserUID: senderUserUID ?? this.senderUserUID,
+      docUID: docUID ?? this.docUID,
     );
   }
 
@@ -103,14 +119,16 @@ class NotificationModule extends HiveObject {
       'title': title,
       'body': body,
       'data': data,
-      'date': date.millisecondsSinceEpoch,
+      'date': date?.millisecondsSinceEpoch,
       'isRead': isRead,
       'isActive': isActive,
       'senderUserUID': senderUserUID,
+      if (docUID != null) 'docUID': docUID,
     };
   }
 
-  factory NotificationModule.fromMap(Map<String, dynamic> map) {
+  factory NotificationModule.fromMap(Map<String, dynamic> map,
+      {String? docUID}) {
     return NotificationModule(
       index: map['index'] != null ? map['index'] as int : null,
       token: map['token'] != null ? map['token'] as String : null,
@@ -124,6 +142,8 @@ class NotificationModule extends HiveObject {
       isActive: map['isActive'] != null ? map['isActive'] as bool : null,
       senderUserUID:
           map['senderUserUID'] != null ? map['senderUserUID'] as String : null,
+      docUID:
+          docUID ?? (map['docUID'] != null ? map['docUID'] as String : null),
     );
   }
 
@@ -134,7 +154,7 @@ class NotificationModule extends HiveObject {
 
   @override
   String toString() {
-    return 'NotificationModule(index: $index, token: $token, title: $title, body: $body, data: $data, date: $date, isRead: $isRead, isActive: $isActive, senderUserUID: $senderUserUID)';
+    return 'NotificationModule(index: $index, token: $token, title: $title, body: $body, data: $data, date: $date, isRead: $isRead, isActive: $isActive, senderUserUID: $senderUserUID, docUID: $docUID)';
   }
 
   @override
@@ -149,7 +169,8 @@ class NotificationModule extends HiveObject {
         other.date == date &&
         other.isRead == isRead &&
         other.isActive == isActive &&
-        other.senderUserUID == senderUserUID;
+        other.senderUserUID == senderUserUID &&
+        other.docUID == docUID;
   }
 
   @override
@@ -162,6 +183,7 @@ class NotificationModule extends HiveObject {
         date.hashCode ^
         isRead.hashCode ^
         isActive.hashCode ^
-        senderUserUID.hashCode;
+        senderUserUID.hashCode ^
+        docUID.hashCode;
   }
 }

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
-import 'package:mataajer_saudi/app/widgets/image_loading.dart';
+import 'package:mataajer_saudi/app/widgets/loading_image.dart';
 import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
 import '../controllers/favorites_controller.dart';
 

@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
-import 'package:mataajer_saudi/app/widgets/image_loading.dart';
+import 'package:mataajer_saudi/app/widgets/loading_image.dart';
 import 'package:mataajer_saudi/database/notification.dart';
 
 import '../controllers/notifications_controller.dart';
@@ -102,31 +102,35 @@ class NotificationsView extends GetView<NotificationsController> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Text(
+                    notification.formateDate,
+                    style: TextStyle(
+                      color: const Color(0xFFB4B4B4),
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 5.h),
                   Row(
                     children: [
-                      Text(
-                        '${notification.title}',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w700,
+                      Flexible(
+                        child: Text(
+                          '${notification.title}',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                       SizedBox(width: 10.w),
-                      Text(
-                        notification.timeString,
-                        style: TextStyle(
-                          color: const Color(0xFFB4B4B4),
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
                     ],
                   ),
-                  Text(
-                    """ تسوق منتجاتك المفضلة من أزياء وإلكترونيات ومنتجات المنزل والجمال ومنتجات """,
-                    // '${notification.body}',
-                    style:
-                        TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+                  Flexible(
+                    child: Text(
+                      '${notification.body}',
+                      style: TextStyle(
+                          fontSize: 14.sp, fontWeight: FontWeight.w500),
+                    ),
                   ),
                 ],
               ),

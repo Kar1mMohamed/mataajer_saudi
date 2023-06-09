@@ -321,43 +321,37 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
   }
 
   Widget _search() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextField(
-        controller: controller.searchTextController,
-        onChanged: (v) {
-          controller.search(v);
-        },
-        style: TextStyle(
+    return TextField(
+      onChanged: controller.search,
+      style: TextStyle(
+        fontSize: 13.sp,
+        color: const Color.fromARGB(255, 119, 119, 119),
+        fontWeight: FontWeight.w500,
+      ),
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.only(right: 10.0.sp, bottom: 40.0.sp),
+        prefixIcon: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30.r),
+          ),
+          child: Image.asset(Assets.searchIcon),
+        ),
+        prefixIconConstraints: BoxConstraints(
+          minWidth: 30.spMin,
+          minHeight: 30.spMax,
+        ),
+        fillColor: Colors.grey[200],
+        hintText: '  ابحث عن المتاجر',
+        hintStyle: TextStyle(
           fontSize: 13.sp,
           color: const Color.fromARGB(255, 119, 119, 119),
           fontWeight: FontWeight.w500,
         ),
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.only(right: 10.0.sp, bottom: 40.0.sp),
-          prefixIcon: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30.r),
-            ),
-            child: Image.asset(Assets.searchIcon),
-          ),
-          prefixIconConstraints: BoxConstraints(
-            minWidth: 30.w,
-            minHeight: 30.h,
-          ),
-          fillColor: Colors.grey[200],
-          hintText: '  ابحث عن المتاجر',
-          hintStyle: TextStyle(
-            fontSize: 13.sp,
-            color: const Color.fromARGB(255, 119, 119, 119),
-            fontWeight: FontWeight.w500,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(
-                color: Color.fromARGB(255, 219, 219, 219), width: 1.0),
-            borderRadius: BorderRadius.circular(30.0),
-          ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+              color: Color.fromARGB(255, 219, 219, 219), width: 1.0),
+          borderRadius: BorderRadius.circular(30.0.r),
         ),
       ),
     );

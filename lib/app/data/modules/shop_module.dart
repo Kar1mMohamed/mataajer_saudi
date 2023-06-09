@@ -227,11 +227,13 @@ class ShopModule {
         (map['categoriesUIDs'] as List<dynamic>)
             .map<String>((x) => x as String),
       ),
-      subscriptions: List<SubscriptionModule>.from(
-        (map['subscriptions'] as List<dynamic>).map<SubscriptionModule>(
-          (x) => SubscriptionModule.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
+      subscriptions: map['subscriptions'] != null
+          ? List<SubscriptionModule>.from(
+              (map['subscriptions'] as List<dynamic>).map<SubscriptionModule>(
+                (x) => SubscriptionModule.fromMap(x as Map<String, dynamic>),
+              ),
+            )
+          : [],
       shopLink: map['shopLink'] != null ? map['shopLink'] as String : null,
       keywords: map['keywords'] != null
           ? List<String>.from(

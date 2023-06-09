@@ -4,12 +4,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mataajer_saudi/app/data/modules/send_notification_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 
+import '../../database/notification.dart';
+import '../../main.dart';
+
 class CloudMessaging {
   CloudMessaging._();
+
+  static Map<String, dynamic> sentData = {
+    'isSent': false,
+    'sentDate': '',
+    'token': '',
+    'docUID': '',
+  };
 
   static const _cloudMessagingKey =
       'AAAAAZHRUrk:APA91bGvrCb7xr1_M8A1sFeaqetTmCy3xP1dgoLz7PHskiMgfLj34k8J2EHJ7KSPu6kYoNXJdBob93EEsj65cf420KIXJegzBTSYTD292Kgly3cAqvWKzOhf4fLr1yZB1TB7Kv6RSx8l';
@@ -28,23 +39,61 @@ class CloudMessaging {
         sound: true,
       );
 
-      print('User granted permission: ${settings.authorizationStatus}');
+      log('User granted permission: ${settings.authorizationStatus}');
 
-      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        print('Got a message whilst in the foreground!');
-        print('Message data: ${message.data}');
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+        log('Got a message whilst in the foreground!');
+        log('Message data: ${message.data}');
 
         if (message.notification != null) {
-          print(
-              'Message also contained a notification: ${message.notification}');
+          log('Message also contained a notification: (name: ${message.notification!.title}, body: ${message.notification!.body})');
+
+          final notificationModule = NotificationModule(
+            title: message.notification?.title ?? '',
+            body: message.notification?.body ?? '',
+            data: message.data,
+            date: DateTime.now(),
+          );
+          await NotificationModule.hiveBox.add(notificationModule);
         }
       });
 
-      CloudMessaging
-          .sendFCMTokenToFirebase(); // TO SEND ANY VISITOR TO DATABASE
+      // initLocalNotifications();
+
+      sendFCMTokenToFirebase(); // TO SEND ANY VISITOR TO DATABASE
     } catch (e) {
       print(e);
     }
+  }
+
+  static void initLocalNotifications() async {
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()!
+        .requestPermission();
+
+    // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+    const DarwinInitializationSettings initializationSettingsDarwin =
+        DarwinInitializationSettings();
+
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsDarwin,
+    );
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      // onDidReceiveNotificationResponse:
+      //     (NotificationResponse notificationResponse) async {
+      //   // ...
+      // },
+      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
+    );
   }
 
   static void sendFCMTokenToFirebase() async {
@@ -54,6 +103,7 @@ class CloudMessaging {
       if (token == null) {
         throw Exception('Token is null');
       }
+
       await FirebaseFirestoreHelper.instance.sendFCMToken(token);
 
       print('FCM Token sent to Firebase $token');
@@ -62,15 +112,15 @@ class CloudMessaging {
     }
   }
 
-  static Future<bool> checkIfUserHasLimit() async {
+  static Future<bool> checkIfUserHasLimit({String? userUID}) async {
     try {
       final now = DateTime.now();
-      final userUID = FirebaseAuth.instance.currentUser!.uid;
+      final userUID0 = userUID ?? FirebaseAuth.instance.currentUser!.uid;
       final currentDateUID = '${now.year}-${now.month}';
 
       var isHasLimit = await FirebaseFirestore.instance
           .collection('shops')
-          .doc(userUID)
+          .doc(userUID0)
           .collection('notifications')
           .doc(currentDateUID)
           .get()
@@ -142,7 +192,7 @@ class CloudMessaging {
       var response = await Dio().post(
         'https://fcm.googleapis.com/fcm/send',
         options: options,
-        data: module.toMap(),
+        data: module.requestToMap(),
       );
 
       if (response.statusCode == 200) {

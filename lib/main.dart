@@ -1,7 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
@@ -22,24 +24,31 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // make sure you call `initializeApp` before using other Firebase services.
   // await Firebase.initializeApp();
 
-  print("Handling a background message: ${message.messageId}");
+  log("Handling a background message: ${message.messageId}");
   await NotificationModule.openBox;
   final notificationModule = NotificationModule(
     title: message.notification?.title ?? '',
     body: message.notification?.body ?? '',
     data: message.data,
     date: DateTime.now(),
+    senderUserImage: message.data['url'],
+    senderUserUID: message.data['userUID'],
   );
   await NotificationModule.hiveBox.add(notificationModule);
-  print('added notificationModule: ${notificationModule.toMap()}');
+  log('added notificationModule: ${notificationModule.toMap()}');
+}
+
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse notificationResponse) {
+  // handle action
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await HiveHelper.initHive();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await CloudMessaging.initialize();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
 }
 

@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
-import 'package:mataajer_saudi/app/widgets/shop_animated_widget.dart';
 
 class OnBoardingController extends GetxController {
   final mainAccountController = Get.find<MainAccountController>();

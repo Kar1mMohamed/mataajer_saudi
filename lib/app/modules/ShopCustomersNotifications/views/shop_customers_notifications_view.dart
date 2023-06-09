@@ -45,7 +45,11 @@ class ShopCustomersNotificationsView
                   _fieldItem(
                     "نص الاشعار",
                     controller.notTitleController,
-                    maxLines: 10,
+                    maxLines: 1,
+                    onFieldSubmitted: (p0) {
+                      // unfocus keyboard
+                      FocusScope.of(context).unfocus();
+                    },
                   ),
                   SizedBox(height: 40.h),
                   RoundedButton(

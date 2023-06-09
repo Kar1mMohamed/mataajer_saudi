@@ -259,9 +259,9 @@ class ShopLoginAndRegisterController extends GetxController {
       changePageIndex(1);
     }
 
-    if (kDebugMode) {
-      loginEmailController.text = 'karimo741852@gmail.com';
-      loginPasswordController.text = 'karim123';
-    }
+    // if (kDebugMode) {
+    loginEmailController.text = 'karimo741852@gmail.com';
+    loginPasswordController.text = 'karim123';
+    // }
   }
 }

@@ -41,4 +41,6 @@ abstract class Assets {
   static const String whiteCircle = 'assets/png/whiteCircle.png';
 
   static const String riveLoadingShop = 'assets/shop_loading.riv';
+
+  static const String noImg = 'assets/images/no_img_av.jpg';
 }

@@ -132,10 +132,24 @@ class MyDrawer extends StatelessWidget {
         //     route: Routes.HOME),
         // _drawerItem(Assets.addPackageIcon, 'عرض باقات الاشتراك',
         //     route: Routes.SPLASH),
-        _drawerItem('', 'الاشعارات المستقبلة',
-            route: Routes.ADMIN_NOTIFICATION,
-            customIcon:
-                Icon(Icons.notifications, color: MataajerTheme.mainColor)),
+        _drawerItem(
+          '',
+          'الاشعارات المستقبلة',
+          route: Routes.ADMIN_NOTIFICATION,
+          customIcon:
+              const Icon(Icons.notifications, color: MataajerTheme.mainColor),
+        ),
+        _drawerItem(
+          Assets.exitVector,
+          'تسجيل خروج',
+          onTap: () async {
+            final currentUser = FirebaseAuth.instance.currentUser;
+            if (currentUser != null) {
+              await FirebaseAuth.instance.signOut();
+              Get.offAllNamed(Routes.SPLASH);
+            }
+          },
+        ),
       ],
     );
   }

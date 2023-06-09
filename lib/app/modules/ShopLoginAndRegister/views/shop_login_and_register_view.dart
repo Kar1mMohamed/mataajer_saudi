@@ -8,7 +8,7 @@ import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart'
 import 'package:mataajer_saudi/app/modules/ChooseSubscription/views/choose_subscription_view.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
-import 'package:mataajer_saudi/app/widgets/image_loading.dart';
+import 'package:mataajer_saudi/app/widgets/loading_image.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 import 'package:mataajer_saudi/utils/input_format.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';

@@ -698,7 +698,10 @@ class HomeView extends GetView<HomeController> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(Assets.renewVectorPNG),
+            Image.asset(
+              Assets.renewVectorPNG,
+              filterQuality: FilterQuality.high,
+            ),
             SizedBox(width: 5.w),
             Text(
               'تجديد الاشتراك',
@@ -716,6 +719,8 @@ class HomeView extends GetView<HomeController> {
 
   Widget get _activeTitleAppBar {
     return InkWell(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       onTap: () {
         KSnackBar.success(
             'يبدو ان الاشتراك مفعل بالفعل، نحن سعداء باشتراكك معنا');
@@ -732,7 +737,10 @@ class HomeView extends GetView<HomeController> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(Assets.renewVectorPNG),
+            Image.asset(
+              Assets.renewVectorPNG,
+              filterQuality: FilterQuality.high,
+            ),
             SizedBox(width: 5.w),
             Text(
               'مفعل',

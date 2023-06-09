@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Constants {
   Constants._();
   static List<String> categoriesString = [
@@ -10,11 +12,17 @@ class Constants {
   ];
 
   static String convertDateToTimeString(DateTime date) {
+    final formateNumber = NumberFormat('00');
     bool isAM = date.hour < 12;
     String timeTitle = isAM ? 'صباحا' : 'مساء';
-    String hour =
-        date.hour > 12 ? (date.hour - 12).toString() : date.hour.toString();
+    int hour = date.hour > 12 ? (date.hour - 12) : date.hour;
 
-    return '$hour:${date.minute} $timeTitle';
+    return '${formateNumber.format(hour)}:${formateNumber.format(date.minute)} $timeTitle';
+  }
+
+  static String convertDateToDateString(DateTime date) {
+    final formateNumber = NumberFormat('00');
+
+    return '${formateNumber.format(date.day)}/${formateNumber.format(date.day)}/${date.year} ${convertDateToTimeString(date)}';
   }
 }
