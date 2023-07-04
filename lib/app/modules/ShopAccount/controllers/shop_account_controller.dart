@@ -54,8 +54,9 @@ class ShopAccountController extends GetxController {
     loading = true;
     update();
     try {
-      currentShop = await FirebaseFirestoreHelper.instance
-          .getShopModule(FirebaseAuth.instance.currentUser!.uid);
+      currentShop = await FirebaseFirestoreHelper.instance.getShopModule(
+          FirebaseAuth.instance.currentUser!.uid,
+          getSubscriptions: true);
     } catch (e) {
       print(e);
     } finally {

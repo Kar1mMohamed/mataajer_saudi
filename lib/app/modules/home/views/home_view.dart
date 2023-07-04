@@ -83,7 +83,7 @@ class HomeView extends GetView<HomeController> {
               ),
               SizedBox(height: 20.h),
               GetBuilder<HomeController>(
-                  id: 'ads',
+                  id: 'all-ads',
                   builder: (context) {
                     return _ads();
                   }),
@@ -233,16 +233,6 @@ class HomeView extends GetView<HomeController> {
           child: GetBuilder<HomeController>(
               id: 'ads',
               builder: (_) {
-                // return GridView.builder(
-                //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                //       crossAxisCount: 1, childAspectRatio: 1.5),
-                //   scrollDirection: Axis.horizontal,
-                //   itemCount: controller.categoriesList.length,
-                //   shrinkWrap: true,
-                //   itemBuilder: (context, index) {
-                //     return _adCard(index);
-                //   },
-                // );
                 return GridView.count(
                   crossAxisCount: crossCount,
                   childAspectRatio: 1.4,
@@ -360,7 +350,7 @@ class HomeView extends GetView<HomeController> {
             highlightColor: Colors.transparent,
             hoverColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: () => Get.dialog(PreviewShopDialog(ad: ad)),
+            onTap: () => Get.dialog(PreviewAdDialog(ad: ad)),
             child: Container(
               padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
               margin:
@@ -544,7 +534,7 @@ class HomeView extends GetView<HomeController> {
               return _errorTitleAppBar;
             }
             if (controller.currentShop!.isSubscriptionExpired) {
-              return _expitedTitleAppBar;
+              return _expiredTitleAppBar;
             } else {
               return _activeTitleAppBar;
             }
@@ -672,7 +662,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget get _expitedTitleAppBar {
+  Widget get _expiredTitleAppBar {
     return InkWell(
       onTap: () async {
         final res = await controller.currentShop?.renewSubscription();

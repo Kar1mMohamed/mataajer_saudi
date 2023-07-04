@@ -72,8 +72,9 @@ class ShopCustomersNotificationsController extends GetxController {
       return;
     }
 
-    currentShop = await FirebaseFirestoreHelper.instance
-        .getShopModule(FirebaseAuth.instance.currentUser!.uid);
+    currentShop = await FirebaseFirestoreHelper.instance.getShopModule(
+        FirebaseAuth.instance.currentUser!.uid,
+        getSubscriptions: true);
 
     loading = false;
     update();

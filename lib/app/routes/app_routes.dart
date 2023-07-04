@@ -17,6 +17,9 @@ abstract class Routes {
   static const ADMIN_ACTIVE_USERS = _Paths.ADMIN_ACTIVE_USERS;
   static const CHOOSE_SUBSCRIPTION = _Paths.CHOOSE_SUBSCRIPTION;
   static const ADMIN_NOTIFICATION = _Paths.ADMIN_NOTIFICATION;
+  static const ADD_POPUP_AD = _Paths.ADD_POPUP_AD;
+  static const PAYMENTS_REDIRECT = _Paths.PAYMENTS_REDIRECT;
+  static const ADD_OFFER = _Paths.ADD_OFFER;
 }
 
 abstract class _Paths {
@@ -34,4 +37,7 @@ abstract class _Paths {
   static const ADMIN_ACTIVE_USERS = '/admin-active-users';
   static const CHOOSE_SUBSCRIPTION = '/choose-subscription';
   static const ADMIN_NOTIFICATION = '/admin-notification';
+  static const ADD_POPUP_AD = '/add-popup-ad';
+  static const PAYMENTS_REDIRECT = '/payments-redirect';
+  static const ADD_OFFER = '/add-offer';
 }

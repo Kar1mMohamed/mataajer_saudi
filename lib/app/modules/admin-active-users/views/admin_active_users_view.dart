@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
@@ -9,6 +8,7 @@ import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/custom_switch.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
+import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 import 'package:mataajer_saudi/database/notification.dart';
 import '../controllers/admin_active_users_controller.dart';
 
@@ -100,7 +100,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
     return InkWell(
       onTap: () async {
         await Get.toNamed(Routes.SHOP_ACCOUNT, arguments: shop);
-        controller.getAllShops();
+        await controller.getAllShops();
       },
       child: Container(
         decoration: BoxDecoration(
@@ -109,53 +109,69 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CircleAvatar(
-                    radius: 35.r,
-                    backgroundColor: Colors.grey,
-                    backgroundImage: NetworkImage(shop.image),
-                  ),
-                  SizedBox(width: 10.w),
-                  Column(
+                  Row(
                     children: [
-                      Text(
-                        shop.name,
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w400),
+                      CircleAvatar(
+                        radius: 35.r,
+                        backgroundColor: Colors.grey,
+                        backgroundImage: NetworkImage(shop.image),
                       ),
-                      Text(
-                        shop.categories.first.name,
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w400,
-                            color: MataajerTheme.mainColor),
+                      SizedBox(width: 10.w),
+                      Column(
+                        children: [
+                          Text(
+                            shop.name,
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w400),
+                          ),
+                          Text(
+                            shop.categories.first.name,
+                            style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w400,
+                                color: MataajerTheme.mainColor),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      CustomSwitch(
+                        value: shop.isVisible!,
+                        onChanged: (v) {
+                          shop.isVisible = v;
+                          controller.updateShopVisibility(shop, indedx);
+                        },
+                      ),
+                      SizedBox(width: 10.w),
+                      IconButton(
+                        onPressed: () => controller.deleteShop(shop),
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  CustomSwitch(
-                    value: shop.isVisible!,
-                    onChanged: (v) {
-                      shop.isVisible = v;
-                      controller.updateShopVisibility(shop, indedx);
-                    },
-                  ),
-                  SizedBox(width: 10.w),
-                  IconButton(
-                    onPressed: () => controller.deleteShop(shop),
-                    icon: Icon(
-                      Icons.delete,
-                      color: Colors.red,
-                    ),
-                  ),
-                ],
+              RoundedButton(
+                text: 'كل الاعلانات',
+                press: () => controller.allShopAdsDialog(shop),
+                verticalPadding: 0,
+                verticalMargin: 5,
+              ),
+              RoundedButton(
+                text: 'كل الاعلانات المنبثقة',
+                press: () => controller.allShopPopUpAdsDialog(shop),
+                verticalPadding: 0,
+                verticalMargin: 5,
               ),
             ],
           ),

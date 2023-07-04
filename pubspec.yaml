@@ -16,7 +16,7 @@ dependencies:
   flutter_screenutil: ^5.6.1
   flutter_multi_select_items: ^0.4.2
   permission_handler: ^10.2.0
-  image_picker: ^0.8.7
+  image_picker: ^1.0.0
   firebase_storage: ^11.0.16
   file_picker: ^5.2.6
   cached_network_image: ^3.2.3
@@ -28,7 +28,10 @@ dependencies:
   rive: ^0.11.2
   typing_animation: ^0.0.1
   intl: any
-  flutter_local_notifications: 14.1.1
+  flutter_local_notifications: ^15.0.0
+  url_launcher: ^6.1.11
+  webview_flutter: ^3.0.0
+  flutter_keyboard_size: 1.0.1
   flutter: 
     sdk: flutter
 

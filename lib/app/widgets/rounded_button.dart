@@ -12,26 +12,28 @@ class RoundedButton extends StatelessWidget {
   final bool? isFilled;
   final double? radius;
   final double? verticalPadding;
-  const RoundedButton(
-      {final key,
-      required this.text,
-      this.isFilled = true,
-      this.textStyle,
-      required this.press,
-      this.color = const Color(0xFFB786CA),
-      this.textColor = Colors.white,
-      this.icon,
-      this.width,
-      this.height,
-      this.radius,
-      this.verticalPadding})
-      : super(key: key);
+  final double? verticalMargin;
+  const RoundedButton({
+    final key,
+    required this.text,
+    this.isFilled = true,
+    this.textStyle,
+    required this.press,
+    this.color = const Color(0xFFB786CA),
+    this.textColor = Colors.white,
+    this.icon,
+    this.width,
+    this.height,
+    this.radius,
+    this.verticalPadding,
+    this.verticalMargin,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      margin: EdgeInsets.symmetric(vertical: verticalMargin ?? 10),
       height: height,
       width: width ?? size.width * 0.8,
       child: ElevatedButton(

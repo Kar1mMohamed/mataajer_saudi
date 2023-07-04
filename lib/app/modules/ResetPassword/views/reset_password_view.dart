@@ -18,12 +18,16 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
       appBar: appBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: SingleChildScrollView(
-          child: GetBuilder<ResetPasswordController>(builder: (_) {
-            if (controller.loading) {
-              return MataajerTheme.loadingWidget;
-            }
-            return Column(
+        child: GetBuilder<ResetPasswordController>(builder: (_) {
+          if (controller.loading) {
+            return SizedBox(
+              height: context.height,
+              width: context.width,
+              child: MataajerTheme.loadingWidget,
+            );
+          }
+          return SingleChildScrollView(
+            child: Column(
               children: [
                 SizedBox(height: 10.h),
                 Align(
@@ -87,9 +91,9 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
                     text: 'تاكيد',
                     press: () => controller.checkIFEmailVerified()),
               ],
-            );
-          }),
-        ),
+            ),
+          );
+        }),
       ),
     );
   }

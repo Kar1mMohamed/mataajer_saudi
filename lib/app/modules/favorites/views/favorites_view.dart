@@ -54,7 +54,7 @@ class FavoritesView extends GetView<FavoritesController> {
     bool isLoved = controller.favs.contains(ad);
     String categoryString = ad.categories.first.name;
     return InkWell(
-      onTap: () => Get.dialog(PreviewShopDialog(ad: ad)),
+      onTap: () => Get.dialog(PreviewAdDialog(ad: ad)),
       child: Container(
         padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
         margin: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp, bottom: 5.0.sp),

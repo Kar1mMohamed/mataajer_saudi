@@ -6,8 +6,8 @@ import 'package:mataajer_saudi/app/controllers/preview_dialog_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 
-class PreviewShopDialog extends StatelessWidget {
-  const PreviewShopDialog({super.key, required this.ad});
+class PreviewAdDialog extends StatelessWidget {
+  const PreviewAdDialog({super.key, required this.ad});
   final AdModule ad;
 
   @override
@@ -270,33 +270,38 @@ class PreviewShopDialog extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20.h),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 22.0),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      'متاجر مشابهة',
-                      style: TextStyle(
-                          fontSize: 14.sp, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10.h),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SizedBox(
-                    height: Get.context!.height * 0.18,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) =>
-                          _similarAdCard(controller.similarAds[index]),
-                      separatorBuilder: (context, index) =>
-                          SizedBox(width: 20.w),
-                      itemCount: controller.similarAds.length,
-                      shrinkWrap: true,
-                    ),
-                  ),
-                ),
+                if (controller.similarAds.isNotEmpty)
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 22.0),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            'متاجر مشابهة',
+                            style: TextStyle(
+                                fontSize: 14.sp, fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: SizedBox(
+                          height: Get.context!.height * 0.18,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) =>
+                                _similarAdCard(controller.similarAds[index]),
+                            separatorBuilder: (context, index) =>
+                                SizedBox(width: 20.w),
+                            itemCount: controller.similarAds.length,
+                            shrinkWrap: true,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
               ],
             ),
           ),
@@ -313,7 +318,7 @@ class PreviewShopDialog extends StatelessWidget {
       splashColor: Colors.transparent,
       onTap: () {
         Get.back(closeOverlays: true);
-        Get.dialog(PreviewShopDialog(ad: ad));
+        Get.dialog(PreviewAdDialog(ad: ad));
       },
       child: Column(
         children: [

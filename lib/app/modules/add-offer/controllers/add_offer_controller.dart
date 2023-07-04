@@ -12,17 +12,33 @@ import 'package:mataajer_saudi/app/widgets/shop_animated_widget.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class AddAdController extends GetxController {
+class AddOfferController extends GetxController {
+  bool loading = false;
+
   bool get isSignedIn => Get.find<MainAccountController>().isSignedIn;
 
   ShopModule? currentShop;
-  bool loading = false;
 
   String? imageURL;
 
   final shopLinkController = TextEditingController();
   final cuponCodeController = TextEditingController();
   final cuponCodeDescription = TextEditingController();
+
+  Future<void> getCurrentShopModule() async {
+    try {
+      loading = true;
+      update();
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+      currentShop = await FirebaseFirestoreHelper.instance
+          .getShopModule(uid, getSubscriptions: true);
+    } catch (e) {
+      print(e);
+    } finally {
+      loading = false;
+      update();
+    }
+  }
 
   Future<void> pickAndUploadImage() async {
     try {
@@ -51,22 +67,7 @@ class AddAdController extends GetxController {
     }
   }
 
-  Future<void> getCurrentShopModule() async {
-    try {
-      loading = true;
-      update();
-      final uid = FirebaseAuth.instance.currentUser!.uid;
-      currentShop = await FirebaseFirestoreHelper.instance
-          .getShopModule(uid, getSubscriptions: true);
-    } catch (e) {
-      print(e);
-    } finally {
-      loading = false;
-      update();
-    }
-  }
-
-  Future<bool> adAdd() async {
+  Future<bool> addOffer() async {
     try {
       if (imageURL == null) {
         throw 'يجب اختيار صورة';
@@ -92,7 +93,7 @@ class AddAdController extends GetxController {
         validTill: currentShop!.validTill,
       );
 
-      await FirebaseFirestoreHelper.instance.adShopAdd(module);
+      await FirebaseFirestoreHelper.instance.addOffer(module);
       return true;
     } catch (e) {
       // KSnackBar.error(e.toString());
@@ -105,10 +106,10 @@ class AddAdController extends GetxController {
   }
 
   @override
-  void onInit() {
-    if (isSignedIn) {
-      getCurrentShopModule();
-    }
+  void onInit() async {
     super.onInit();
+    if (isSignedIn) {
+      await getCurrentShopModule();
+    }
   }
 }

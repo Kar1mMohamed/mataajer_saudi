@@ -411,17 +411,17 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
               ),
             ),
             SizedBox(height: 20.h),
-            _fieldItem(
-              'اضافة كود خصم',
-              controller.cuponCodeController,
-            ),
-            SizedBox(height: 20.h),
-            _fieldItem(
-              'تفاصيل كود خصم',
-              controller.cuponCodeDetailsController,
-              height: 80.h,
-            ),
-            SizedBox(height: 20.h),
+            // _fieldItem(
+            //   'اضافة كود خصم',
+            //   controller.cuponCodeController,
+            // ),
+            // SizedBox(height: 20.h),
+            // _fieldItem(
+            //   'تفاصيل كود خصم',
+            //   controller.cuponCodeDetailsController,
+            //   height: 80.h,
+            // ),
+            // SizedBox(height: 20.h),
             pricesTable(),
             SizedBox(height: 40.h),
             RoundedButton(

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
-import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
+import 'package:mataajer_saudi/app/data/modules/pop_up_ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
@@ -12,17 +12,31 @@ import 'package:mataajer_saudi/app/widgets/shop_animated_widget.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class AddAdController extends GetxController {
+class AddPopupAdController extends GetxController {
+  bool loading = false;
+
   bool get isSignedIn => Get.find<MainAccountController>().isSignedIn;
 
   ShopModule? currentShop;
-  bool loading = false;
 
   String? imageURL;
 
   final shopLinkController = TextEditingController();
-  final cuponCodeController = TextEditingController();
-  final cuponCodeDescription = TextEditingController();
+
+  Future<void> getCurrentShopModule() async {
+    try {
+      loading = true;
+      update();
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+      currentShop = await FirebaseFirestoreHelper.instance
+          .getShopModule(uid, getSubscriptions: true);
+    } catch (e) {
+      print(e);
+    } finally {
+      loading = false;
+      update();
+    }
+  }
 
   Future<void> pickAndUploadImage() async {
     try {
@@ -51,22 +65,7 @@ class AddAdController extends GetxController {
     }
   }
 
-  Future<void> getCurrentShopModule() async {
-    try {
-      loading = true;
-      update();
-      final uid = FirebaseAuth.instance.currentUser!.uid;
-      currentShop = await FirebaseFirestoreHelper.instance
-          .getShopModule(uid, getSubscriptions: true);
-    } catch (e) {
-      print(e);
-    } finally {
-      loading = false;
-      update();
-    }
-  }
-
-  Future<bool> adAdd() async {
+  Future<bool> addPopUpAd() async {
     try {
       if (imageURL == null) {
         throw 'يجب اختيار صورة';
@@ -80,19 +79,15 @@ class AddAdController extends GetxController {
       loading = true;
       update();
 
-      final module = AdModule(
-        shopUID: FirebaseAuth.instance.currentUser!.uid,
-        name: currentShop!.name,
-        categoryUIDs: currentShop!.categoriesUIDs,
-        description: cuponCodeDescription.text,
-        imageURL: imageURL!,
-        avgShippingPrice: currentShop!.avgShippingPrice,
-        avgShippingTime: currentShop!.avgShippingTime,
-        cuponCode: cuponCodeController.text,
+      final module = PopUpAdModule(
+        image: imageURL!,
+        shopUID: currentShop!.uid!,
         validTill: currentShop!.validTill,
+        url: shopLinkController.text,
+        isVisible: true,
       );
 
-      await FirebaseFirestoreHelper.instance.adShopAdd(module);
+      await FirebaseFirestoreHelper.instance.addPopUpAd(module);
       return true;
     } catch (e) {
       // KSnackBar.error(e.toString());
@@ -105,10 +100,10 @@ class AddAdController extends GetxController {
   }
 
   @override
-  void onInit() {
-    if (isSignedIn) {
-      getCurrentShopModule();
-    }
+  void onInit() async {
     super.onInit();
+    if (isSignedIn) {
+      await getCurrentShopModule();
+    }
   }
 }

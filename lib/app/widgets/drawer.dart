@@ -78,8 +78,6 @@ class MyDrawer extends StatelessWidget {
   Widget _forShop() {
     return Column(
       children: [
-        _drawerItem(Assets.plusIcon, 'اضف متجرك الالكتروني',
-            route: Routes.HOME),
         _drawerItem(
           Assets.notificationVector,
           'اشعارات العملاء',
@@ -87,8 +85,18 @@ class MyDrawer extends StatelessWidget {
         ),
         _drawerItem(
           Assets.addAdVector,
+          'اضافة اعلان منبثق',
+          route: Routes.ADD_POPUP_AD,
+        ),
+        _drawerItem(
+          Assets.addAdVector,
           'اضف اعلانك',
           route: Routes.ADD_AD,
+        ),
+        _drawerItem(
+          Assets.addAdVector,
+          'اضف عرض',
+          route: Routes.ADD_OFFER,
         ),
         _drawerItem(
           Assets.personIcon,

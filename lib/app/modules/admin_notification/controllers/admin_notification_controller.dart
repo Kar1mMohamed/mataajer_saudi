@@ -1,10 +1,6 @@
-import 'dart:ffi';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
-
 import '../../../../database/notification.dart';
 import '../../../../utils/ksnackbar.dart';
 import '../../../data/modules/send_notification_module.dart';
@@ -30,7 +26,7 @@ class AdminNotificationController extends GetxController {
 
       this.notifications = notifications;
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 
@@ -39,7 +35,7 @@ class AdminNotificationController extends GetxController {
       final shops = await FirebaseFirestoreHelper.instance.getShops();
       this.shops = shops;
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 
@@ -93,7 +89,7 @@ class AdminNotificationController extends GetxController {
 
       KSnackBar.success('تم ارسال الاشعارات بنجاح');
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       module.sendingText = '';
       updateNotificationCard(index);

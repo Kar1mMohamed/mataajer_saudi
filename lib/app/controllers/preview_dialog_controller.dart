@@ -8,7 +8,9 @@ class PreviewDialogController extends GetxController {
   PreviewDialogController({required this.adModule});
   void addView() => FirebaseFirestoreHelper.instance.addHit(adModule.uid!);
 
-  List<AdModule> get similarAds => Get.find<HomeController>().ads.where(
+  List<AdModule> get similarAds {
+    try {
+      return Get.find<HomeController>().ads.where(
         (element) {
           if (element.uid == adModule.uid) return false;
           if (element.categoryUIDs.contains(adModule.categoryUIDs.first)) {
@@ -17,6 +19,11 @@ class PreviewDialogController extends GetxController {
           return false;
         },
       ).toList();
+    } catch (e) {
+      // Mostly because of HomeController not initialized yet
+      return [];
+    }
+  }
 
   @override
   void onInit() {

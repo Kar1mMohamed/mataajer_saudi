@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ChooseSubscriptionModule {
   final String? uid;
   String? name;
@@ -12,6 +14,7 @@ class ChooseSubscriptionModule {
   bool? isTwoPopUpAdsMonthly = false;
   bool? isFourPopUpAdsMonthly = false;
   bool? isCanSendNotification = false;
+  DateTime? subscriptionDate = DateTime.now();
 
   double? get getPriceByDays => allowedDays == 30 ? monthlyPrice : yearlyPrice;
 
@@ -26,6 +29,7 @@ class ChooseSubscriptionModule {
     this.isTwoPopUpAdsMonthly,
     this.isFourPopUpAdsMonthly,
     this.isCanSendNotification,
+    this.subscriptionDate,
   });
 
   ChooseSubscriptionModule copyWith({
@@ -68,6 +72,8 @@ class ChooseSubscriptionModule {
       'isTwoPopUpAdsMonthly': isTwoPopUpAdsMonthly,
       'isFourPopUpAdsMonthly': isFourPopUpAdsMonthly,
       'isCanSendNotification': isCanSendNotification,
+      'subscriptionDate':
+          Timestamp.fromDate(subscriptionDate ?? DateTime.now()),
     };
   }
 
@@ -95,6 +101,9 @@ class ChooseSubscriptionModule {
       isCanSendNotification: map['isCanSendNotification'] != null
           ? map['isCanSendNotification'] as bool
           : null,
+      subscriptionDate: map['subscriptionDate'] != null
+          ? (map['subscriptionDate'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
   String toJson() => json.encode(toMap());

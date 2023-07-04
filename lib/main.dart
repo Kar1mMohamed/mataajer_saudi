@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +10,12 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_notification_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
+import 'package:mataajer_saudi/app/controllers/main_popup_ads_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
+import 'package:mataajer_saudi/app/data/modules/pop_up_ad_module.dart';
 import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
+import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
+import 'package:mataajer_saudi/app/widgets/check_out_webview.dart';
 import 'package:mataajer_saudi/database/helper/hive_helper.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/translation/tr.dart';
@@ -71,11 +76,38 @@ class MyApp extends StatelessWidget {
         translations: Translation(),
         locale: const Locale('ar', 'SA'),
         smartManagement: SmartManagement.full,
+        // builder: (context, child) {
+        //   return CheckoutWebview(
+        //     'https://initail-exp.com/',
+        //     'mataajer://m.mataajer-sa.com/payments-redirect/',
+        //     'https://fail.com/',
+        //     'https://cancel.com/',
+        //     onPaymentSuccess: (query) {
+        //       log('success query: $query');
+        //     },
+        //   );
+        // },
         onInit: () async {
           print('current date: ${DateTime.now().millisecondsSinceEpoch}');
           print(
-              'current date +12: ${DateTime.now().add(Duration(days: 12)).millisecondsSinceEpoch}');
+              'current date +12: ${DateTime.now().add(const Duration(days: 12)).millisecondsSinceEpoch}');
           // --------------- //
+
+          // final popUpAds = List.generate(
+          //     3,
+          //     (index) => PopUpAdModule(
+          //           title: 'Test $index',
+          //           description: 'Descripton $index',
+          //           isVisible: true,
+          //           validTill: DateTime.now().add(Duration(days: 12)),
+          //           image:
+          //               'https://c8.alamy.com/comp/H3D3H0/small-indian-shop-sells-merchandise-per-single-unit-H3D3H0.jpg',
+          //         ));
+
+          // for (var ad in popUpAds) {
+          //   print('added ad ');
+          //   await FirebaseFirestoreHelper.instance.addPopUpAd(ad);
+          // }
 
           // await FirebaseAuth.instance.signOut();
 
@@ -171,5 +203,7 @@ class _InitialBindings extends Bindings {
     Get.put<MainAccountController>(MainAccountController(), permanent: true);
     Get.lazyPut<MainNotificationController>(() => MainNotificationController(),
         fenix: true);
+
+    Get.put<MainPopupAdsController>(MainPopupAdsController(), permanent: true);
   }
 }

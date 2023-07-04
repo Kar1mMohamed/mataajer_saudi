@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
-import 'package:mataajer_saudi/app/data/assets.dart';
-import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
-import 'package:mataajer_saudi/app/widgets/drawer.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 
-import '../controllers/add_ad_controller.dart';
+import '../../../data/assets.dart';
+import '../../../theme/theme.dart';
+import '../../../widgets/drawer.dart';
+import '../controllers/add_offer_controller.dart';
 
-class AddAdView extends GetView<AddAdController> {
-  const AddAdView({Key? key}) : super(key: key);
+class AddOfferView extends GetView<AddOfferController> {
+  const AddOfferView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: appBar(),
       drawer: const MyDrawer(ads: [], isShop: true),
-      body: GetBuilder<AddAdController>(builder: (_) {
+      body: GetBuilder<AddOfferController>(builder: (_) {
         if (controller.loading) {
           return MataajerTheme.loadingWidget;
         }
@@ -55,25 +55,26 @@ class AddAdView extends GetView<AddAdController> {
                   ),
                   SizedBox(height: 30.h),
                   _fieldItem(
-                    'كود الخصم',
+                    'كود العرض',
                     controller.cuponCodeController,
                     height: 50.h,
                   ),
                   SizedBox(height: 30.h),
                   _fieldItem(
-                    'تفاصيل كود الخصم',
+                    'تفاصيل كود العرض',
                     controller.cuponCodeDescription,
                     height: 50.h,
                   ),
                   SizedBox(height: 30.h),
                   RoundedButton(
-                      text: 'ارسال',
-                      press: () async {
-                        final isOk = await controller.adAdd();
-                        if (isOk) {
-                          sucessDialog();
-                        }
-                      })
+                    text: 'ارسال',
+                    press: () async {
+                      final isOk = await controller.addOffer();
+                      if (isOk) {
+                        sucessDialog();
+                      }
+                    },
+                  )
                 ],
               ),
             ),
@@ -89,7 +90,7 @@ class AddAdView extends GetView<AddAdController> {
       shadowColor: Colors.transparent,
       foregroundColor: Colors.white,
       elevation: 0,
-      title: Text('اضافة اعلان',
+      title: Text('اضافة عرض',
           style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500)),
       centerTitle: true,
       toolbarHeight: 50.h,

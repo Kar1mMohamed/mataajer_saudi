@@ -8,6 +8,7 @@ import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
+import 'package:mataajer_saudi/app/functions/popup_ads.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 
@@ -48,16 +49,23 @@ class HomeController extends GetxController {
         ),
       );
 
+  ///
   List<AdModule> _ads = <AdModule>[];
 
   List<AdModule> ads = <AdModule>[];
+
+  List<AdModule> _offers = <AdModule>[];
+
+  List<AdModule> offers = <AdModule>[];
+
+  ///
 
   List<AdModule> get favAds => mainAccountController.getFavAds(_ads);
 
   Future<void> getAds() async {
     try {
       adsLoading = true;
-      update(['ads']);
+      update(['all-ads']);
       final adsList = await FirebaseFirestoreHelper.instance.getAds();
       _ads = adsList;
       // _ads.addAll(_dumpAds);
@@ -67,7 +75,24 @@ class HomeController extends GetxController {
     } finally {
       ads = _ads;
       adsLoading = false;
-      update(['ads']);
+      update(['all-ads']);
+    }
+  }
+
+  Future<void> getOffers() async {
+    try {
+      adsLoading = true;
+      update(['all-ads']);
+      final offersList = await FirebaseFirestoreHelper.instance.getOffers();
+      _offers = offersList;
+      // _ads.addAll(_dumpAds);
+      log('offers: ${_offers.length}');
+    } catch (e) {
+      print(e);
+    } finally {
+      ads = _ads;
+      adsLoading = false;
+      update(['all-ads']);
     }
   }
 
@@ -79,7 +104,7 @@ class HomeController extends GetxController {
           .where((element) => element.categoryUIDs.contains(categoyry.uid))
           .toList();
     }
-    update(['ads']);
+    update(['all-ads']);
   }
 
   void updateLoveState(AdModule ad) {
@@ -113,7 +138,8 @@ class HomeController extends GetxController {
     loading = true;
     update(['_appBarTitle']);
     try {
-      currentShop = await FirebaseFirestoreHelper.instance.getShopModule(uid);
+      currentShop = await FirebaseFirestoreHelper.instance
+          .getShopModule(uid, getSubscriptions: true);
     } catch (e) {
       print(e);
       logout();
@@ -123,7 +149,12 @@ class HomeController extends GetxController {
     }
   }
 
-  void search(String? query) {
+  search(String? query) {
+    searchAds(query);
+    searchOffers(query);
+  }
+
+  void searchAds(String? query) {
     if (query == null || query.isEmpty) {
       ads = _ads;
     } else {
@@ -132,7 +163,19 @@ class HomeController extends GetxController {
               element.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     }
-    update(['ads']);
+    update(['all-ads']);
+  }
+
+  void searchOffers(String? query) {
+    if (query == null || query.isEmpty) {
+      offers = _offers;
+    } else {
+      offers = _offers
+          .where((element) =>
+              element.name.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    }
+    update(['offers']);
   }
 
   void logout() async {
@@ -150,6 +193,8 @@ class HomeController extends GetxController {
       await getCurrentShop();
     }
     await getAds();
+
+    PopUpAdsFunctions.showPopUpAd();
 
     super.onInit();
   }

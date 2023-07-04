@@ -4,6 +4,8 @@ import '../modules/AddAd/bindings/add_ad_binding.dart';
 import '../modules/AddAd/views/add_ad_view.dart';
 import '../modules/ChooseSubscription/bindings/choose_subscription_binding.dart';
 import '../modules/ChooseSubscription/views/choose_subscription_view.dart';
+import '../modules/OnBoarding/bindings/on_boarding_binding.dart';
+import '../modules/OnBoarding/views/on_boarding_view.dart';
 import '../modules/ResetPassword/bindings/reset_password_binding.dart';
 import '../modules/ResetPassword/views/reset_password_view.dart';
 import '../modules/ShopAccount/bindings/shop_account_binding.dart';
@@ -12,6 +14,10 @@ import '../modules/ShopCustomersNotifications/bindings/shop_customers_notificati
 import '../modules/ShopCustomersNotifications/views/shop_customers_notifications_view.dart';
 import '../modules/ShopLoginAndRegister/bindings/shop_login_and_register_binding.dart';
 import '../modules/ShopLoginAndRegister/views/shop_login_and_register_view.dart';
+import '../modules/add-offer/bindings/add_offer_binding.dart';
+import '../modules/add-offer/views/add_offer_view.dart';
+import '../modules/add-popup-ad/bindings/add_popup_ad_binding.dart';
+import '../modules/add-popup-ad/views/add_popup_ad_view.dart';
 import '../modules/admin-active-users/bindings/admin_active_users_binding.dart';
 import '../modules/admin-active-users/views/admin_active_users_view.dart';
 import '../modules/admin_notification/bindings/admin_notification_binding.dart';
@@ -20,10 +26,10 @@ import '../modules/favorites/bindings/favorites_binding.dart';
 import '../modules/favorites/views/favorites_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
-import '../modules/OnBoarding/bindings/on_boarding_binding.dart';
-import '../modules/OnBoarding/views/on_boarding_view.dart';
 import '../modules/notifications/bindings/notifications_binding.dart';
 import '../modules/notifications/views/notifications_view.dart';
+import '../modules/payments-redirect/bindings/payments_redirect_binding.dart';
+import '../modules/payments-redirect/views/payments_redirect_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 
@@ -101,6 +107,21 @@ class AppPages {
       name: _Paths.ADMIN_NOTIFICATION,
       page: () => const AdminNotificationView(),
       binding: AdminNotificationBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADD_POPUP_AD,
+      page: () => const AddPopupAdView(),
+      binding: AddPopupAdBinding(),
+    ),
+    GetPage(
+      name: _Paths.PAYMENTS_REDIRECT,
+      page: () => const PaymentsRedirectView(),
+      binding: PaymentsRedirectBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADD_OFFER,
+      page: () => const AddOfferView(),
+      binding: AddOfferBinding(),
     ),
   ];
 }

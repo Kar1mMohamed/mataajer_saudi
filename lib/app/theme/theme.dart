@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+// import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:mataajer_saudi/app/widgets/shop_animated_widget.dart';
 
 class MataajerTheme {

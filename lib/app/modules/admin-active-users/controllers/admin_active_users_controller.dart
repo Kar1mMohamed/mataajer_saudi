@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_notification_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
+import 'package:mataajer_saudi/app/widgets/loading_image.dart';
+import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
 
 class AdminActiveUsersController extends GetxController {
   RxInt get notificationCount =>
@@ -125,6 +128,129 @@ class AdminActiveUsersController extends GetxController {
             element.name.toLowerCase().contains(text.toLowerCase()))
         .toList();
     updateActiveShops();
+  }
+
+  void allShopAdsDialog(ShopModule shop) async {
+    loading = true;
+    update();
+
+    final ads = await FirebaseFirestoreHelper.instance
+        .getAds(forAdmin: true)
+        .then((value) =>
+            value.where((element) => element.shopUID == shop.uid).toList());
+
+    Get.dialog(Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Container(
+        width: 300.w,
+        height: 400.h,
+        padding: const EdgeInsets.all(12.0),
+        child: ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          itemCount: ads.length,
+          itemBuilder: (context, index) {
+            return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: ListTile(
+                title: Text(ads[index].cuponCode ?? ''),
+                subtitle: Text(ads[index].description),
+                trailing: IconButton(
+                  onPressed: () async {
+                    await FirebaseFirestoreHelper.instance.deleteAd(ads[index]);
+                    await getAllShops();
+                    Get.back();
+                  },
+                  icon: Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                  ),
+                ),
+                leading: IconButton(
+                  icon: Icon(Icons.info),
+                  onPressed: () {
+                    Get.dialog(PreviewAdDialog(ad: ads[index]));
+                  },
+                ),
+              ),
+            );
+          },
+          separatorBuilder: (context, index) => const SizedBox(height: 10),
+        ),
+      ),
+    ));
+
+    loading = false;
+    update();
+  }
+
+  void allShopPopUpAdsDialog(ShopModule shop) async {
+    loading = true;
+    update();
+
+    final ads = await FirebaseFirestoreHelper.instance
+        .getPopUpAds(forAdmin: true)
+        .then((value) =>
+            value.where((element) => element.shopUID == shop.uid).toList());
+
+    Get.dialog(Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Container(
+        width: double.infinity,
+        height: Get.context!.height * 0.8,
+        padding: const EdgeInsets.all(12.0),
+        child: ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          itemCount: ads.length,
+          itemBuilder: (context, index) {
+            return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Column(
+                children: [
+                  Image.network(
+                    ads[index].image,
+                    fit: BoxFit.cover,
+                    height: 150,
+                    width: 150,
+                  ),
+                  ListTile(
+                    title: Text(
+                      ads[index].url ?? '',
+                      textAlign: TextAlign.center,
+                    ),
+                    trailing: IconButton(
+                      onPressed: () async {
+                        await FirebaseFirestoreHelper.instance
+                            .deletePopUpAd(ads[index]);
+                        await getAllShops();
+                        Get.back();
+                      },
+                      icon: Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+          separatorBuilder: (context, index) => const SizedBox(height: 10),
+        ),
+      ),
+    ));
+
+    loading = false;
+    update();
   }
 
   @override

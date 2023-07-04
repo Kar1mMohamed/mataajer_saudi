@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,12 +8,17 @@ import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
+import 'package:mataajer_saudi/app/data/modules/tap/tap_charge_req.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
+import 'package:mataajer_saudi/app/functions/payments_helper.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
+import 'package:mataajer_saudi/app/widgets/check_out_webview.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import '../../../utils/log.dart';
 
 class ShopLoginAndRegisterController extends GetxController {
   /// Usally called from the drawer
@@ -90,8 +94,8 @@ class ShopLoginAndRegisterController extends GetxController {
       //       arguments: {'isEmailVerify': true});
       // }
 
-      final userModule =
-          await FirebaseFirestoreHelper.instance.getShopModule(user.user!.uid);
+      final userModule = await FirebaseFirestoreHelper.instance
+          .getShopModule(user.user!.uid, getSubscriptions: true);
 
       print('userModule: $userModule');
 
@@ -159,6 +163,64 @@ class ShopLoginAndRegisterController extends GetxController {
         to: DateTime.now().add(Duration(days: sub.allowedDays!)),
         subscriptionUID: sub.uid!,
       );
+
+      final tapModule = TapChargeReq(
+        amount: sub.getPriceByDays,
+        description:
+            'mataajer-sa subscription for ${sub.name} - ${FirebaseAuth.instance.currentUser?.uid} - ${sub.allowedDays}',
+        currency: 'SAR',
+        customer: Customer(
+          firstName: shopNameController.text,
+          email: emailController.text,
+        ),
+      );
+
+      final paymentReqRes = await PaymentsHelper.sendRequest(tapModule);
+
+      final id = paymentReqRes['id'];
+      final redirectURL = paymentReqRes['transaction']['url'];
+
+      final paymentRes = await Get.to(
+        () => CheckoutWebview(
+          redirectURL,
+          'mataajer://m.mataajer-sa.com/success',
+          'mataajer://m.mataajer-sa.com/failed',
+          'mataajer://m.mataajer-sa.com/cancel',
+          onPaymentSuccess: (query) async {
+            log('success query: $query');
+
+            final isPaid = await PaymentsHelper.checkIFPaid(id);
+
+            if (!isPaid) {
+              KSnackBar.error('حدث خطأ ما الرجاء المحاولة مرة أخرى');
+              Get.back(result: {
+                'status': 'failed',
+              });
+              return;
+            }
+
+            Get.back(result: {
+              'status': 'success',
+              'data': query,
+            });
+          },
+          onPaymentCanceled: () {
+            Get.back(result: {
+              'status': 'canceled',
+            });
+          },
+          onPaymentFailed: () {
+            Get.back(result: {
+              'status': 'failed',
+            });
+          },
+        ),
+      ) as Map<String, dynamic>;
+
+      if (paymentRes['status'] != 'success') {
+        log('paymentReqRes: $paymentReqRes');
+        throw Exception('paymentReqRes: $paymentReqRes');
+      }
 
       await FirebaseFirestoreHelper.instance
           .addSubscription(regResponse.user!.uid, subscriptionModule);
@@ -234,8 +296,8 @@ class ShopLoginAndRegisterController extends GetxController {
       loading = true;
       update();
 
-      final shopModule =
-          await FirebaseFirestoreHelper.instance.getShopModule(currentUser.uid);
+      final shopModule = await FirebaseFirestoreHelper.instance
+          .getShopModule(currentUser.uid, getSubscriptions: true);
 
       if (shopModule.userCategory != null &&
           shopModule.userCategory!.contains('admin')) {

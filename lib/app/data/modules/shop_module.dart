@@ -2,16 +2,22 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
+import 'package:mataajer_saudi/app/functions/payments_helper.dart';
+import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
+import 'package:mataajer_saudi/app/widgets/check_out_webview.dart';
+import 'package:mataajer_saudi/utils/ksnackbar.dart';
 
 import '../../modules/ChooseSubscription/views/choose_subscription_view.dart';
 import 'choose_subscription_module.dart';
+import 'tap/tap_charge_req.dart';
 
 class ShopModule {
   String? uid;
@@ -53,7 +59,7 @@ class ShopModule {
     return isExpired(lastSub.from, lastSub.to);
   }
 
-  bool isExpired(DateTime from, DateTime to) {
+  static bool isExpired(DateTime from, DateTime to) {
     final now = DateTime.now();
     return now.isBefore(from) || now.isAfter(to);
   }
@@ -96,7 +102,39 @@ class ShopModule {
     return isSubscriptionCanSendNotification ?? false;
   }
 
+  int get remainingDaysForSubscription {
+    if (subscriptions == null || subscriptions!.isEmpty) {
+      log('subscriptions is null or empty');
+      return 0;
+    }
+
+    final lastSub = subscriptions!.last;
+    if (isExpired(lastSub.from, lastSub.to)) {
+      log('subscription is expired');
+      return 0;
+    }
+
+    final lastSubscriptionUID = lastSub.subscriptionUID;
+    final subscription = MainSettingsController.find.subscriptions
+        .firstWhereOrNull((element) => element.uid == lastSubscriptionUID);
+
+    if (subscription == null || subscription.allowedDays == null) {
+      log('subscription is null');
+      return 0;
+    }
+
+    return subscription.allowedDays! -
+        DateTime.now().difference(lastSub.from).inDays;
+  }
+
+  DateTime get validTill =>
+      DateTime.now().add(Duration(days: remainingDaysForSubscription));
+
   Future<ChooseSubscriptionModule?> renewSubscription() async {
+    if (FirebaseAuth.instance.currentUser == null) {
+      KSnackBar.error('عقواً برجاء التأكد من تسجيل الدخول');
+      return null;
+    }
     try {
       final res = await Get.dialog(
         ChooseSubscriptionView(),
@@ -104,8 +142,69 @@ class ShopModule {
       );
 
       if (res is Map && res['status'] == 'success') {
+        Get.dialog(MataajerTheme.loadingWidget, barrierDismissible: false);
         log('res from sub: $res');
         final resData = res['data'] as ChooseSubscriptionModule;
+
+        final tapModule = TapChargeReq(
+          amount: resData.getPriceByDays,
+          description:
+              'mataajer-sa subscription for ${resData.name} - ${FirebaseAuth.instance.currentUser?.uid} - ${resData.allowedDays}',
+          currency: 'SAR',
+          customer: Customer(
+            firstName: name,
+            email: email,
+          ),
+        );
+
+        final paymentReqRes = await PaymentsHelper.sendRequest(tapModule);
+
+        final id = paymentReqRes['id'];
+        final redirectURL = paymentReqRes['transaction']['url'];
+
+        Get.back();
+
+        final paymentRes = await Get.to(
+          () => CheckoutWebview(
+            redirectURL,
+            'mataajer://m.mataajer-sa.com/success',
+            'mataajer://m.mataajer-sa.com/failed',
+            'mataajer://m.mataajer-sa.com/cancel',
+            onPaymentSuccess: (query) async {
+              log('success query: $query');
+
+              final isPaid = await PaymentsHelper.checkIFPaid(id);
+
+              if (!isPaid) {
+                KSnackBar.error('حدث خطأ ما الرجاء المحاولة مرة أخرى');
+                Get.back(result: {
+                  'status': 'failed',
+                });
+                return;
+              }
+
+              Get.back(result: {
+                'status': 'success',
+                'data': query,
+              });
+            },
+            onPaymentCanceled: () {
+              Get.back(result: {
+                'status': 'canceled',
+              });
+            },
+            onPaymentFailed: () {
+              Get.back(result: {
+                'status': 'failed',
+              });
+            },
+          ),
+        ) as Map<String, dynamic>;
+
+        if (paymentRes['status'] != 'success') {
+          log('paymentReqRes: $paymentReqRes');
+          throw Exception('paymentReqRes: $paymentReqRes');
+        }
 
         await FirebaseFirestoreHelper.instance.addSubscription(
           uid!,
@@ -145,6 +244,63 @@ class ShopModule {
       log('updated visibility $isVisible for all ads $uid');
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<void> renewAllAdsAndPopUps() async {
+    await getSubscriptions();
+    try {
+      final newAllowedDays = remainingDaysForSubscription;
+
+      final ads = await FirebaseFirestore.instance
+          .collection('ads')
+          .where('shopUID', isEqualTo: uid)
+          .get();
+
+      final popUpAds = await FirebaseFirestore.instance
+          .collection('popUpAds')
+          .where('shopUID', isEqualTo: uid)
+          .get();
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      for (var e in ads.docs) {
+        log('update visible for ad ${e.id}');
+        batch.update(e.reference, {
+          'isVisible': true,
+          'validTill': DateTime.now().add(Duration(days: newAllowedDays)),
+        });
+      }
+
+      for (var e in popUpAds.docs) {
+        log('update visible for popUpAd ${e.id}');
+        batch.update(e.reference, {
+          'isVisible': true,
+          'validTill': DateTime.now().add(Duration(days: newAllowedDays)),
+        });
+      }
+
+      await batch.commit();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  /// GET SUBSCRIPTIONS FROM FIREBASE
+  Future<void> getSubscriptions() async {
+    try {
+      final subscriptions = await FirebaseFirestore.instance
+          .collection('shops')
+          .doc(uid)
+          .collection('subscriptions')
+          .get()
+          .then((value) => value.docs
+              .map((e) => SubscriptionModule.fromMap(e.data()))
+              .toList());
+
+      this.subscriptions = subscriptions;
+    } catch (e) {
+      print(e);
     }
   }
 

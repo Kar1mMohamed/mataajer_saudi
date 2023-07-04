@@ -9,6 +9,8 @@ import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/database/notification.dart';
 
+import '../data/modules/pop_up_ad_module.dart';
+
 class FirebaseFirestoreHelper {
   FirebaseFirestoreHelper._();
 
@@ -25,7 +27,7 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<ShopModule> getShopModule(String uid) async {
+  Future<ShopModule> getShopModule(String uid, {bool? getSubscriptions}) async {
     try {
       final profile = await FirebaseFirestore.instance
           .collection('shops')
@@ -33,22 +35,15 @@ class FirebaseFirestoreHelper {
           .get()
           .then((value) => ShopModule.fromMap(value.data()!, uid));
 
-      final subscriptions = await FirebaseFirestore.instance
-          .collection('shops')
-          .doc(uid)
-          .collection('subscriptions')
-          .get()
-          .then((value) => value.docs
-              .map((e) => SubscriptionModule.fromMap(e.data()))
-              .toList());
-
-      profile.subscriptions = subscriptions;
+      if ((getSubscriptions ?? false)) {
+        await profile.getSubscriptions();
+      }
 
       log('profile: ${profile.toJson()}');
 
       return profile;
     } catch (e) {
-      print(e);
+      log(e);
       rethrow;
     }
   }
@@ -64,7 +59,7 @@ class FirebaseFirestoreHelper {
 
       log('add subscription to $userUID, ${subModule.toJson()}');
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 
@@ -83,7 +78,7 @@ class FirebaseFirestoreHelper {
     try {
       await FirebaseFirestore.instance.collection('ads').add(module.toMap());
     } catch (e) {
-      print(e);
+      log(e);
       Get.defaultDialog(
         title: 'خطأ',
         middleText: "حدث خطأ أثناء إضافة المتجر",
@@ -91,23 +86,78 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<List<AdModule>> getAds() async {
+  Future<List<AdModule>> getAds({bool? forAdmin}) async {
+    forAdmin ??= false;
+
     try {
-      final ads = await FirebaseFirestore.instance
-          .collection('ads')
-          .where('isVisible', isEqualTo: true)
-          .where('validTill',
-              isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
-          .get()
-          .then((value) => value.docs
-              .map((e) => AdModule.fromMap(e.data()..['uid'] = e.id))
-              .toList());
+      final collection = FirebaseFirestore.instance.collection('ads');
 
-      log('ads: ${ads.length}');
+      if (forAdmin) {
+        final ads = await collection.get().then((value) => value.docs
+            .map((e) => AdModule.fromMap(e.data()..['uid'] = e.id))
+            .toList());
 
-      return ads;
+        log('ads: ${ads.length}');
+
+        return ads;
+      } else {
+        final ads = await collection
+            .where('isVisible', isEqualTo: true)
+            .where('validTill',
+                isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
+            .get()
+            .then((value) => value.docs
+                .map((e) => AdModule.fromMap(e.data()..['uid'] = e.id))
+                .toList());
+
+        log('ads: ${ads.length}');
+
+        return ads;
+      }
+    } catch (e) {
+      log(e);
+      rethrow;
+    }
+  }
+
+  Future<void> addOffer(AdModule ad) async {
+    try {
+      await FirebaseFirestore.instance.collection('offers').add(ad.toMap());
     } catch (e) {
       print(e);
+    }
+  }
+
+  Future<List<AdModule>> getOffers({bool? forAdmin}) async {
+    forAdmin ??= false;
+
+    try {
+      final collection = FirebaseFirestore.instance.collection('offers');
+
+      if (forAdmin) {
+        final ads = await collection.get().then((value) => value.docs
+            .map((e) => AdModule.fromMap(e.data()..['uid'] = e.id))
+            .toList());
+
+        log('offers: ${ads.length}');
+
+        return ads;
+      } else {
+        final ads = await collection
+            .where('isVisible', isEqualTo: true)
+            .where('validTill',
+                isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
+            .get()
+            .then((value) => value.docs
+                .map((e) => AdModule.fromMap(e.data()..['uid'] = e.id))
+                .toList());
+
+        log('offers: ${ads.length}');
+
+        return ads;
+      }
+    } catch (e) {
+      log(e);
       rethrow;
     }
   }
@@ -125,7 +175,7 @@ class FirebaseFirestoreHelper {
 
       return shops;
     } catch (e) {
-      print(e);
+      log(e);
       rethrow;
     }
   }
@@ -139,7 +189,7 @@ class FirebaseFirestoreHelper {
 
       log('hit added $adUID');
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 
@@ -176,7 +226,7 @@ class FirebaseFirestoreHelper {
         CloudMessaging.sentData['docUID'] = res.id;
       }
     } catch (e) {
-      print(e);
+      log(e);
       rethrow;
     }
   }
@@ -206,7 +256,7 @@ class FirebaseFirestoreHelper {
           .collection('notifications')
           .add(module.toMap());
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 
@@ -220,7 +270,7 @@ class FirebaseFirestoreHelper {
 
       return tokens;
     } catch (e) {
-      print(e);
+      log(e);
       rethrow;
     }
   }
@@ -232,7 +282,7 @@ class FirebaseFirestoreHelper {
           .doc(module.uid)
           .update({'isVisible': module.isVisible});
     } catch (e) {
-      print(e);
+      log(e);
       rethrow;
     }
   }
@@ -244,7 +294,7 @@ class FirebaseFirestoreHelper {
           .doc(module.uid)
           .delete();
     } catch (e) {
-      print(e);
+      log(e);
       rethrow;
     }
   }
@@ -258,6 +308,17 @@ class FirebaseFirestoreHelper {
           .collection('notifications')
           .doc(module.docUID)
           .delete();
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  Future<void> deleteAd(AdModule ad) async {
+    try {
+      if (ad.uid == null) {
+        throw 'docUID is null';
+      }
+      await FirebaseFirestore.instance.collection('ads').doc(ad.uid).delete();
     } catch (e) {
       log(e);
     }
@@ -286,6 +347,61 @@ class FirebaseFirestoreHelper {
           .collection('notifications')
           .doc(module.docUID)
           .update({'isActive': true});
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  Future<void> addPopUpAd(PopUpAdModule ad) async {
+    try {
+      await FirebaseFirestore.instance.collection('pop_up_ads').add(ad.toMap());
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  Future<List<PopUpAdModule>> getPopUpAds({bool? forAdmin}) async {
+    forAdmin ??= false;
+    try {
+      final collection = FirebaseFirestore.instance.collection('pop_up_ads');
+
+      if (forAdmin) {
+        final ads = await collection.get().then((value) => value.docs
+            .map((e) => PopUpAdModule.fromMap(e.data(), uid: e.id))
+            .toList());
+
+        log('popup ads: ${ads.length}');
+
+        return ads;
+      } else {
+        final ads = await collection
+            .where('isVisible', isEqualTo: true)
+            .where('validTill',
+                isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
+            .get()
+            .then((value) => value.docs
+                .map((e) => PopUpAdModule.fromMap(e.data(), uid: e.id))
+                .toList());
+
+        log('popup ads: ${ads.length}');
+
+        return ads;
+      }
+    } catch (e) {
+      log(e);
+      throw e.toString();
+    }
+  }
+
+  Future<void> deletePopUpAd(PopUpAdModule ad) async {
+    try {
+      if (ad.uid == null) {
+        throw 'docUID is null';
+      }
+      await FirebaseFirestore.instance
+          .collection('pop_up_ads')
+          .doc(ad.uid)
+          .delete();
     } catch (e) {
       log(e);
     }
