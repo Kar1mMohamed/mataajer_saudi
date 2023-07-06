@@ -19,15 +19,14 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
     return Scaffold(
       appBar: appBar(),
       backgroundColor: const Color(0xFFF5F5F5),
-      drawer: const MyDrawer(ads: [], isShop: false, isAdmin: true),
+      drawer: const MyDrawer(shops: [], isShop: false, isAdmin: true),
       body: GetBuilder<AdminActiveUsersController>(builder: (_) {
         return Column(
           children: [
-            SizedBox(height: 20.h),
+            SizedBox(height: 10.h),
             _switchButtons(),
-            SizedBox(height: 20.h),
+            SizedBox(height: 10.h),
             _search(),
-            SizedBox(height: 5.h),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
@@ -97,6 +96,8 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
   }
 
   Widget _shopCard(ShopModule shop, int indedx) {
+    bool isHasUnVisiblePopUpAds = controller.isHasUnVisiblePopUpAds(shop);
+    bool isHasUnVisibleOffers = controller.isHasUnVisibleOffers(shop);
     return InkWell(
       onTap: () async {
         await Get.toNamed(Routes.SHOP_ACCOUNT, arguments: shop);
@@ -161,17 +162,75 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
                   ),
                 ],
               ),
-              RoundedButton(
-                text: 'كل الاعلانات',
-                press: () => controller.allShopAdsDialog(shop),
-                verticalPadding: 0,
-                verticalMargin: 5,
+              Stack(
+                children: [
+                  RoundedButton(
+                    text: 'كل الاعلانات المنبثقة',
+                    press: () => controller.allShopPopUpAdsDialog(shop),
+                    verticalPadding: 0,
+                    verticalMargin: 5,
+                  ),
+                  if (isHasUnVisiblePopUpAds)
+                    Builder(builder: (context) {
+                      int length = controller.noOfUnVisiblePopUpAds(shop);
+                      return Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Container(
+                            height: 30.h,
+                            width: 30.w,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10.w, vertical: 6.h),
+                            decoration: BoxDecoration(
+                              color: MataajerTheme.mainColor,
+                              borderRadius: BorderRadius.circular(50.r),
+                            ),
+                            child: Text(
+                              '$length',
+                              style: TextStyle(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            )),
+                      );
+                    }),
+                ],
               ),
-              RoundedButton(
-                text: 'كل الاعلانات المنبثقة',
-                press: () => controller.allShopPopUpAdsDialog(shop),
-                verticalPadding: 0,
-                verticalMargin: 5,
+              Stack(
+                children: [
+                  RoundedButton(
+                    text: 'كل العروض',
+                    press: () => controller.allOffersDialog(shop),
+                    verticalPadding: 0,
+                    verticalMargin: 5,
+                  ),
+                  if (isHasUnVisibleOffers)
+                    Builder(builder: (context) {
+                      int length = controller.noOfUnVisibleOffers(shop);
+                      return Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Container(
+                            height: 30.h,
+                            width: 30.w,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10.w, vertical: 6.h),
+                            decoration: BoxDecoration(
+                              color: MataajerTheme.mainColor,
+                              borderRadius: BorderRadius.circular(50.r),
+                            ),
+                            child: Text(
+                              '$length',
+                              style: TextStyle(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                            )),
+                      );
+                    }),
+                ],
               ),
             ],
           ),

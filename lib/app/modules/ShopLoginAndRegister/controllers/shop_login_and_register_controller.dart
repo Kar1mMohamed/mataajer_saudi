@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -225,6 +226,12 @@ class ShopLoginAndRegisterController extends GetxController {
       await FirebaseFirestoreHelper.instance
           .addSubscription(regResponse.user!.uid, subscriptionModule);
 
+      final finalShopModule = await FirebaseFirestoreHelper.instance
+          .getShopModule(regResponse.user!.uid);
+
+      await finalShopModule.updateValidTill();
+      await finalShopModule.updatePrivileges();
+
       await Get.offAndToNamed(Routes.RESET_PASSWORD,
           arguments: {'isEmailVerify': true});
     } on FirebaseAuthException catch (e) {
@@ -321,9 +328,9 @@ class ShopLoginAndRegisterController extends GetxController {
       changePageIndex(1);
     }
 
-    // if (kDebugMode) {
-    loginEmailController.text = 'karimo741852@gmail.com';
-    loginPasswordController.text = 'karim123';
-    // }
+    if (kDebugMode) {
+      loginEmailController.text = 'karimo741852@gmail.com';
+      loginPasswordController.text = 'karim123';
+    }
   }
 }

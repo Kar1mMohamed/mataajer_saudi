@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_notification_controller.dart';
+import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
+import 'package:mataajer_saudi/app/data/modules/pop_up_ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/loading_image.dart';
 import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
 
@@ -19,6 +22,9 @@ class AdminActiveUsersController extends GetxController {
 
   List<ShopModule> allShops = [];
   List<ShopModule> activeShops = [];
+
+  List<PopUpAdModule> allPopUpAds = [];
+  List<AdModule> offers = [];
 
   bool get isCurrentPageAllShops => pageIndex == 0;
 
@@ -40,11 +46,17 @@ class AdminActiveUsersController extends GetxController {
     loading = true;
     updateAllShops();
     try {
-      final shopsList = await FirebaseFirestoreHelper.instance.getShops();
+      final shopsList =
+          await FirebaseFirestoreHelper.instance.getShops(forAdmin: true);
       allShops = shopsList;
+
+      await getAllPopUpAds();
+      await getAllOffers();
     } catch (e) {
       print(e);
     } finally {
+      sortShops();
+
       loading = false;
       updateAllShops();
     }
@@ -54,7 +66,8 @@ class AdminActiveUsersController extends GetxController {
     loading = true;
     updateActiveShops();
     try {
-      final shopsList = await FirebaseFirestoreHelper.instance.getShops();
+      final shopsList =
+          await FirebaseFirestoreHelper.instance.getShops(forAdmin: true);
       activeShops = shopsList.where((element) => element.isVisible!).toList();
     } catch (e) {
       print(e);
@@ -134,10 +147,10 @@ class AdminActiveUsersController extends GetxController {
     loading = true;
     update();
 
-    final ads = await FirebaseFirestoreHelper.instance
-        .getAds(forAdmin: true)
+    final shops = await FirebaseFirestoreHelper.instance
+        .getShops(forAdmin: true)
         .then((value) =>
-            value.where((element) => element.shopUID == shop.uid).toList());
+            value.where((element) => element.uid == shop.uid).toList());
 
     Get.dialog(Dialog(
       shape: RoundedRectangleBorder(
@@ -149,7 +162,7 @@ class AdminActiveUsersController extends GetxController {
         padding: const EdgeInsets.all(12.0),
         child: ListView.separated(
           physics: const BouncingScrollPhysics(),
-          itemCount: ads.length,
+          itemCount: shops.length,
           itemBuilder: (context, index) {
             return Container(
               decoration: BoxDecoration(
@@ -157,11 +170,12 @@ class AdminActiveUsersController extends GetxController {
                 border: Border.all(color: Colors.grey.shade300),
               ),
               child: ListTile(
-                title: Text(ads[index].cuponCode ?? ''),
-                subtitle: Text(ads[index].description),
+                title: Text(shops[index].cuponCode ?? ''),
+                subtitle: Text(shops[index].description),
                 trailing: IconButton(
                   onPressed: () async {
-                    await FirebaseFirestoreHelper.instance.deleteAd(ads[index]);
+                    await FirebaseFirestoreHelper.instance
+                        .deleteShop(shops[index]);
                     await getAllShops();
                     Get.back();
                   },
@@ -173,7 +187,7 @@ class AdminActiveUsersController extends GetxController {
                 leading: IconButton(
                   icon: Icon(Icons.info),
                   onPressed: () {
-                    Get.dialog(PreviewAdDialog(ad: ads[index]));
+                    Get.dialog(PreviewShopDialog(shop: shops[index]));
                   },
                 ),
               ),
@@ -205,29 +219,54 @@ class AdminActiveUsersController extends GetxController {
         width: double.infinity,
         height: Get.context!.height * 0.8,
         padding: const EdgeInsets.all(12.0),
-        child: ListView.separated(
-          physics: const BouncingScrollPhysics(),
-          itemCount: ads.length,
-          itemBuilder: (context, index) {
-            return Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: Column(
-                children: [
-                  Image.network(
-                    ads[index].image,
-                    fit: BoxFit.cover,
-                    height: 150,
-                    width: 150,
-                  ),
-                  ListTile(
-                    title: Text(
+        child: Builder(builder: (context) {
+          if (ads.isEmpty) {
+            return const Center(
+              child: Text('لا يوجد اعلانات'),
+            );
+          }
+          return ListView.separated(
+            physics: const BouncingScrollPhysics(),
+            itemCount: ads.length,
+            itemBuilder: (context, index) {
+              return Container(
+                padding: const EdgeInsets.all(12.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Get.dialog(
+                          Dialog(
+                            child: SizedBox(
+                              width: 300.w,
+                              height: 300.h,
+                              child: LoadingImage(
+                                src: ads[index].image,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      child: CircleAvatar(
+                        radius: 25.r,
+                        backgroundImage: NetworkImage(
+                          ads[index].image,
+                          // fit: BoxFit.cover,
+                          // height: 150,
+                          // width: 150,
+                        ),
+                      ),
+                    ),
+                    Text(
                       ads[index].url ?? '',
                       textAlign: TextAlign.center,
                     ),
-                    trailing: IconButton(
+                    IconButton(
                       onPressed: () async {
                         await FirebaseFirestoreHelper.instance
                             .deletePopUpAd(ads[index]);
@@ -239,13 +278,27 @@ class AdminActiveUsersController extends GetxController {
                         color: Colors.red,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
-          separatorBuilder: (context, index) => const SizedBox(height: 10),
-        ),
+                    if (!(ads[index].isVisible ?? false))
+                      IconButton(
+                        onPressed: () async {
+                          await FirebaseFirestoreHelper.instance
+                              .updatePopUpAdVisibility(
+                                  ads[index]..isVisible = true);
+                          await getAllShops();
+                          Get.back();
+                        },
+                        icon: Icon(
+                          Icons.check,
+                          color: Colors.green,
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+            separatorBuilder: (context, index) => const SizedBox(height: 10),
+          );
+        }),
       ),
     ));
 
@@ -253,9 +306,161 @@ class AdminActiveUsersController extends GetxController {
     update();
   }
 
+  void allOffersDialog(ShopModule shop) async {
+    loading = true;
+    update();
+
+    final offers = await FirebaseFirestoreHelper.instance
+        .getOffers(forAdmin: true)
+        .then((value) =>
+            value.where((element) => element.shopUID == shop.uid).toList());
+
+    Get.dialog(Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Container(
+        width: double.infinity,
+        height: Get.context!.height * 0.8,
+        padding: const EdgeInsets.all(12.0),
+        child: Builder(builder: (context) {
+          if (offers.isEmpty) {
+            return const Center(
+              child: Text('لا يوجد عروض'),
+            );
+          }
+          return ListView.separated(
+            physics: const BouncingScrollPhysics(),
+            itemCount: offers.length,
+            itemBuilder: (context, index) {
+              return Container(
+                padding: const EdgeInsets.all(12.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Get.to(() => PreviewShopDialog(shop: shop));
+                      },
+                      child: CircleAvatar(
+                        radius: 25.r,
+                        backgroundImage: NetworkImage(
+                          offers[index].imageURL,
+                          // fit: BoxFit.cover,
+                          // height: 150,
+                          // width: 150,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      offers[index].name,
+                      textAlign: TextAlign.center,
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        await FirebaseFirestoreHelper.instance
+                            .deleteOffer(offers[index]);
+                        await getAllShops();
+                        Get.back();
+                      },
+                      icon: Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                      ),
+                    ),
+                    if (!(offers[index].isVisible ?? false))
+                      IconButton(
+                        onPressed: () async {
+                          await FirebaseFirestoreHelper.instance
+                              .updateOfferVisibility(
+                                  offers[index]..isVisible = true);
+                          await getAllShops();
+                          Get.back();
+                        },
+                        icon: Icon(
+                          Icons.check,
+                          color: Colors.green,
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+            separatorBuilder: (context, index) => const SizedBox(height: 10),
+          );
+        }),
+      ),
+    ));
+
+    loading = false;
+    update();
+  }
+
+  Future<void> getAllPopUpAds() async {
+    try {
+      final popUpAdsList =
+          await FirebaseFirestoreHelper.instance.getPopUpAds(forAdmin: true);
+      allPopUpAds = popUpAdsList;
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  Future<void> getAllOffers() async {
+    try {
+      final offersList =
+          await FirebaseFirestoreHelper.instance.getOffers(forAdmin: true);
+      offers = offersList;
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  bool isHasUnVisiblePopUpAds(ShopModule shop) {
+    final ads =
+        allPopUpAds.where((element) => element.shopUID == shop.uid).toList();
+    return ads.any((element) => !(element.isVisible ?? false));
+  }
+
+  int noOfUnVisiblePopUpAds(ShopModule shop) {
+    final ads =
+        allPopUpAds.where((element) => element.shopUID == shop.uid).toList();
+    return ads.where((element) => !(element.isVisible ?? false)).length;
+  }
+
+  bool isHasUnVisibleOffers(ShopModule shop) {
+    final filteredOffers =
+        offers.where((element) => element.shopUID == shop.uid).toList();
+    return filteredOffers.any((element) => !(element.isVisible ?? false));
+  }
+
+  int noOfUnVisibleOffers(ShopModule shop) {
+    final filteredOffers =
+        offers.where((element) => element.shopUID == shop.uid).toList();
+    return filteredOffers
+        .where((element) => !(element.isVisible ?? false))
+        .length;
+  }
+
+  void sortShops() {
+    // Shops with unvisible offers and pop up ads will be first
+    allShops.sort((a, b) =>
+        noOfUnVisibleOffers(b).compareTo(noOfUnVisibleOffers(a)) +
+        noOfUnVisiblePopUpAds(b).compareTo(noOfUnVisiblePopUpAds(a)));
+
+    activeShops.sort((a, b) =>
+        noOfUnVisibleOffers(b).compareTo(noOfUnVisibleOffers(a)) +
+        noOfUnVisiblePopUpAds(b).compareTo(noOfUnVisiblePopUpAds(a)));
+  }
+
   @override
   void onInit() async {
     await getAllShops();
+
     super.onInit();
   }
 }

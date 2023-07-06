@@ -17,7 +17,7 @@ class AddPopupAdView extends GetView<AddPopupAdController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: appBar(),
-      drawer: const MyDrawer(ads: [], isShop: true),
+      drawer: const MyDrawer(shops: [], isShop: true),
       body: GetBuilder<AddPopupAdController>(builder: (_) {
         if (controller.loading) {
           return MataajerTheme.loadingWidget;

@@ -104,9 +104,9 @@ class ShopAccountController extends GetxController {
         isVisible: isVisible,
       );
 
-      if (currentShop!.isVisible != module.isVisible) {
-        await currentShop!.changeAllAdsVisibility(isVisible);
-      }
+      // if (currentShop!.isVisible != module.isVisible) {
+      //   await currentShop!.changeAllAdsVisibility(isVisible);
+      // }
 
       await FirebaseFirestoreHelper.instance.updateShop(module);
     } catch (e) {

@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
-import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
+import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
@@ -19,7 +19,7 @@ class HomeView extends GetView<HomeController> {
     return Scaffold(
       appBar: appBar(),
       backgroundColor: const Color(0xFFF5F5F5),
-      drawer: MyDrawer(ads: controller.ads, isShop: controller.isShop),
+      drawer: MyDrawer(shops: controller.shops, isShop: controller.isShop),
       body: SingleChildScrollView(
         child: GetBuilder<HomeController>(builder: (_) {
           return Column(
@@ -170,18 +170,19 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _ads() {
-    List<AdModule> staticAds =
-        controller.ads.where((element) => element.isStaticAd ?? false).toList();
+    List<ShopModule> staticAds = controller.shops
+        .where((element) => element.isStaticAd ?? false)
+        .toList();
 
-    List<AdModule> mostViewed = [];
-    mostViewed.addAll(controller.ads);
+    List<ShopModule> mostViewed = [];
+    mostViewed.addAll(controller.shops);
     mostViewed.sort((a, b) => (b.hits ?? 0).compareTo(a.hits ?? 0));
 
-    List<AdModule> mostOffers =
-        controller.ads.where((element) => element.isMostOffers).toList();
+    List<ShopModule> mostOffers =
+        controller.shops.where((element) => element.isMostOffers).toList();
 
-    List<AdModule> others =
-        controller.ads.where((element) => element.isOtherAd).toList();
+    List<ShopModule> others =
+        controller.shops.where((element) => element.isOtherAd).toList();
 
     return Column(
       children: [
@@ -328,9 +329,9 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _adCard(AdModule ad) {
+  Widget _adCard(ShopModule shop) {
     return GetBuilder<HomeController>(
-        id: 'shopCard-${ad.uid}',
+        id: 'shopCard-${shop.uid}',
         builder: (_) {
           if (controller.adsLoading) {
             return Container(
@@ -343,14 +344,14 @@ class HomeView extends GetView<HomeController> {
               ),
             );
           }
-          bool isLoved = controller.favAds.contains(ad);
-          String categoryString = ad.categories.first.name;
+          bool isLoved = controller.favShops.contains(shop);
+          String categoryString = shop.categories.first.name;
           return InkWell(
             focusColor: Colors.transparent,
             highlightColor: Colors.transparent,
             hoverColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: () => Get.dialog(PreviewAdDialog(ad: ad)),
+            onTap: () => Get.dialog(PreviewShopDialog(shop: shop)),
             child: Container(
               padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
               margin:
@@ -374,8 +375,8 @@ class HomeView extends GetView<HomeController> {
                       hoverColor: Colors.transparent,
                       splashColor: Colors.transparent,
                       onTap: () {
-                        controller.updateLoveState(ad);
-                        print('loved ${ad.uid}');
+                        controller.updateLoveState(shop);
+                        print('loved ${shop.uid}');
                       },
                       child: Icon(
                         Icons.favorite,
@@ -394,7 +395,7 @@ class HomeView extends GetView<HomeController> {
                       children: [
                         CircleAvatar(
                           radius: 40.r,
-                          backgroundImage: NetworkImage(ad.imageURL),
+                          backgroundImage: NetworkImage(shop.image),
                           backgroundColor: Colors.transparent,
                         ),
                         SizedBox(height: 10.h),
@@ -407,7 +408,7 @@ class HomeView extends GetView<HomeController> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    ad.name,
+                                    shop.name,
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 13.sp,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
+import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/loading_image.dart';
@@ -40,7 +41,7 @@ class FavoritesView extends GetView<FavoritesController> {
                   ),
                   scrollDirection: Axis.vertical,
                   itemBuilder: (context, index) =>
-                      _favoriteCard(controller.favs[index]),
+                      _favoriteCard(controller.shops[index]),
                 );
               }),
             ),
@@ -50,11 +51,11 @@ class FavoritesView extends GetView<FavoritesController> {
     );
   }
 
-  Widget _favoriteCard(AdModule ad) {
-    bool isLoved = controller.favs.contains(ad);
-    String categoryString = ad.categories.first.name;
+  Widget _favoriteCard(ShopModule shop) {
+    bool isLoved = controller.favs.contains(shop);
+    String categoryString = shop.categories.first.name;
     return InkWell(
-      onTap: () => Get.dialog(PreviewAdDialog(ad: ad)),
+      onTap: () => Get.dialog(PreviewShopDialog(shop: shop)),
       child: Container(
         padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
         margin: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp, bottom: 5.0.sp),
@@ -73,7 +74,7 @@ class FavoritesView extends GetView<FavoritesController> {
               left: 5,
               child: InkWell(
                 onTap: () {
-                  controller.updateLoveState(ad);
+                  controller.updateLoveState(shop);
                 },
                 child: Icon(
                   Icons.favorite,
@@ -89,7 +90,7 @@ class FavoritesView extends GetView<FavoritesController> {
                 children: [
                   CircleAvatar(
                     radius: 40.r,
-                    backgroundImage: NetworkImage(ad.imageURL),
+                    backgroundImage: NetworkImage(shop.image),
                     backgroundColor: Colors.transparent,
                   ),
                   SizedBox(height: 10.h),
@@ -101,7 +102,7 @@ class FavoritesView extends GetView<FavoritesController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            ad.name,
+                            shop.name,
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 12.sp,

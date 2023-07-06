@@ -1,6 +1,4 @@
 import 'dart:developer';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +10,7 @@ import 'package:mataajer_saudi/app/controllers/main_notification_controller.dart
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_popup_ads_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
-import 'package:mataajer_saudi/app/data/modules/pop_up_ad_module.dart';
 import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
-import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
-import 'package:mataajer_saudi/app/widgets/check_out_webview.dart';
 import 'package:mataajer_saudi/database/helper/hive_helper.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/translation/tr.dart';

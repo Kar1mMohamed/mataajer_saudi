@@ -70,7 +70,7 @@ class PopUpAdModule {
       'description': description,
       'image': image,
       'isVisible': isVisible,
-      'validTill': validTill?.millisecondsSinceEpoch,
+      'validTill': validTill != null ? Timestamp.fromDate(validTill!) : null,
       'url': url,
       'shopUID': shopUID,
       'hits': hits,

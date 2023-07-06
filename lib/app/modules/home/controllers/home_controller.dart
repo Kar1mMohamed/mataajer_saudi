@@ -28,31 +28,35 @@ class HomeController extends GetxController {
   bool loading = false;
   bool adsLoading = false;
 
-  List<AdModule> get _dumpAds => List.generate(
-        10,
-        (index) => AdModule(
-          uid: 'uid$index',
-          name: 'name$index',
-          hits: index,
-          categoryUIDs: [
-            if (index > 5) '6jXOqpwqxoaNmisfCY9m',
-            '6soK9jRZO6S4fdBtB9FM',
-            if (index.isEven) '9gPMKnAALDoL5vyYdebd',
-            if (index.isOdd) 'ChSXe5tp6ZS96fKoaU2j',
-            if (index < 5) 'OQA7tqLMtz1z7p3kWMvO',
-            'TZ1qFoDmlzzs1APOmO5f'
-          ],
-          description: 'description$index',
-          imageURL:
-              'https://c8.alamy.com/comp/H3D3H0/small-indian-shop-sells-merchandise-per-single-unit-H3D3H0.jpg',
-          validTill: DateTime.now().add(Duration(days: index)),
-        ),
-      );
+  // List<AdModule> get _dumpAds => List.generate(
+  //       10,
+  //       (index) => AdModule(
+  //         uid: 'uid$index',
+  //         name: 'name$index',
+  //         hits: index,
+  //         categoryUIDs: [
+  //           if (index > 5) '6jXOqpwqxoaNmisfCY9m',
+  //           '6soK9jRZO6S4fdBtB9FM',
+  //           if (index.isEven) '9gPMKnAALDoL5vyYdebd',
+  //           if (index.isOdd) 'ChSXe5tp6ZS96fKoaU2j',
+  //           if (index < 5) 'OQA7tqLMtz1z7p3kWMvO',
+  //           'TZ1qFoDmlzzs1APOmO5f'
+  //         ],
+  //         description: 'description$index',
+  //         imageURL:
+  //             'https://c8.alamy.com/comp/H3D3H0/small-indian-shop-sells-merchandise-per-single-unit-H3D3H0.jpg',
+  //         validTill: DateTime.now().add(Duration(days: index)),
+  //       ),
+  //     );
 
   ///
-  List<AdModule> _ads = <AdModule>[];
+  // List<AdModule> _ads = <AdModule>[];
 
-  List<AdModule> ads = <AdModule>[];
+  // List<AdModule> ads = <AdModule>[];
+
+  List<ShopModule> _shops = <ShopModule>[];
+
+  List<ShopModule> shops = <ShopModule>[];
 
   List<AdModule> _offers = <AdModule>[];
 
@@ -60,20 +64,38 @@ class HomeController extends GetxController {
 
   ///
 
-  List<AdModule> get favAds => mainAccountController.getFavAds(_ads);
+  // List<AdModule> get favAds => mainAccountController.getFavAds(_ads);
 
-  Future<void> getAds() async {
+  List<ShopModule> get favShops => mainAccountController.getFavShops(_shops);
+
+  // Future<void> getAds() async {
+  //   try {
+  //     adsLoading = true;
+  //     update(['all-ads']);
+  //     final adsList = await FirebaseFirestoreHelper.instance.getAds();
+  //     _ads = adsList;
+  //     // _ads.addAll(_dumpAds);
+  //     log('ads: ${_ads.length}');
+  //   } catch (e) {
+  //     print(e);
+  //   } finally {
+  //     ads = _ads;
+  //     adsLoading = false;
+  //     update(['all-ads']);
+  //   }
+  // }
+
+  Future<void> getShops() async {
     try {
       adsLoading = true;
       update(['all-ads']);
-      final adsList = await FirebaseFirestoreHelper.instance.getAds();
-      _ads = adsList;
-      // _ads.addAll(_dumpAds);
-      log('ads: ${_ads.length}');
+      final shopsList = await FirebaseFirestoreHelper.instance.getShops();
+      _shops = shopsList;
+      log('shops: ${_shops.length}');
     } catch (e) {
       print(e);
     } finally {
-      ads = _ads;
+      shops = _shops;
       adsLoading = false;
       update(['all-ads']);
     }
@@ -85,12 +107,11 @@ class HomeController extends GetxController {
       update(['all-ads']);
       final offersList = await FirebaseFirestoreHelper.instance.getOffers();
       _offers = offersList;
-      // _ads.addAll(_dumpAds);
       log('offers: ${_offers.length}');
     } catch (e) {
       print(e);
     } finally {
-      ads = _ads;
+      offers = _offers;
       adsLoading = false;
       update(['all-ads']);
     }
@@ -98,24 +119,28 @@ class HomeController extends GetxController {
 
   void changeAdsForCategory(CategoryModule categoyry) {
     if (categoyry.name == 'الكل') {
-      ads = _ads;
+      // ads = _ads;
+      shops = _shops;
     } else {
-      ads = _ads
-          .where((element) => element.categoryUIDs.contains(categoyry.uid))
+      // ads = _ads
+      shops = _shops
+          .where((element) => element.categoriesUIDs.contains(categoyry.uid))
           .toList();
     }
     update(['all-ads']);
   }
 
-  void updateLoveState(AdModule ad) {
-    log('favs: $favAds');
-    final isExistInFavs = favAds.any((e) => e.uid! == ad.uid!);
+  void updateLoveState(ShopModule shop) {
+    // log('favs: $favAds');
+    log('favShops: $favShops');
+    // final isExistInFavs = favAds.any((e) => e.uid! == ad.uid!);
+    final isExistInFavs = favShops.any((e) => e.uid == shop.uid);
     if (isExistInFavs) {
-      mainAccountController.removeAdFromFav(ad);
+      mainAccountController.removeAdFromFav(shop);
     } else {
-      mainAccountController.addAdToFav(ad);
+      mainAccountController.addAdToFav(shop);
     }
-    update(['shopCard-${ad.uid}']);
+    update(['shopCard-${shop.uid}']);
   }
 
   void updateShopCard(String shopUID) {
@@ -150,15 +175,27 @@ class HomeController extends GetxController {
   }
 
   search(String? query) {
-    searchAds(query);
+    searchShops(query);
     searchOffers(query);
   }
 
-  void searchAds(String? query) {
+  // void searchAds(String? query) {
+  //   if (query == null || query.isEmpty) {
+  //     ads = _ads;
+  //   } else {
+  //     ads = _ads
+  //         .where((element) =>
+  //             element.name.toLowerCase().contains(query.toLowerCase()))
+  //         .toList();
+  //   }
+  //   update(['all-ads']);
+  // }
+
+  void searchShops(String? query) {
     if (query == null || query.isEmpty) {
-      ads = _ads;
+      shops = _shops;
     } else {
-      ads = _ads
+      shops = _shops
           .where((element) =>
               element.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
@@ -192,7 +229,8 @@ class HomeController extends GetxController {
     if (isSignedIn) {
       await getCurrentShop();
     }
-    await getAds();
+    // await getAds();
+    await getShops();
 
     PopUpAdsFunctions.showPopUpAd();
 

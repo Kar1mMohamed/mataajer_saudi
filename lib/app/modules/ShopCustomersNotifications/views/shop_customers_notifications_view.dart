@@ -16,7 +16,7 @@ class ShopCustomersNotificationsView
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      drawer: MyDrawer(ads: const [], isShop: controller.isShop),
+      drawer: MyDrawer(shops: const [], isShop: controller.isShop),
       body: GetBuilder<ShopCustomersNotificationsController>(builder: (_) {
         if (controller.loading) {
           return MataajerTheme.loadingWidget;

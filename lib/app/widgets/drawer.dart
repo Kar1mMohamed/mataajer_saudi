@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
-import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 
+import '../data/modules/shop_module.dart';
+
 class MyDrawer extends StatelessWidget {
   const MyDrawer(
-      {super.key, required this.ads, required this.isShop, this.isAdmin});
+      {super.key, required this.shops, required this.isShop, this.isAdmin});
 
-  final List<AdModule> ads;
+  final List<ShopModule> shops;
   final bool isShop;
   final bool? isAdmin;
 
@@ -88,11 +89,11 @@ class MyDrawer extends StatelessWidget {
           'اضافة اعلان منبثق',
           route: Routes.ADD_POPUP_AD,
         ),
-        _drawerItem(
-          Assets.addAdVector,
-          'اضف اعلانك',
-          route: Routes.ADD_AD,
-        ),
+        // _drawerItem(
+        //   Assets.addAdVector,
+        //   'اضف اعلانك',
+        //   route: Routes.ADD_AD,
+        // ),
         _drawerItem(
           Assets.addAdVector,
           'اضف عرض',
@@ -128,7 +129,7 @@ class MyDrawer extends StatelessWidget {
             route: Routes.SHOP_LOGIN_AND_REGISTER,
             arguments: {'isNavigateToRegister': true}),
         _drawerItem(Assets.loveIcon, 'المتاجر المفضلة',
-            route: Routes.FAVORITES, arguments: {'ads': ads}),
+            route: Routes.FAVORITES, arguments: {'shops': shops}),
       ],
     );
   }

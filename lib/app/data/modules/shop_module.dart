@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
@@ -35,6 +36,14 @@ class ShopModule {
   List<String>? keywords = [];
   bool? isVisible;
   String? userCategory;
+  int? hits;
+  //
+  bool? isStaticAd = false;
+  bool? isTwoPopUpAdsMonthly = false;
+  bool? isFourPopUpAdsMonthly = false;
+  bool? isCanSendNotification = false;
+  DateTime? validTill;
+  //
   ShopModule({
     this.uid,
     required this.name,
@@ -51,7 +60,29 @@ class ShopModule {
     this.keywords,
     this.isVisible,
     this.userCategory,
+    this.hits,
+    this.isStaticAd,
+    this.isTwoPopUpAdsMonthly,
+    this.isFourPopUpAdsMonthly,
+    this.isCanSendNotification,
+    this.validTill,
   });
+
+  bool get isMostVisitAd {
+    return true; // Temprory true untill do it as logic
+  }
+
+  bool get isMostOffers {
+    return true; // Temprory true untill do it as logic
+  }
+
+  bool get isOtherAd {
+    if ((isStaticAd ?? false) || isMostOffers || isMostOffers) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   bool get isSubscriptionExpired {
     if (subscriptions == null || subscriptions!.isEmpty) return true;
@@ -127,8 +158,8 @@ class ShopModule {
         DateTime.now().difference(lastSub.from).inDays;
   }
 
-  DateTime get validTill =>
-      DateTime.now().add(Duration(days: remainingDaysForSubscription));
+  // DateTime get validTill =>
+  //     DateTime.now().add(Duration(days: remainingDaysForSubscription));
 
   Future<ChooseSubscriptionModule?> renewSubscription() async {
     if (FirebaseAuth.instance.currentUser == null) {
@@ -215,6 +246,9 @@ class ShopModule {
           ),
         );
 
+        await updateValidTill();
+        await updatePrivileges();
+
         return resData;
       } else {
         return null;
@@ -225,37 +259,66 @@ class ShopModule {
     }
   }
 
-  Future<void> changeAllAdsVisibility(bool isVisible) async {
+  Future<void> updatePrivileges() async {
     try {
-      final ads = await FirebaseFirestore.instance
-          .collection('ads')
-          .where('shopUID', isEqualTo: uid)
-          .get();
+      await getSubscriptions();
+      if (subscriptions == null || subscriptions!.isEmpty) return;
 
-      final batch = FirebaseFirestore.instance.batch();
+      final currentSubscription = subscriptions!.last;
 
-      for (var e in ads.docs) {
-        log('update visible for ad ${e.id}');
-        batch.update(e.reference, {'isVisible': isVisible});
-      }
+      final subscriptionSettings = MainSettingsController.find.subscriptions
+          .firstWhereOrNull(
+              (element) => element.uid == currentSubscription.subscriptionUID);
 
-      await batch.commit();
+      bool isStatic = subscriptionSettings?.isStatic ?? false;
+      bool isCanSendNotification =
+          subscriptionSettings?.isCanSendNotification ?? false;
 
-      log('updated visibility $isVisible for all ads $uid');
+      bool isFourPopUpAdsMonthly =
+          subscriptionSettings?.isFourPopUpAdsMonthly ?? false;
+
+      isStaticAd = isStatic;
+      isCanSendNotification = isCanSendNotification;
+      isFourPopUpAdsMonthly = isFourPopUpAdsMonthly;
+
+      await FirebaseFirestoreHelper.instance.updateShop(this);
     } catch (e) {
-      rethrow;
+      log(e);
     }
   }
 
+  // Future<void> changeAllAdsVisibility(bool isVisible) async {
+  //   try {
+  //     final ads = await FirebaseFirestore.instance
+  //         .collection('ads')
+  //         .where('shopUID', isEqualTo: uid)
+  //         .get();
+
+  //     final batch = FirebaseFirestore.instance.batch();
+
+  //     for (var e in ads.docs) {
+  //       log('update visible for ad ${e.id}');
+  //       batch.update(e.reference, {'isVisible': isVisible});
+  //     }
+
+  //     await batch.commit();
+
+  //     log('updated visibility $isVisible for all ads $uid');
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
+
   Future<void> renewAllAdsAndPopUps() async {
     await getSubscriptions();
+
     try {
       final newAllowedDays = remainingDaysForSubscription;
 
-      final ads = await FirebaseFirestore.instance
-          .collection('ads')
-          .where('shopUID', isEqualTo: uid)
-          .get();
+      // final ads = await FirebaseFirestore.instance
+      //     .collection('ads')
+      //     .where('shopUID', isEqualTo: uid)
+      //     .get();
 
       final popUpAds = await FirebaseFirestore.instance
           .collection('popUpAds')
@@ -264,13 +327,13 @@ class ShopModule {
 
       final batch = FirebaseFirestore.instance.batch();
 
-      for (var e in ads.docs) {
-        log('update visible for ad ${e.id}');
-        batch.update(e.reference, {
-          'isVisible': true,
-          'validTill': DateTime.now().add(Duration(days: newAllowedDays)),
-        });
-      }
+      // for (var e in ads.docs) {
+      //   log('update visible for ad ${e.id}');
+      //   batch.update(e.reference, {
+      //     'isVisible': true,
+      //     'validTill': DateTime.now().add(Duration(days: newAllowedDays)),
+      //   });
+      // }
 
       for (var e in popUpAds.docs) {
         log('update visible for popUpAd ${e.id}');
@@ -304,6 +367,20 @@ class ShopModule {
     }
   }
 
+  Future<void> updateValidTill() async {
+    try {
+      await getSubscriptions();
+
+      final newAllowedDays = remainingDaysForSubscription;
+      final validTill = DateTime.now().add(Duration(days: newAllowedDays));
+      this.validTill = validTill;
+
+      await FirebaseFirestoreHelper.instance.updateShop(this);
+    } catch (e) {
+      log('updateValidTill ${toJson()}');
+    }
+  }
+
   ShopModule copyWith({
     String? uid,
     String? name,
@@ -320,6 +397,12 @@ class ShopModule {
     List<String>? keywords,
     bool? isVisible,
     String? userCategory,
+    int? hits,
+    bool? isStaticAd,
+    bool? isTwoPopUpAdsMonthly,
+    bool? isFourPopUpAdsMonthly,
+    bool? isCanSendNotification,
+    DateTime? validTill,
   }) {
     return ShopModule(
       uid: uid ?? this.uid,
@@ -337,6 +420,14 @@ class ShopModule {
       keywords: keywords ?? this.keywords,
       isVisible: isVisible ?? this.isVisible,
       userCategory: userCategory ?? this.userCategory,
+      hits: hits ?? this.hits,
+      isStaticAd: isStaticAd ?? this.isStaticAd,
+      isTwoPopUpAdsMonthly: isTwoPopUpAdsMonthly ?? this.isTwoPopUpAdsMonthly,
+      isFourPopUpAdsMonthly:
+          isFourPopUpAdsMonthly ?? this.isFourPopUpAdsMonthly,
+      isCanSendNotification:
+          isCanSendNotification ?? this.isCanSendNotification,
+      validTill: validTill ?? this.validTill,
     );
   }
 
@@ -361,6 +452,12 @@ class ShopModule {
       'keywords': keywords,
       'isVisible': isVisible,
       if (userCategory != null) 'userCategory': userCategory,
+      'hits': hits,
+      'isStaticAd': isStaticAd,
+      'validTill': validTill,
+      'isCanSendNotification': isCanSendNotification,
+      'isTwoPopUpAdsMonthly': isTwoPopUpAdsMonthly,
+      'isFourPopUpAdsMonthly': isFourPopUpAdsMonthly,
     };
   }
 
@@ -400,6 +497,20 @@ class ShopModule {
       isVisible: map['isVisible'] != null ? map['isVisible'] as bool : false,
       userCategory:
           map['userCategory'] != null ? map['userCategory'] as String : null,
+      hits: map['hits'] != null ? map['hits'] as int : 0,
+      isStaticAd: map['isStaticAd'] != null ? map['isStaticAd'] as bool : false,
+      validTill: map['validTill'] != null
+          ? (map['validTill'] as Timestamp).toDate()
+          : null,
+      isCanSendNotification: map['isCanSendNotification'] != null
+          ? map['isCanSendNotification'] as bool
+          : false,
+      isFourPopUpAdsMonthly: map['isFourPopUpAdsMonthly'] != null
+          ? map['isFourPopUpAdsMonthly'] as bool
+          : false,
+      isTwoPopUpAdsMonthly: map['isTwoPopUpAdsMonthly'] != null
+          ? map['isTwoPopUpAdsMonthly'] as bool
+          : false,
     );
   }
 
@@ -410,7 +521,7 @@ class ShopModule {
 
   @override
   String toString() {
-    return 'ShopModule(uid: $uid, name: $name, email: $email, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions, shopLink: $shopLink, keywords: $keywords, isVisible: $isVisible, userCategory: $userCategory)';
+    return 'ShopModule(uid: $uid, name: $name, email: $email, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions, shopLink: $shopLink, keywords: $keywords, isVisible: $isVisible, userCategory: $userCategory, hits: $hits, isStaticAd: $isStaticAd, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendNotification: $isCanSendNotification, validTill: $validTill)';
   }
 
   @override
@@ -431,7 +542,13 @@ class ShopModule {
         other.shopLink == shopLink &&
         listEquals(other.keywords, keywords) &&
         other.isVisible == isVisible &&
-        other.userCategory == userCategory;
+        other.userCategory == userCategory &&
+        other.hits == hits &&
+        other.isStaticAd == isStaticAd &&
+        other.isTwoPopUpAdsMonthly == isTwoPopUpAdsMonthly &&
+        other.isFourPopUpAdsMonthly == isFourPopUpAdsMonthly &&
+        other.isCanSendNotification == isCanSendNotification &&
+        other.validTill == validTill;
   }
 
   @override
@@ -450,6 +567,12 @@ class ShopModule {
         shopLink.hashCode ^
         keywords.hashCode ^
         isVisible.hashCode ^
-        userCategory.hashCode;
+        userCategory.hashCode ^
+        hits.hashCode ^
+        isStaticAd.hashCode ^
+        isTwoPopUpAdsMonthly.hashCode ^
+        isFourPopUpAdsMonthly.hashCode ^
+        isCanSendNotification.hashCode ^
+        validTill.hashCode;
   }
 }

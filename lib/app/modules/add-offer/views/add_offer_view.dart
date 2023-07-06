@@ -17,7 +17,7 @@ class AddOfferView extends GetView<AddOfferController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: appBar(),
-      drawer: const MyDrawer(ads: [], isShop: true),
+      drawer: const MyDrawer(shops: [], isShop: true),
       body: GetBuilder<AddOfferController>(builder: (_) {
         if (controller.loading) {
           return MataajerTheme.loadingWidget;

@@ -21,7 +21,7 @@ class ShopAccountView extends GetView<ShopAccountController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: appBar(),
-      drawer: MyDrawer(ads: const [], isShop: controller.isShop),
+      drawer: MyDrawer(shops: const [], isShop: controller.isShop),
       body: GetBuilder<ShopAccountController>(builder: (_) {
         if (controller.loading) {
           return MataajerTheme.loadingWidget;

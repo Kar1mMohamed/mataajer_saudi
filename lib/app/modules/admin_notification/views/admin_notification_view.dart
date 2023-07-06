@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
-import 'package:mataajer_saudi/app/modules/admin_notification/bindings/admin_notification_binding.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
-import 'package:mataajer_saudi/app/widgets/loading_image.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 
 import '../../../widgets/back_button.dart';
@@ -20,7 +17,7 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
     return Scaffold(
       appBar: appBar(),
       backgroundColor: const Color(0xFFF5F5F5),
-      drawer: const MyDrawer(ads: [], isShop: false, isAdmin: true),
+      drawer: const MyDrawer(shops: [], isShop: false, isAdmin: true),
       body: GetBuilder<AdminNotificationController>(builder: (_) {
         if (controller.loading) {
           return MataajerTheme.loadingWidget;

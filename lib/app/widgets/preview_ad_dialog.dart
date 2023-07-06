@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:mataajer_saudi/app/controllers/preview_shop_dialog_controller.dart';
-import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
+import 'package:mataajer_saudi/app/controllers/preview_ad_dialog_controller.dart';
+import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 
-class PreviewShopDialog extends StatelessWidget {
-  const PreviewShopDialog({super.key, required this.shop});
-  final ShopModule shop;
+class PreviewAdDialog extends StatelessWidget {
+  const PreviewAdDialog({super.key, required this.adModule});
+  final AdModule adModule;
 
   @override
   Widget build(BuildContext context) {
-    PreviewShopDialogController controller =
-        Get.put(PreviewShopDialogController(shopModule: shop));
-    return GetBuilder<PreviewShopDialogController>(builder: (context) {
+    PreviewAdDialogController controller =
+        Get.put(PreviewAdDialogController(adModule: adModule));
+    return GetBuilder<PreviewAdDialogController>(builder: (context) {
       return Dialog(
         insetPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 35.h),
         shape:
@@ -51,7 +51,7 @@ class PreviewShopDialog extends StatelessWidget {
                             child: SizedBox.fromSize(
                               size: const Size.fromRadius(48),
                               child: Image.network(
-                                shop.image,
+                                adModule.imageURL,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -61,7 +61,7 @@ class PreviewShopDialog extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              shop.name,
+                              adModule.name,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 15.sp,
@@ -69,7 +69,7 @@ class PreviewShopDialog extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              shop.categories.first.name,
+                              adModule.categories.first.name,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 13.sp,
@@ -86,7 +86,7 @@ class PreviewShopDialog extends StatelessWidget {
                           child: Padding(
                             padding: EdgeInsets.all(8.0.sp),
                             child: Text(
-                              'عدد الزيارات  ${shop.hits ?? 0}',
+                              'عدد الزيارات  ${adModule.hits ?? 0}',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 13.sp,
@@ -115,7 +115,7 @@ class PreviewShopDialog extends StatelessWidget {
                       ),
                       SizedBox(height: 5.0.h),
                       Text(
-                        shop.description,
+                        adModule.description,
                         style: TextStyle(
                           color: Colors.black.withOpacity(0.7),
                           fontSize: 15.sp,
@@ -147,7 +147,7 @@ class PreviewShopDialog extends StatelessWidget {
                             child: Column(
                               children: [
                                 Text(
-                                  '${shop.avgShippingPrice}',
+                                  '${adModule.avgShippingPrice}',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16.sp,
@@ -185,7 +185,7 @@ class PreviewShopDialog extends StatelessWidget {
                             child: Column(
                               children: [
                                 Text(
-                                  '${shop.avgShippingTime}',
+                                  '${adModule.avgShippingTime}',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16.sp,
@@ -213,7 +213,7 @@ class PreviewShopDialog extends StatelessWidget {
                   onTap: () {
                     // set clippboard
                     Clipboard.setData(
-                        ClipboardData(text: shop.cuponCode ?? ''));
+                        ClipboardData(text: adModule.cuponCode ?? ''));
                     Get.snackbar(
                       'نسخ الكود',
                       'تم نسخ الكود بنجاح',
@@ -256,7 +256,7 @@ class PreviewShopDialog extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                shop.description,
+                                adModule.description,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 12.sp,
@@ -271,7 +271,7 @@ class PreviewShopDialog extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20.h),
-                if (controller.similarShops.isNotEmpty)
+                if (controller.similarAds.isNotEmpty)
                   Column(
                     children: [
                       Padding(
@@ -293,10 +293,10 @@ class PreviewShopDialog extends StatelessWidget {
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) =>
-                                _similarAdCard(controller.similarShops[index]),
+                                _similarAdCard(controller.similarAds[index]),
                             separatorBuilder: (context, index) =>
                                 SizedBox(width: 20.w),
-                            itemCount: controller.similarShops.length,
+                            itemCount: controller.similarAds.length,
                             shrinkWrap: true,
                           ),
                         ),
@@ -311,7 +311,7 @@ class PreviewShopDialog extends StatelessWidget {
     });
   }
 
-  Widget _similarAdCard(ShopModule shop) {
+  Widget _similarAdCard(AdModule ad) {
     return InkWell(
       focusColor: Colors.transparent,
       highlightColor: Colors.transparent,
@@ -319,21 +319,21 @@ class PreviewShopDialog extends StatelessWidget {
       splashColor: Colors.transparent,
       onTap: () {
         Get.back(closeOverlays: true);
-        Get.dialog(PreviewShopDialog(shop: shop));
+        Get.dialog(PreviewAdDialog(adModule: ad));
       },
       child: Column(
         children: [
           CircleAvatar(
             radius: 40.r,
             backgroundImage: NetworkImage(
-              shop.image,
+              adModule.imageURL,
               // height: 75,
               // width: 75,
             ),
           ),
           SizedBox(height: 10.h),
           Text(
-            shop.name,
+            adModule.name,
             style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,

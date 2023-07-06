@@ -39,7 +39,7 @@ class FirebaseFirestoreHelper {
         await profile.getSubscriptions();
       }
 
-      log('profile: ${profile.toJson()}');
+      log('profile: ${profile.uid}');
 
       return profile;
     } catch (e) {
@@ -162,16 +162,33 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<List<ShopModule>> getShops() async {
+  Future<List<ShopModule>> getShops({bool? forAdmin}) async {
+    forAdmin ??= false;
     try {
-      final shops = await FirebaseFirestore.instance
-          .collection('shops')
-          .get()
-          .then((value) => value.docs
-              .map((e) => ShopModule.fromMap(e.data(), e.id))
-              .toList());
+      var collection = FirebaseFirestore.instance.collection('shops');
 
-      shops.removeWhere((element) => element.userCategory != null);
+      List<ShopModule> shops = [];
+
+      if (forAdmin) {
+        shops = await collection.get().then((value) =>
+            value.docs.map((e) => ShopModule.fromMap(e.data(), e.id)).toList());
+
+        log('shops: ${shops.length}');
+      } else {
+        shops = await collection
+            .where('isVisible', isEqualTo: true)
+            .where('validTill',
+                isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
+            .get()
+            .then((value) => value.docs
+                .map((e) => ShopModule.fromMap(e.data(), e.id))
+                .toList());
+
+        log('shops: ${shops.length}');
+      }
+
+      shops.removeWhere((element) =>
+          element.categories.isEmpty || element.categoriesUIDs.isEmpty);
 
       return shops;
     } catch (e) {
@@ -180,14 +197,14 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  void addHit(String adUID) async {
+  void addHit(String collectionName, String uid) async {
     try {
       await FirebaseFirestore.instance
-          .collection('ads')
-          .doc(adUID)
+          .collection(collectionName)
+          .doc(uid)
           .update({'hits': FieldValue.increment(1)});
 
-      log('hit added $adUID');
+      log('hit added $uid');
     } catch (e) {
       log(e);
     }
@@ -287,15 +304,26 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<void> deleteShop(ShopModule module) async {
+  Future<void> updatePopUpAdVisibility(PopUpAdModule module) async {
     try {
       await FirebaseFirestore.instance
-          .collection('shops')
+          .collection('pop_up_ads')
           .doc(module.uid)
-          .delete();
+          .update({'isVisible': module.isVisible});
     } catch (e) {
       log(e);
       rethrow;
+    }
+  }
+
+  Future<void> updateOfferVisibility(AdModule offer) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('offers')
+          .doc(offer.uid)
+          .update({'isVisible': offer.isVisible});
+    } catch (e) {
+      log(e);
     }
   }
 
@@ -313,12 +341,26 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<void> deleteAd(AdModule ad) async {
+  // Future<void> deleteAd(AdModule ad) async {
+  //   try {
+  //     if (ad.uid == null) {
+  //       throw 'docUID is null';
+  //     }
+  //     await FirebaseFirestore.instance.collection('ads').doc(ad.uid).delete();
+  //   } catch (e) {
+  //     log(e);
+  //   }
+  // }
+
+  Future<void> deleteShop(ShopModule shop) async {
     try {
-      if (ad.uid == null) {
+      if (shop.uid == null) {
         throw 'docUID is null';
       }
-      await FirebaseFirestore.instance.collection('ads').doc(ad.uid).delete();
+      await FirebaseFirestore.instance
+          .collection('shops')
+          .doc(shop.uid)
+          .delete();
     } catch (e) {
       log(e);
     }
@@ -401,6 +443,20 @@ class FirebaseFirestoreHelper {
       await FirebaseFirestore.instance
           .collection('pop_up_ads')
           .doc(ad.uid)
+          .delete();
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  Future<void> deleteOffer(AdModule offer) async {
+    try {
+      if (offer.uid == null) {
+        throw 'docUID is null';
+      }
+      await FirebaseFirestore.instance
+          .collection('offers')
+          .doc(offer.uid)
           .delete();
     } catch (e) {
       log(e);
