@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../utils/log.dart';
+
 class MainPermisionsController extends GetxController {
   Permission get photosPerm {
     if (GetPlatform.isAndroid) {
@@ -15,10 +17,10 @@ class MainPermisionsController extends GetxController {
   void askForPermisions() async {
     if (!await photosPerm.request().isGranted) {
       KSnackBar.error('يجب السماح بالوصول للصور');
-      print('Permission not granted');
+      log('Permission not granted');
       if (!await photosPerm.request().isGranted) {
         openAppSettings();
-        print('Permission not granted going to app settings');
+        log('Permission not granted going to app settings');
       }
     }
   }

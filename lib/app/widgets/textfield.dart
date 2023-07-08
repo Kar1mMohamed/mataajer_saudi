@@ -73,7 +73,7 @@ Widget textFormField({
         decoration: InputDecoration(
           icon: icon,
           hintText: hint,
-          hintStyle: MataajerTheme.lightTextTheme.bodyText2!
+          hintStyle: MataajerTheme.lightTextTheme.bodyMedium!
               .copyWith(color: Colors.grey, fontSize: 14),
           border: const OutlineInputBorder(
             borderSide: BorderSide(width: 3, color: MataajerTheme.yellowColor),

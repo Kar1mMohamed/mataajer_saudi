@@ -12,6 +12,8 @@ import 'package:mataajer_saudi/app/widgets/shop_animated_widget.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../../utils/log.dart';
+
 class AddAdController extends GetxController {
   bool get isSignedIn => Get.find<MainAccountController>().isSignedIn;
 
@@ -44,7 +46,7 @@ class AddAdController extends GetxController {
       );
       imageURL = await FirebaseStorageFunctions.uploadImage(image);
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       Get.back(); // dismiss laoding dialog
       update();
@@ -59,7 +61,7 @@ class AddAdController extends GetxController {
       currentShop = await FirebaseFirestoreHelper.instance
           .getShopModule(uid, getSubscriptions: true);
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       loading = false;
       update();
@@ -97,7 +99,7 @@ class AddAdController extends GetxController {
     } catch (e) {
       // KSnackBar.error(e.toString());
       return false;
-      // print(e.toString());
+      // log(e.toString());
     } finally {
       loading = false;
       update();

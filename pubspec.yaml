@@ -3,7 +3,7 @@ version: 1.0.0+1
 publish_to: none
 description: Mataajer Saudi.
 environment:
-  sdk: ">=2.19.2 <3.10.0"
+  sdk: ">=2.19.2 <4.0.0"
 
 dependencies:
   cupertino_icons: ^1.0.2
@@ -32,6 +32,8 @@ dependencies:
   url_launcher: ^6.1.11
   webview_flutter: ^3.0.0
   flutter_keyboard_size: ^1.0.1
+  http: any
+  get_storage: ^2.1.1
   flutter:
     sdk: flutter
 

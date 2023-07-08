@@ -14,44 +14,45 @@ class TapChargeReq {
   Post? redirect;
   Metadata? metadata;
 
-  TapChargeReq(
-      {this.amount,
-      this.currency = 'SAR',
-      this.threeDSecure = true,
-      this.saveCard = false,
-      this.description,
-      this.reference,
-      this.receipt,
-      this.customer,
-      this.source,
-      this.post,
-      this.redirect,
-      this.metadata});
+  TapChargeReq({
+    this.amount,
+    this.currency = 'SAR',
+    this.threeDSecure = true,
+    this.saveCard = false,
+    this.description,
+    this.reference,
+    this.receipt,
+    this.customer,
+    this.source,
+    this.post,
+    this.redirect,
+    this.metadata,
+  });
 
-  TapChargeReq.fromMap(Map<String, dynamic> TapChargeReq) {
-    amount = double.parse(TapChargeReq['amount'].toString());
-    currency = TapChargeReq['currency'] = 'SAR';
-    threeDSecure = TapChargeReq['threeDSecure'] = true;
-    saveCard = TapChargeReq['save_card'] = false;
-    description = TapChargeReq['description'];
-    reference = TapChargeReq['reference'] != null
-        ? Reference?.fromJson(TapChargeReq['reference'])
+  TapChargeReq.fromMap(Map<String, dynamic> tapChargeReq) {
+    amount = double.parse(tapChargeReq['amount'].toString());
+    currency = tapChargeReq['currency'] = 'SAR';
+    threeDSecure = tapChargeReq['threeDSecure'] = true;
+    saveCard = tapChargeReq['save_card'] = false;
+    description = tapChargeReq['description'];
+    reference = tapChargeReq['reference'] != null
+        ? Reference?.fromJson(tapChargeReq['reference'])
         : null;
-    receipt = TapChargeReq['receipt'] != null
-        ? Receipt?.fromJson(TapChargeReq['receipt'])
+    receipt = tapChargeReq['receipt'] != null
+        ? Receipt?.fromJson(tapChargeReq['receipt'])
         : null;
-    customer = TapChargeReq['customer'] != null
-        ? Customer?.fromJson(TapChargeReq['customer'])
+    customer = tapChargeReq['customer'] != null
+        ? Customer?.fromJson(tapChargeReq['customer'])
         : null;
-    source = TapChargeReq['source'] = Source(id: 'src_all');
-    post = TapChargeReq['post'] != null
-        ? Post?.fromJson(TapChargeReq['post'])
+    source = tapChargeReq['source'] = Source(id: 'src_all');
+    post = tapChargeReq['post'] != null
+        ? Post?.fromJson(tapChargeReq['post'])
         : null;
-    redirect = TapChargeReq['redirect'] != null
-        ? Post?.fromJson(TapChargeReq['redirect'])
+    redirect = tapChargeReq['redirect'] != null
+        ? Post?.fromJson(tapChargeReq['redirect'])
         : null;
-    metadata = TapChargeReq['metadata'] != null
-        ? Metadata?.fromJson(TapChargeReq['metadata'])
+    metadata = tapChargeReq['metadata'] != null
+        ? Metadata?.fromJson(tapChargeReq['metadata'])
         : null;
   }
 
@@ -95,9 +96,9 @@ class Reference {
 
   Reference({this.transaction, this.order});
 
-  Reference.fromJson(Map<String, dynamic> TapChargeReq) {
-    transaction = TapChargeReq['transaction'];
-    order = TapChargeReq['order'];
+  Reference.fromJson(Map<String, dynamic> map) {
+    transaction = map['transaction'];
+    order = map['order'];
   }
 
   Map<String, dynamic> toJson() {
@@ -114,9 +115,9 @@ class Receipt {
 
   Receipt({this.email, this.sms});
 
-  Receipt.fromJson(Map<String, dynamic> TapChargeReq) {
-    email = TapChargeReq['email'];
-    sms = TapChargeReq['sms'];
+  Receipt.fromJson(Map<String, dynamic> map) {
+    email = map['email'];
+    sms = map['sms'];
   }
 
   Map<String, dynamic> toJson() {
@@ -137,14 +138,12 @@ class Customer {
   Customer(
       {this.firstName, this.middleName, this.lastName, this.email, this.phone});
 
-  Customer.fromJson(Map<String, dynamic> TapChargeReq) {
-    firstName = TapChargeReq['first_name'];
-    middleName = TapChargeReq['middle_name'];
-    lastName = TapChargeReq['last_name'];
-    email = TapChargeReq['email'];
-    phone = TapChargeReq['phone'] != null
-        ? Phone?.fromJson(TapChargeReq['phone'])
-        : null;
+  Customer.fromJson(Map<String, dynamic> map) {
+    firstName = map['first_name'];
+    middleName = map['middle_name'];
+    lastName = map['last_name'];
+    email = map['email'];
+    phone = map['phone'] != null ? Phone?.fromJson(map['phone']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -166,9 +165,9 @@ class Phone {
 
   Phone({this.countryCode, this.number});
 
-  Phone.fromJson(Map<String, dynamic> TapChargeReq) {
-    countryCode = TapChargeReq['country_code'];
-    number = TapChargeReq['number'];
+  Phone.fromJson(Map<String, dynamic> map) {
+    countryCode = map['country_code'];
+    number = map['number'];
   }
 
   Map<String, dynamic> toJson() {
@@ -184,8 +183,8 @@ class Source {
 
   Source({this.id});
 
-  Source.fromJson(Map<String, dynamic> TapChargeReq) {
-    id = TapChargeReq['id'];
+  Source.fromJson(Map<String, dynamic> map) {
+    id = map['id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -200,8 +199,8 @@ class Post {
 
   Post({this.url});
 
-  Post.fromJson(Map<String, dynamic> TapChargeReq) {
-    url = TapChargeReq['url'];
+  Post.fromJson(Map<String, dynamic> map) {
+    url = map['url'];
   }
 
   Map<String, dynamic> toJson() {
@@ -216,8 +215,8 @@ class Metadata {
 
   Metadata({this.udf1});
 
-  Metadata.fromJson(Map<String, dynamic> TapChargeReq) {
-    udf1 = TapChargeReq['udf1'];
+  Metadata.fromJson(Map<String, dynamic> map) {
+    udf1 = map['udf1'];
   }
 
   Map<String, dynamic> toJson() {

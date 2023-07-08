@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 
@@ -72,7 +74,7 @@ class OTPTextField extends StatefulWidget {
     this.margin,
     this.keyboardType = TextInputType.number,
     this.style = const TextStyle(),
-    this.outlineBorderRadius: 10,
+    this.outlineBorderRadius = 10,
     this.textFieldAlignment = MainAxisAlignment.spaceBetween,
     this.obscureText = false,
     this.onChanged,
@@ -84,7 +86,7 @@ class OTPTextField extends StatefulWidget {
         super(key: key);
 
   @override
-  _OTPTextFieldState createState() => _OTPTextFieldState();
+  State<OTPTextField> createState() => _OTPTextFieldState();
 }
 
 class _OTPTextFieldState extends State<OTPTextField> {
@@ -119,7 +121,9 @@ class _OTPTextFieldState extends State<OTPTextField> {
 
   @override
   void dispose() {
-    _textControllers.forEach((controller) => controller?.dispose());
+    for (var controller in _textControllers) {
+      controller?.dispose();
+    }
     super.dispose();
   }
 
@@ -149,7 +153,7 @@ class _OTPTextFieldState extends State<OTPTextField> {
     }
     final isLast = index == widget.length - 1;
 
-    InputBorder _getBorder(Color color) {
+    InputBorder getBorder(Color color) {
       final colorOrError =
           widget.hasError ? _otpFieldStyle.errorBorderColor : color;
 
@@ -181,12 +185,12 @@ class _OTPTextFieldState extends State<OTPTextField> {
           fillColor: _otpFieldStyle.backgroundColor,
           counterText: "",
           contentPadding: widget.contentPadding,
-          border: _getBorder(_otpFieldStyle.borderColor),
-          focusedBorder: _getBorder(_otpFieldStyle.focusBorderColor),
-          enabledBorder: _getBorder(_otpFieldStyle.enabledBorderColor),
-          disabledBorder: _getBorder(_otpFieldStyle.disabledBorderColor),
-          errorBorder: _getBorder(_otpFieldStyle.errorBorderColor),
-          focusedErrorBorder: _getBorder(_otpFieldStyle.errorBorderColor),
+          border: getBorder(_otpFieldStyle.borderColor),
+          focusedBorder: getBorder(_otpFieldStyle.focusBorderColor),
+          enabledBorder: getBorder(_otpFieldStyle.enabledBorderColor),
+          disabledBorder: getBorder(_otpFieldStyle.disabledBorderColor),
+          errorBorder: getBorder(_otpFieldStyle.errorBorderColor),
+          focusedErrorBorder: getBorder(_otpFieldStyle.errorBorderColor),
           errorText: null,
           // to hide the error text
           errorStyle: const TextStyle(height: 0, fontSize: 0),
@@ -236,9 +240,9 @@ class _OTPTextFieldState extends State<OTPTextField> {
 
   String _getCurrentPin() {
     String currentPin = "";
-    _pin.forEach((String value) {
+    for (var value in _pin) {
       currentPin += value;
-    });
+    }
     return currentPin;
   }
 
@@ -284,11 +288,11 @@ class OtpFieldController {
     });
 
     final textControllers = _otpTextFieldState._textControllers;
-    textControllers.forEach((textController) {
+    for (var textController in textControllers) {
       if (textController != null) {
         textController.text = '';
       }
-    });
+    }
 
     final firstFocusNode = _otpTextFieldState._focusNodes[0];
     if (firstFocusNode != null) {
@@ -341,9 +345,9 @@ class OtpFieldController {
     }
 
     String newPin = "";
-    currentPin.forEach((item) {
+    for (var item in currentPin) {
       newPin += item;
-    });
+    }
 
     final widget = _otpTextFieldState.widget;
     if (widget.onChanged != null) {
@@ -387,11 +391,11 @@ class OtpFieldStyle {
   final Color errorBorderColor;
 
   OtpFieldStyle({
-    this.backgroundColor: Colors.transparent,
-    this.borderColor: Colors.black26,
-    this.focusBorderColor: MataajerTheme.mainColor,
-    this.disabledBorderColor: Colors.grey,
-    this.enabledBorderColor: Colors.black26,
-    this.errorBorderColor: Colors.red,
+    this.backgroundColor = Colors.transparent,
+    this.borderColor = Colors.black26,
+    this.focusBorderColor = MataajerTheme.mainColor,
+    this.disabledBorderColor = Colors.grey,
+    this.enabledBorderColor = Colors.black26,
+    this.errorBorderColor = Colors.red,
   });
 }

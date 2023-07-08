@@ -127,12 +127,12 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
                         children: [
                           Text(
                             shop.name,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w400),
                           ),
                           Text(
                             shop.categories.first.name,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w400,
                                 color: MataajerTheme.mainColor),
@@ -153,7 +153,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
                       SizedBox(width: 10.w),
                       IconButton(
                         onPressed: () => controller.deleteShop(shop),
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.delete,
                           color: Colors.red,
                         ),

@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/database/notification.dart';
 
+import '../../../utils/log.dart';
+
 class NotificationsController extends GetxController {
   bool get isThereNoNotifications => _notifications.isEmpty;
   List<NotificationModule> _notifications = [];
@@ -35,7 +37,7 @@ class NotificationsController extends GetxController {
     try {
       _notifications = NotificationModule.notifications;
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       loading = false;
       update();

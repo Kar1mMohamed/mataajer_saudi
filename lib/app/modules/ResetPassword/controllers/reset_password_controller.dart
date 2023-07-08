@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 
+import '../../../utils/log.dart';
+
 class ResetPasswordController extends GetxController {
   final bool isEmailVerify = Get.arguments?['isEmailVerify'] ?? false;
 
@@ -10,6 +12,18 @@ class ResetPasswordController extends GetxController {
       isEmailVerify ? 'تأكيد البريد الالكتروني' : 'تغيير كلمة المرور';
 
   bool loading = false;
+
+  void listenToAccountIfVerfiy() {
+    if (isEmailVerify) {
+      FirebaseAuth.instance.authStateChanges().listen((user) async {
+        if (user != null && user.emailVerified) {
+          KSnackBar.success('تم تأكيد البريد الالكتروني');
+          await Future.delayed(const Duration(seconds: 1));
+          Get.offAllNamed(Routes.HOME);
+        }
+      });
+    }
+  }
 
   Future<void> checkIFEmailVerified() async {
     loading = true;
@@ -26,7 +40,7 @@ class ResetPasswordController extends GetxController {
         }
       }
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       loading = false;
       update();
@@ -44,7 +58,7 @@ class ResetPasswordController extends GetxController {
         KSnackBar.success('تم ارسال رسالة تأكيد البريد الالكتروني');
       }
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       loading = false;
       update();
@@ -54,7 +68,7 @@ class ResetPasswordController extends GetxController {
   @override
   void onInit() {
     if (isEmailVerify) {
-      checkIFEmailVerified();
+      listenToAccountIfVerfiy();
     }
     super.onInit();
   }

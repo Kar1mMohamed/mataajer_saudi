@@ -11,6 +11,7 @@ import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/payments_helper.dart';
+import 'package:mataajer_saudi/app/modules/home/controllers/home_controller.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/check_out_webview.dart';
@@ -24,6 +25,7 @@ class ShopModule {
   String? uid;
   String name;
   String? email;
+  String? phone;
   String description;
   String image;
   double? avgShippingPrice;
@@ -48,6 +50,7 @@ class ShopModule {
     this.uid,
     required this.name,
     this.email,
+    this.phone,
     required this.description,
     required this.image,
     this.avgShippingPrice,
@@ -68,12 +71,50 @@ class ShopModule {
     this.validTill,
   });
 
-  bool get isMostVisitAd {
-    return true; // Temprory true untill do it as logic
+  bool get isMostVisitShop {
+    try {
+      final allShops = Get.find<HomeController>().shops;
+      final shops = allShops
+          .where((element) => element.categoriesUIDs.contains(uid))
+          .toList()
+        ..sort((a, b) => b.hits?.compareTo(a.hits ?? 0) ?? 0);
+
+      if (shops.isEmpty) return false;
+
+      final bestShops = shops.take(20);
+
+      bool isCurrentShopInsideBsetShops =
+          bestShops.where((element) => element.uid == uid).toList().isNotEmpty;
+
+      return isCurrentShopInsideBsetShops;
+    } catch (e) {
+      log('isMostVisitAd error: $e');
+      return false;
+    }
+    // return true; // Temprory true untill do it as logic
   }
 
   bool get isMostOffers {
-    return true; // Temprory true untill do it as logic
+    try {
+      final allOffers = Get.find<HomeController>().offers;
+      final offers = allOffers
+          .where((element) => element.shopUID == uid)
+          .toList()
+        ..sort((a, b) => b.hits?.compareTo(a.hits ?? 0) ?? 0);
+
+      if (offers.isEmpty) return false;
+
+      final bestOffers = offers.take(20);
+
+      bool isCurrentOfferInsideBsetShops =
+          bestOffers.where((element) => element.uid == uid).toList().isNotEmpty;
+
+      return isCurrentOfferInsideBsetShops;
+    } catch (e) {
+      log('isMostOffers error: $e');
+      return false;
+    }
+    // return true; // Temprory true untill do it as logic
   }
 
   bool get isOtherAd {
@@ -92,7 +133,19 @@ class ShopModule {
 
   static bool isExpired(DateTime from, DateTime to) {
     final now = DateTime.now();
-    return now.isBefore(from) || now.isAfter(to);
+
+    if (now.isAfter(to) && now.isAfter(from)) {
+      // is after end date and after start date (start - end - now)
+      log('isExpired is after end date and after start date (start - end - now)');
+      return true;
+    } else if (now.isBefore(from) || now.isAfter(to)) {
+      log('isExpired is before start date or after end date (now - start - end)');
+      // is before start date or after end date (now - start - end)
+      return true;
+    }
+
+    log('isExpired is not expired');
+    return false;
   }
 
   List<CategoryModule> get categories {
@@ -111,22 +164,23 @@ class ShopModule {
     }
 
     final lastSub = subscriptions!.last;
+
     if (isExpired(lastSub.from, lastSub.to)) {
       log('subscription is expired');
       return false;
     }
 
     final lastSubscriptionUID = lastSub.subscriptionUID;
-    final subscription = MainSettingsController.find.subscriptions
+    final subscriptionSetting = MainSettingsController.find.subscriptions
         .firstWhereOrNull((element) => element.uid == lastSubscriptionUID);
 
-    if (subscription == null) {
+    if (subscriptionSetting == null) {
       log('subscription is null');
       return false;
     }
 
     final isSubscriptionCanSendNotification =
-        subscription.isCanSendNotification;
+        subscriptionSetting.isCanSendNotification;
 
     log('isSubscriptionCanSendNotification: $isSubscriptionCanSendNotification');
 
@@ -266,6 +320,20 @@ class ShopModule {
 
       final currentSubscription = subscriptions!.last;
 
+      final isCurrentSubscriptionExpired = isExpired(
+        currentSubscription.from,
+        currentSubscription.to,
+      );
+
+      if (isCurrentSubscriptionExpired) {
+        log('subscription is expired');
+        isStaticAd = false;
+        this.isCanSendNotification = false;
+        this.isFourPopUpAdsMonthly = false;
+        this.isTwoPopUpAdsMonthly = false;
+        return;
+      }
+
       final subscriptionSettings = MainSettingsController.find.subscriptions
           .firstWhereOrNull(
               (element) => element.uid == currentSubscription.subscriptionUID);
@@ -273,13 +341,15 @@ class ShopModule {
       bool isStatic = subscriptionSettings?.isStatic ?? false;
       bool isCanSendNotification =
           subscriptionSettings?.isCanSendNotification ?? false;
-
       bool isFourPopUpAdsMonthly =
           subscriptionSettings?.isFourPopUpAdsMonthly ?? false;
+      bool isTwoPopUpAdsMonthly =
+          subscriptionSettings?.isTwoPopUpAdsMonthly ?? false;
 
       isStaticAd = isStatic;
-      isCanSendNotification = isCanSendNotification;
-      isFourPopUpAdsMonthly = isFourPopUpAdsMonthly;
+      this.isCanSendNotification = isCanSendNotification;
+      this.isFourPopUpAdsMonthly = isFourPopUpAdsMonthly;
+      this.isTwoPopUpAdsMonthly = isTwoPopUpAdsMonthly;
 
       await FirebaseFirestoreHelper.instance.updateShop(this);
     } catch (e) {
@@ -325,6 +395,11 @@ class ShopModule {
           .where('shopUID', isEqualTo: uid)
           .get();
 
+      final offers = await FirebaseFirestore.instance
+          .collection('offers')
+          .where('shopUID', isEqualTo: uid)
+          .get();
+
       final batch = FirebaseFirestore.instance.batch();
 
       // for (var e in ads.docs) {
@@ -343,9 +418,17 @@ class ShopModule {
         });
       }
 
+      for (var e in offers.docs) {
+        log('update visible for offer ${e.id}');
+        batch.update(e.reference, {
+          'isVisible': true,
+          'validTill': DateTime.now().add(Duration(days: newAllowedDays)),
+        });
+      }
+
       await batch.commit();
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 
@@ -361,9 +444,11 @@ class ShopModule {
               .map((e) => SubscriptionModule.fromMap(e.data()))
               .toList());
 
+      log('shop subscriptions: ${subscriptions.map((e) => e.toMap()).toList()}');
+
       this.subscriptions = subscriptions;
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 
@@ -376,8 +461,42 @@ class ShopModule {
       this.validTill = validTill;
 
       await FirebaseFirestoreHelper.instance.updateShop(this);
+      await updateShopServicesValidTill();
     } catch (e) {
       log('updateValidTill ${toJson()}');
+    }
+  }
+
+  Future<void> updateShopServicesValidTill() async {
+    try {
+      final newAllowedDays = remainingDaysForSubscription;
+      final validTill = DateTime.now().add(Duration(days: newAllowedDays));
+
+      final offers = await FirebaseFirestore.instance
+          .collection('offers')
+          .where('shopUID', isEqualTo: uid)
+          .get();
+
+      final popUpAds = await FirebaseFirestore.instance
+          .collection('pop_up_ads')
+          .where('shopUID', isEqualTo: uid)
+          .get();
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      for (var e in offers.docs) {
+        log('update validTill for offer ${e.id}');
+        batch.update(e.reference, {'validTill': validTill});
+      }
+
+      for (var e in popUpAds.docs) {
+        log('update validTill for pop up ad ${e.id}');
+        batch.update(e.reference, {'validTill': validTill});
+      }
+
+      await batch.commit();
+    } catch (e) {
+      log(e);
     }
   }
 
@@ -385,6 +504,7 @@ class ShopModule {
     String? uid,
     String? name,
     String? email,
+    String? phone,
     String? description,
     String? image,
     double? avgShippingPrice,
@@ -408,6 +528,7 @@ class ShopModule {
       uid: uid ?? this.uid,
       name: name ?? this.name,
       email: email ?? this.email,
+      phone: phone ?? this.phone,
       description: description ?? this.description,
       image: image ?? this.image,
       avgShippingPrice: avgShippingPrice ?? this.avgShippingPrice,
@@ -436,6 +557,7 @@ class ShopModule {
       // 'uid': uid,
       'name': name,
       'email': email,
+      'phone': phone,
       'description': description,
       'image': image,
       'avgShippingPrice': avgShippingPrice,
@@ -466,6 +588,7 @@ class ShopModule {
       uid: uid,
       name: map['name'] as String,
       email: map['email'] != null ? map['email'] as String : null,
+      phone: map['phone'] != null ? map['phone'] as String : null,
       description: map['description'] as String,
       image: map['image'] as String,
       avgShippingPrice: map['avgShippingPrice'] != null
@@ -521,7 +644,7 @@ class ShopModule {
 
   @override
   String toString() {
-    return 'ShopModule(uid: $uid, name: $name, email: $email, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions, shopLink: $shopLink, keywords: $keywords, isVisible: $isVisible, userCategory: $userCategory, hits: $hits, isStaticAd: $isStaticAd, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendNotification: $isCanSendNotification, validTill: $validTill)';
+    return 'ShopModule(uid: $uid, name: $name, email: $email, phone: $phone, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions, shopLink: $shopLink, keywords: $keywords, isVisible: $isVisible, userCategory: $userCategory, hits: $hits, isStaticAd: $isStaticAd, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendNotification: $isCanSendNotification, validTill: $validTill)';
   }
 
   @override
@@ -531,6 +654,7 @@ class ShopModule {
     return other.uid == uid &&
         other.name == name &&
         other.email == email &&
+        other.phone == phone &&
         other.description == description &&
         other.image == image &&
         other.avgShippingPrice == avgShippingPrice &&
@@ -556,6 +680,7 @@ class ShopModule {
     return uid.hashCode ^
         name.hashCode ^
         email.hashCode ^
+        phone.hashCode ^
         description.hashCode ^
         image.hashCode ^
         avgShippingPrice.hashCode ^

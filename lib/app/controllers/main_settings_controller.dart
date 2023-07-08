@@ -25,7 +25,7 @@ class MainSettingsController extends GetxController {
 
       log('mainCategories: $mainCategories');
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 
@@ -42,12 +42,7 @@ class MainSettingsController extends GetxController {
 
       log('subscriptions: $subscriptions');
     } catch (e) {
-      print(e);
+      log(e);
     }
-  }
-
-  @override
-  void onInit() async {
-    super.onInit();
   }
 }

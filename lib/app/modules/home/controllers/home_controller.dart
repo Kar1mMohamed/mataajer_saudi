@@ -21,12 +21,30 @@ class HomeController extends GetxController {
   RxInt get notificationCount =>
       Get.find<MainNotificationController>().notificationCount;
 
+  bool isHomeFullyInitilized = false;
+
   ShopModule? currentShop;
 
   int categorySelectedIndex = 0;
 
   bool loading = false;
   bool adsLoading = false;
+
+  //
+  List<ShopModule> get staticAds =>
+      shops.where((element) => element.isStaticAd ?? false).toList();
+
+  List<ShopModule> get mostViewed =>
+      shops..sort((a, b) => (b.hits ?? 0).compareTo(a.hits ?? 0));
+  // mostViewed.addAll(controller.shops);
+  // mostViewed.sort((a, b) => (b.hits ?? 0).compareTo(a.hits ?? 0));
+
+  List<ShopModule> get mostOffers =>
+      shops.where((element) => element.isMostOffers).toList();
+
+  List<ShopModule> get others =>
+      shops.where((element) => element.isOtherAd).toList();
+  //
 
   // List<AdModule> get _dumpAds => List.generate(
   //       10,
@@ -77,7 +95,7 @@ class HomeController extends GetxController {
   //     // _ads.addAll(_dumpAds);
   //     log('ads: ${_ads.length}');
   //   } catch (e) {
-  //     print(e);
+  //     log(e);
   //   } finally {
   //     ads = _ads;
   //     adsLoading = false;
@@ -93,7 +111,7 @@ class HomeController extends GetxController {
       _shops = shopsList;
       log('shops: ${_shops.length}');
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       shops = _shops;
       adsLoading = false;
@@ -109,7 +127,7 @@ class HomeController extends GetxController {
       _offers = offersList;
       log('offers: ${_offers.length}');
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       offers = _offers;
       adsLoading = false;
@@ -147,6 +165,10 @@ class HomeController extends GetxController {
     update(['shopCard-$shopUID']);
   }
 
+  void updateOfferCard(String offerUID) {
+    update(['offerCard-$offerUID']);
+  }
+
   void updateCategorySelectedIndex(int index) {
     categorySelectedIndex = index;
     update(['categories']);
@@ -166,7 +188,7 @@ class HomeController extends GetxController {
       currentShop = await FirebaseFirestoreHelper.instance
           .getShopModule(uid, getSubscriptions: true);
     } catch (e) {
-      print(e);
+      log(e);
       logout();
     } finally {
       loading = false;
@@ -224,6 +246,9 @@ class HomeController extends GetxController {
 
   @override
   void onInit() async {
+    isHomeFullyInitilized = false;
+    update();
+
     CloudMessaging.sendFCMTokenToFirebase();
 
     if (isSignedIn) {
@@ -231,8 +256,12 @@ class HomeController extends GetxController {
     }
     // await getAds();
     await getShops();
+    await getOffers();
 
     PopUpAdsFunctions.showPopUpAd();
+
+    isHomeFullyInitilized = true;
+    update();
 
     super.onInit();
   }

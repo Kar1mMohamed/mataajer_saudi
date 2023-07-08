@@ -39,7 +39,7 @@ class PopUpAdsFunctions {
                   URLLauncherFuntions.launchURL(ad.url!);
                 },
                 child: Center(
-                  child: LoadingImage(src: ad.image),
+                  child: LoadingImage(src: ad.image, fit: BoxFit.cover),
                 ),
               ),
               Positioned(

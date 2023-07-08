@@ -9,6 +9,8 @@ import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/database/notification.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 
+import '../../../utils/log.dart';
+
 class ShopCustomersNotificationsController extends GetxController {
   static FirebaseFirestore get firestore => FirebaseFirestore.instance;
   final mainAccountController = Get.find<MainAccountController>();
@@ -57,7 +59,7 @@ class ShopCustomersNotificationsController extends GetxController {
 
       KSnackBar.success('تم ارسال الاشعار بنجاح سيتم مراجعتة من قبل الادارة');
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       loading = false;
       update();

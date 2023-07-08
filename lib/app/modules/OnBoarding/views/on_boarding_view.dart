@@ -21,7 +21,7 @@ class OnBoardingView extends GetView<OnBoardingController> {
                 SizedBox(height: 50.h),
                 Image.asset(Assets.loginImage),
                 SizedBox(height: 10.h),
-                Text('هل انت زائر ام صاحب متاجر؟!',
+                const Text('هل انت زائر ام صاحب متاجر؟!',
                     style: TextStyle(fontSize: 17)),
                 SizedBox(height: 10.h),
                 InkWell(
@@ -85,7 +85,8 @@ class OnBoardingView extends GetView<OnBoardingController> {
                 SizedBox(width: 5.w),
                 Text(
                   text,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ],
             ),

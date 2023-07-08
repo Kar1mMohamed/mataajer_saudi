@@ -69,7 +69,7 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
                 //     textFieldAlignment: MainAxisAlignment.spaceAround,
                 //     onChanged: (v) {},
                 //     onCompleted: (pin) {
-                //       print("Completed: " + pin);
+                //       log("Completed: " + pin);
                 //     },
                 //   ),
                 // ),
@@ -82,7 +82,7 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
                       fontFamily: 'Tajawal',
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF366EE9),
+                      color: const Color(0xFF366EE9),
                     ),
                   ),
                 ),

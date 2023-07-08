@@ -15,7 +15,7 @@ class CustomBackButton extends StatelessWidget {
       height: 40,
       width: 60,
       decoration: BoxDecoration(
-        color: Color(0xFFF5F5F5),
+        color: const Color(0xFFF5F5F5),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Padding(

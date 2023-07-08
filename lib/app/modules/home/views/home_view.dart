@@ -3,10 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
+import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
+import 'package:mataajer_saudi/app/functions/url_launcher.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
+import 'package:mataajer_saudi/app/widgets/preview_ad_dialog.dart';
 import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
 import 'package:mataajer_saudi/database/notification.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
@@ -20,9 +24,33 @@ class HomeView extends GetView<HomeController> {
       appBar: appBar(),
       backgroundColor: const Color(0xFFF5F5F5),
       drawer: MyDrawer(shops: controller.shops, isShop: controller.isShop),
-      body: SingleChildScrollView(
-        child: GetBuilder<HomeController>(builder: (_) {
-          return Column(
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.green,
+        onPressed: () {
+          const url = "https://wa.me/+966505544326?text=%20السلام%20عليكم";
+          URLLauncherFuntions.launchURL(url);
+        },
+        label: Row(
+          children: [
+            Text(
+              'تواصل معنا',
+              style: TextStyle(
+                fontSize: 13.sp,
+                fontFamily: 'Tajawal',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(width: 5.w),
+            const Icon(Icons.call),
+          ],
+        ),
+      ),
+      body: GetBuilder<HomeController>(builder: (_) {
+        if (!controller.isHomeFullyInitilized) {
+          return Center(child: MataajerTheme.loadingWidget);
+        }
+        return SingleChildScrollView(
+          child: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -84,13 +112,13 @@ class HomeView extends GetView<HomeController> {
               SizedBox(height: 20.h),
               GetBuilder<HomeController>(
                   id: 'all-ads',
-                  builder: (context) {
-                    return _ads();
+                  builder: (_) {
+                    return _ads(context);
                   }),
             ],
-          );
-        }),
-      ),
+          ),
+        );
+      }),
     );
   }
 
@@ -117,7 +145,7 @@ class HomeView extends GetView<HomeController> {
               gradient: LinearGradient(
                 begin: FractionalOffset.topLeft,
                 end: FractionalOffset.topRight,
-                stops: [0.5, double.infinity],
+                stops: const [0.5, double.infinity],
                 colors: [
                   MataajerTheme.mainColor.withOpacity(0.7),
                   Colors.white.withOpacity(0.1),
@@ -169,33 +197,27 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _ads() {
-    List<ShopModule> staticAds = controller.shops
-        .where((element) => element.isStaticAd ?? false)
-        .toList();
-
-    List<ShopModule> mostViewed = [];
-    mostViewed.addAll(controller.shops);
-    mostViewed.sort((a, b) => (b.hits ?? 0).compareTo(a.hits ?? 0));
-
-    List<ShopModule> mostOffers =
-        controller.shops.where((element) => element.isMostOffers).toList();
-
-    List<ShopModule> others =
-        controller.shops.where((element) => element.isOtherAd).toList();
-
+  Widget _ads(BuildContext context) {
     return Column(
       children: [
-        _adItem('متاجر مثبتة', Icons.keyboard_arrow_up, staticAds, 1),
-        _adItem('الاكثر زيارة', Icons.remove_red_eye_outlined, mostViewed, 2),
-        _adItem('الاكثر عروضا', Icons.percent, mostOffers, 2),
-        _adItem('متاجر اخرى', Icons.maps_home_work_outlined, others, 2),
+        _shopItem(
+            'متاجر مثبتة', Icons.keyboard_arrow_up, controller.staticAds, 2),
+        _shopItem('الاكثر زيارة', Icons.remove_red_eye_outlined,
+            controller.mostViewed, 2),
+        _offerItem('العروض', Icons.percent, controller.offers, 1),
+        _shopItem('الاكثر عروضا', Icons.percent, controller.mostOffers, 2),
+        _shopItem(
+            'متاجر اخرى', Icons.maps_home_work_outlined, controller.others, 1),
+        SizedBox(
+            height: context.height * 0.015), // This to make space at the bottom
       ],
     );
   }
 
-  Widget _adItem(String text, IconData icon, List list, int crossCount) {
+  Widget _shopItem(
+      String text, IconData icon, List<ShopModule> list, int crossCount) {
     double height = crossCount == 1 ? 170.h : (170.h * 2);
+
     return Column(
       children: [
         Padding(
@@ -228,21 +250,86 @@ class HomeView extends GetView<HomeController> {
           ),
         ),
         SizedBox(height: 5.h),
-        SizedBox(
-          height: height,
-          width: double.infinity,
-          child: GetBuilder<HomeController>(
-              id: 'ads',
-              builder: (_) {
-                return GridView.count(
-                  crossAxisCount: crossCount,
-                  childAspectRatio: 1.4,
-                  scrollDirection: Axis.horizontal,
-                  children: List.generate(
-                      list.length, (index) => _adCard(list[index])),
-                );
-              }),
+        if (list.isNotEmpty)
+          SizedBox(
+            height: height,
+            width: double.infinity,
+            child: GetBuilder<HomeController>(
+                id: 'ads',
+                builder: (_) {
+                  return GridView.count(
+                    crossAxisCount: crossCount,
+                    childAspectRatio: 1.4,
+                    scrollDirection: Axis.horizontal,
+                    children: List.generate(
+                        list.length, (index) => _shopCard(list[index])),
+                  );
+                }),
+          )
+        // else
+        //   Center(
+        //     child: Text('لا يوجد اعلانات'),
+        //   ),
+      ],
+    );
+  }
+
+  Widget _offerItem(
+      String text, IconData icon, List<AdModule> list, int crossCount) {
+    double height = crossCount == 1 ? 170.h : (170.h * 2);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: MataajerTheme.mainColor,
+                  borderRadius: BorderRadius.circular(20.0.r),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: 20.sp,
+                  ),
+                ),
+              ),
+              SizedBox(width: 10.w),
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
+        SizedBox(height: 5.h),
+        if (list.isNotEmpty)
+          SizedBox(
+            height: height,
+            width: double.infinity,
+            child: GetBuilder<HomeController>(
+                id: 'ads',
+                builder: (_) {
+                  return GridView.count(
+                    crossAxisCount: crossCount,
+                    childAspectRatio: 1.4,
+                    scrollDirection: Axis.horizontal,
+                    children: List.generate(
+                        list.length, (index) => _offerCard(list[index])),
+                  );
+                }),
+          )
+        // else
+        //   Center(
+        //     child: Text('لا يوجد اعلانات'),
+        //   ),
       ],
     );
   }
@@ -329,7 +416,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _adCard(ShopModule shop) {
+  Widget _shopCard(ShopModule shop) {
     return GetBuilder<HomeController>(
         id: 'shopCard-${shop.uid}',
         builder: (_) {
@@ -376,7 +463,7 @@ class HomeView extends GetView<HomeController> {
                       splashColor: Colors.transparent,
                       onTap: () {
                         controller.updateLoveState(shop);
-                        print('loved ${shop.uid}');
+                        log('loved ${shop.uid}');
                       },
                       child: Icon(
                         Icons.favorite,
@@ -409,6 +496,121 @@ class HomeView extends GetView<HomeController> {
                                 children: [
                                   Text(
                                     shop.name,
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 13.sp,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  SizedBox(height: 2.h),
+                                  Text(
+                                    categoryString,
+                                    style: TextStyle(
+                                      color: MataajerTheme.mainColor,
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 5.w),
+                            Icon(
+                              Icons.info_outlined,
+                              color: Colors.grey.shade400,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  Widget _offerCard(AdModule offer) {
+    return GetBuilder<HomeController>(
+        id: 'offerCard-${offer.uid}',
+        builder: (_) {
+          if (controller.adsLoading) {
+            return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(25.r),
+                image: const DecorationImage(
+                  image: AssetImage(Assets.loadingGIF),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            );
+          }
+          // bool isLoved = controller.favShops.contains(offer);
+          String categoryString = offer.categories.first.name;
+          return InkWell(
+            focusColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            splashColor: Colors.transparent,
+            onTap: () => Get.dialog(PreviewAdDialog(adModule: offer)),
+            child: Container(
+              padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
+              margin:
+                  EdgeInsets.only(left: 5.0.sp, right: 5.0.sp, bottom: 10.0.sp),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(25.r),
+                // border: Border.all(
+                //   color: MataajerTheme.mainColor,
+                //   width: 1,
+                // ),
+              ),
+              child: Stack(
+                children: [
+                  // Positioned(
+                  //   top: 10,
+                  //   left: 5,
+                  //   child: InkWell(
+                  //     focusColor: Colors.transparent,
+                  //     highlightColor: Colors.transparent,
+                  //     hoverColor: Colors.transparent,
+                  //     splashColor: Colors.transparent,
+                  //     onTap: () {
+                  //       controller.updateLoveState(shop);
+                  //       log('loved ${shop.uid}');
+                  //     },
+                  //     child: Icon(
+                  //       Icons.favorite,
+                  //       color: isLoved
+                  //           ? Colors.red.shade600
+                  //           : const Color(0xFFC6C6C6),
+                  //       size: 25.sp,
+                  //     ),
+                  //   ),
+                  // ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 40.r,
+                          backgroundImage: NetworkImage(offer.imageURL),
+                          backgroundColor: Colors.transparent,
+                        ),
+                        SizedBox(height: 10.h),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    offer.name,
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 13.sp,

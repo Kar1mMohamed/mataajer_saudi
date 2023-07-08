@@ -8,6 +8,7 @@ import 'package:mataajer_saudi/app/data/modules/pop_up_ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/shop_animated_widget.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -23,6 +24,8 @@ class AddPopupAdController extends GetxController {
 
   final shopLinkController = TextEditingController();
 
+  List<PopUpAdModule> popUpAds = [];
+
   Future<void> getCurrentShopModule() async {
     try {
       loading = true;
@@ -31,7 +34,7 @@ class AddPopupAdController extends GetxController {
       currentShop = await FirebaseFirestoreHelper.instance
           .getShopModule(uid, getSubscriptions: true);
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       loading = false;
       update();
@@ -58,7 +61,7 @@ class AddPopupAdController extends GetxController {
       );
       imageURL = await FirebaseStorageFunctions.uploadImage(image);
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       Get.back(); // dismiss laoding dialog
       update();
@@ -84,7 +87,7 @@ class AddPopupAdController extends GetxController {
         shopUID: currentShop!.uid!,
         validTill: currentShop!.validTill,
         url: shopLinkController.text,
-        isVisible: true,
+        isVisible: false,
       );
 
       await FirebaseFirestoreHelper.instance.addPopUpAd(module);
@@ -92,7 +95,36 @@ class AddPopupAdController extends GetxController {
     } catch (e) {
       // KSnackBar.error(e.toString());
       return false;
-      // print(e.toString());
+      // log(e.toString());
+    } finally {
+      loading = false;
+      update();
+    }
+  }
+
+  Future<void> getPopUpAds() async {
+    try {
+      final shopuid = FirebaseAuth.instance.currentUser!.uid;
+      loading = true;
+      update();
+      popUpAds =
+          await FirebaseFirestoreHelper.instance.getShopPopUpAds(shopuid);
+    } catch (e) {
+      log(e);
+    } finally {
+      loading = false;
+      update();
+    }
+  }
+
+  Future<void> deletePopUpAd(PopUpAdModule ad) async {
+    try {
+      loading = true;
+      update();
+      await FirebaseFirestoreHelper.instance.deletePopUpAd(ad.uid!);
+      popUpAds.remove(ad);
+    } catch (e) {
+      log(e);
     } finally {
       loading = false;
       update();
@@ -104,6 +136,7 @@ class AddPopupAdController extends GetxController {
     super.onInit();
     if (isSignedIn) {
       await getCurrentShopModule();
+      await getPopUpAds();
     }
   }
 }

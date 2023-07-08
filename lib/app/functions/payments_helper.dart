@@ -69,11 +69,11 @@ abstract class PaymentsHelper {
         // log(responseMap);
         return responseMap;
       } else {
-        print(responseMap);
+        log(responseMap);
         throw Exception(response.reasonPhrase ?? 'Error');
       }
     } catch (e) {
-      print(e);
+      log(e);
       rethrow;
     }
   }
@@ -98,7 +98,7 @@ abstract class PaymentsHelper {
         return false;
       }
     } catch (e) {
-      print(e);
+      log(e);
       return false;
     }
   }

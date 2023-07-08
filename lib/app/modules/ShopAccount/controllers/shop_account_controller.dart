@@ -12,6 +12,8 @@ import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../../utils/log.dart';
+
 class ShopAccountController extends GetxController {
   final mainAccountController = Get.find<MainAccountController>();
   final mainSettingsController = Get.find<MainSettingsController>();
@@ -23,6 +25,7 @@ class ShopAccountController extends GetxController {
 
   final shopNameController = TextEditingController();
   final emailController = TextEditingController();
+  final phoneController = TextEditingController();
   final passwordController = TextEditingController();
   final shopLinkController = TextEditingController();
   List<CategoryModule> choosedCategories = [];
@@ -35,6 +38,7 @@ class ShopAccountController extends GetxController {
   final cuponCodeController = TextEditingController();
   final cuponCodeDetailsController = TextEditingController();
 
+  List<int> shippingTimes = List.generate(30, (index) => index + 1);
   int? shippingFrom;
   int? shippingTo;
 
@@ -58,16 +62,23 @@ class ShopAccountController extends GetxController {
           FirebaseAuth.instance.currentUser!.uid,
           getSubscriptions: true);
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       loading = false;
       update();
     }
   }
 
+  void initilizeDropMenu() {
+    shippingFrom = shippingTimes[0];
+    shippingTo = shippingTimes[0];
+    update();
+  }
+
   void setAlreadySetted() {
     shopNameController.text = currentShop?.name ?? '';
     emailController.text = currentShop?.email ?? '';
+    phoneController.text = currentShop?.phone ?? '';
     shopLinkController.text = currentShop?.shopLink ?? '';
     shopDescriptionController.text = currentShop?.description ?? '';
     shopKeyWordsController.text = currentShop?.keywords?.join(',') ?? '';
@@ -75,12 +86,29 @@ class ShopAccountController extends GetxController {
         currentShop?.avgShippingPrice?.toString() ?? '';
     cuponCodeController.text = currentShop?.cuponCode ?? '';
     cuponCodeDetailsController.text = currentShop?.cuponText ?? '';
+    avgFromShippingPrice = currentShop?.avgShippingPrice?.toInt() ?? 0;
+    avgToShippingPrice = currentShop?.avgShippingPrice?.toInt() ?? 0;
+    cuponCodeController.text = currentShop?.cuponCode ?? '';
+    cuponCodeDetailsController.text = currentShop?.cuponText ?? '';
+    keywords = currentShop?.keywords ?? [];
 
-    // shippingFrom =
-    //     int.parse(currentShop?.avgShippingTime?.split('-')[0].trim() ?? '1');
+    log('shippingFrom: ${currentShop?.avgShippingTime?.split('-')[0].trim() ?? '1'}, shippingTo: ${currentShop?.avgShippingTime?.split('-')[1].trim() ?? '1'}');
 
-    // shippingTo =
-    //     int.parse(currentShop?.avgShippingTime?.split('-')[1].trim() ?? '1');
+    shippingFrom = currentShop?.avgShippingTime != null
+        ? int.parse(currentShop!.avgShippingTime!.split('-')[0].trim())
+        : null;
+
+    if (shippingFrom == 0) {
+      shippingFrom = null;
+    }
+
+    shippingTo = currentShop?.avgShippingTime != null
+        ? int.parse(currentShop!.avgShippingTime!.split('-')[1].trim())
+        : null;
+
+    if (shippingTo == 0) {
+      shippingTo = null;
+    }
 
     choosedCategories = currentShop?.categories ?? [];
     isVisible = currentShop?.isVisible ?? false;
@@ -108,9 +136,11 @@ class ShopAccountController extends GetxController {
       //   await currentShop!.changeAllAdsVisibility(isVisible);
       // }
 
+      await module.updateValidTill();
+      await module.updatePrivileges();
       await FirebaseFirestoreHelper.instance.updateShop(module);
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       loading = false;
       update();
@@ -138,7 +168,7 @@ class ShopAccountController extends GetxController {
       currentShop!.image = await FirebaseStorageFunctions.uploadImage(image);
       await FirebaseFirestoreHelper.instance.updateShop(currentShop!);
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       loading = false;
       update();
@@ -148,6 +178,7 @@ class ShopAccountController extends GetxController {
   @override
   void onInit() async {
     await getShop();
+    initilizeDropMenu();
     setAlreadySetted();
     super.onInit();
   }

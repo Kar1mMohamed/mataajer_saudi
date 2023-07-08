@@ -116,9 +116,9 @@ class AdModule {
     };
   }
 
-  factory AdModule.fromMap(Map<String, dynamic> map) {
+  factory AdModule.fromMap(Map<String, dynamic> map, {String? uid}) {
     return AdModule(
-      uid: map['uid'] != null ? map['uid'] as String : null,
+      uid: uid,
       shopUID: map['shopUID'] != null ? map['shopUID'] as String : null,
       name: map['name'] as String,
       categoryUIDs: List<String>.from((map['categoryUIDs'] as List<dynamic>)),

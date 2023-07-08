@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
@@ -124,7 +123,7 @@ class FirebaseFirestoreHelper {
     try {
       await FirebaseFirestore.instance.collection('offers').add(ad.toMap());
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 
@@ -136,7 +135,7 @@ class FirebaseFirestoreHelper {
 
       if (forAdmin) {
         final ads = await collection.get().then((value) => value.docs
-            .map((e) => AdModule.fromMap(e.data()..['uid'] = e.id))
+            .map((e) => AdModule.fromMap(e.data(), uid: e.id))
             .toList());
 
         log('offers: ${ads.length}');
@@ -149,7 +148,7 @@ class FirebaseFirestoreHelper {
                 isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
             .get()
             .then((value) => value.docs
-                .map((e) => AdModule.fromMap(e.data()..['uid'] = e.id))
+                .map((e) => AdModule.fromMap(e.data(), uid: e.id))
                 .toList());
 
         log('offers: ${ads.length}');
@@ -435,14 +434,49 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<void> deletePopUpAd(PopUpAdModule ad) async {
+  Future<List<AdModule>> getShopOffers(String shopUID) async {
     try {
-      if (ad.uid == null) {
-        throw 'docUID is null';
-      }
+      final offers = await FirebaseFirestore.instance
+          .collection('offers')
+          .where('shopUID', isEqualTo: shopUID)
+          .get()
+          .then((value) => value.docs
+              .map((e) => AdModule.fromMap(e.data(), uid: e.id))
+              .toList());
+
+      log('offers: ${offers.length}');
+
+      return offers;
+    } catch (e) {
+      log(e);
+      throw e.toString();
+    }
+  }
+
+  Future<List<PopUpAdModule>> getShopPopUpAds(String shopUID) async {
+    try {
+      final ads = await FirebaseFirestore.instance
+          .collection('pop_up_ads')
+          .where('shopUID', isEqualTo: shopUID)
+          .get()
+          .then((value) => value.docs
+              .map((e) => PopUpAdModule.fromMap(e.data(), uid: e.id))
+              .toList());
+
+      log('popup ads: ${ads.length}');
+
+      return ads;
+    } catch (e) {
+      log(e);
+      throw e.toString();
+    }
+  }
+
+  Future<void> deletePopUpAd(String adUID) async {
+    try {
       await FirebaseFirestore.instance
           .collection('pop_up_ads')
-          .doc(ad.uid)
+          .doc(adUID)
           .delete();
     } catch (e) {
       log(e);

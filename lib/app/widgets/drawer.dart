@@ -86,7 +86,7 @@ class MyDrawer extends StatelessWidget {
         ),
         _drawerItem(
           Assets.addAdVector,
-          'اضافة اعلان منبثق',
+          'الاعلانات المنبثقة',
           route: Routes.ADD_POPUP_AD,
         ),
         // _drawerItem(
@@ -96,13 +96,19 @@ class MyDrawer extends StatelessWidget {
         // ),
         _drawerItem(
           Assets.addAdVector,
-          'اضف عرض',
+          'العروض',
           route: Routes.ADD_OFFER,
         ),
         _drawerItem(
           Assets.personIcon,
           'حسابي',
           route: Routes.SHOP_ACCOUNT,
+        ),
+        _drawerItem(
+          Assets.bigLoveIcon,
+          'المتاجر المفضلة',
+          route: Routes.FAVORITES,
+          arguments: {'shops': shops},
         ),
         _drawerItem(
           Assets.exitVector,
@@ -128,7 +134,7 @@ class MyDrawer extends StatelessWidget {
         _drawerItem(Assets.addPackageIcon, 'عرض باقات الاشتراك',
             route: Routes.SHOP_LOGIN_AND_REGISTER,
             arguments: {'isNavigateToRegister': true}),
-        _drawerItem(Assets.loveIcon, 'المتاجر المفضلة',
+        _drawerItem(Assets.bigLoveIcon, 'المتاجر المفضلة',
             route: Routes.FAVORITES, arguments: {'shops': shops}),
       ],
     );

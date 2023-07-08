@@ -27,6 +27,7 @@ class AddPopupAdView extends GetView<AddPopupAdController> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.w),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(height: 50.h),
                   Image.asset(Assets.adVector),
@@ -62,7 +63,52 @@ class AddPopupAdView extends GetView<AddPopupAdController> {
                         sucessDialog();
                       }
                     },
-                  )
+                  ),
+                  SizedBox(height: 10.h),
+                  const Divider(thickness: 1),
+                  SizedBox(height: 10.h),
+                  Flexible(
+                    child: Container(
+                      margin: EdgeInsets.only(bottom: 20.h),
+                      padding: EdgeInsets.symmetric(vertical: 12.w),
+                      height: context.height * 0.5,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: controller.popUpAds.length,
+                          itemBuilder: (context, index) {
+                            final popUpAd = controller.popUpAds[index];
+                            return ListTile(
+                              leading: Container(
+                                width: 50.w,
+                                height: 50.h,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                    image: NetworkImage(popUpAd.image),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              title: Text(popUpAd.url ?? ''),
+                              subtitle: Text((popUpAd.isVisible ?? false)
+                                  ? 'تم الموافقة'
+                                  : 'جاري المراجعة'),
+                              trailing: IconButton(
+                                onPressed: () async {
+                                  await controller.deletePopUpAd(popUpAd);
+                                },
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
+                              ),
+                            );
+                          }),
+                    ),
+                  ),
                 ],
               ),
             ),

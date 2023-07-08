@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,12 +7,12 @@ import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
 import 'package:mataajer_saudi/app/modules/ChooseSubscription/views/choose_subscription_view.dart';
-import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/loading_image.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 import 'package:mataajer_saudi/utils/input_format.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
+import '../../../utils/log.dart';
 import '../controllers/shop_login_and_register_controller.dart';
 
 class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
@@ -178,41 +179,46 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
             controller.update();
           }),
           SizedBox(height: 10.h),
-          InkWell(
-            onTap: () {},
-            child: Row(
-              children: [
-                const Text(
-                  'هل نسيت كلمة المرور؟',
+          Row(
+            children: [
+              const Text('تذكرني'),
+              Checkbox(
+                value: controller.loginRememberMe,
+                onChanged: controller.loginRememberMeFunction,
+              )
+            ],
+          ),
+          SizedBox(height: 10.h),
+          RoundedButton(
+            text: 'تسجيل الدخول',
+            press: controller.login,
+            radius: 12,
+          ),
+          SizedBox(height: 5.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'هل نسيت كلمة المرور؟',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF626262),
+                ),
+              ),
+              SizedBox(width: 5.w),
+              InkWell(
+                onTap: controller.resetPasswordFunction,
+                child: const Text(
+                  'استعدها',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF626262),
+                    color: MataajerTheme.mainColor,
                   ),
                 ),
-                SizedBox(width: 5.w),
-                InkWell(
-                  onTap: () {
-                    Get.toNamed(Routes.RESET_PASSWORD,
-                        arguments: {'isEmailVerify': true});
-                  },
-                  child: const Text(
-                    'استعدها',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: MataajerTheme.mainColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 40.h),
-          RoundedButton(
-            text: 'تسجيل الدخول',
-            press: () => controller.login(),
-            radius: 12,
+              ),
+            ],
           ),
         ],
       ),
@@ -240,6 +246,13 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
               'البريد الالكتروني',
               controller.emailController,
               imageAssetIcon: Assets.emailPNG,
+            ),
+            SizedBox(height: 20.h),
+
+            _fieldItem(
+              'رقم الجوال',
+              controller.phoneController,
+              // imageAssetIcon: Assets.emailPNG,
             ),
             SizedBox(height: 20.h),
             _fieldItem(
@@ -503,9 +516,9 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
               color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Row(
+            child: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text('اختر التصنيفات'),
                 Icon(Icons.arrow_drop_down),
               ],
@@ -611,7 +624,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
                     onChange: (allSelectedItems, selectedItem) {
                       controller.choosedCategories = allSelectedItems;
                       controller.update();
-                      print('categories: ${controller.choosedCategories}');
+                      log('categories: ${controller.choosedCategories}');
                     },
                   ),
                 ),
@@ -718,7 +731,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
   Widget _priceText(double yearPrice) {
     return InkWell(
       onTap: () {
-        print('year price: $yearPrice');
+        log('year price: $yearPrice');
       },
       child: Text(
         '$yearPrice ريال',
@@ -849,7 +862,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
     const fontColor = Colors.black;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 15.sp),
-      color: isWhite ?? false ? Colors.white : Color(0xFFEFEFEF),
+      color: isWhite ?? false ? Colors.white : const Color(0xFFEFEFEF),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

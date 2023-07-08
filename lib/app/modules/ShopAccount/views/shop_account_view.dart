@@ -60,6 +60,9 @@ class ShopAccountView extends GetView<ShopAccountController> {
                 _fieldItem('البريد الالكتروني', controller.emailController,
                     isEmail: true, imageAssetIcon: Assets.emailPNG),
                 SizedBox(height: 20.h),
+                _fieldItem('رقم الجوال', controller.emailController,
+                    isEmail: true, imageAssetIcon: Assets.emailPNG),
+                SizedBox(height: 20.h),
                 _fieldItem('رابط المتجر', controller.shopLinkController,
                     imageAssetIcon: Assets.marketVectorPNG),
                 SizedBox(height: 20.h),
@@ -110,24 +113,20 @@ class ShopAccountView extends GetView<ShopAccountController> {
                                   ),
                                   underline: Container(),
                                   value: controller.shippingFrom,
-                                  items: List.generate(
-                                    5,
-                                    (index) {
-                                      final value = index + 1;
-
-                                      return DropdownMenuItem(
-                                        value: value,
-                                        child: Text(
-                                          value.toString(),
-                                          style: TextStyle(
-                                            fontSize: 13.sp,
-                                            fontFamily: 'Tajawal',
-                                            fontWeight: FontWeight.w400,
+                                  items: controller.shippingTimes
+                                      .map(
+                                        (e) => DropdownMenuItem(
+                                          value: e,
+                                          child: Text(
+                                            e.toString(),
+                                            style: TextStyle(
+                                                fontSize: 13.sp,
+                                                fontFamily: 'Tajawal',
+                                                fontWeight: FontWeight.w400),
                                           ),
                                         ),
-                                      );
-                                    },
-                                  ),
+                                      )
+                                      .toList(),
                                   onChanged: (v) {
                                     controller.shippingFrom = v;
                                     controller.update();
@@ -146,25 +145,27 @@ class ShopAccountView extends GetView<ShopAccountController> {
                                   hint: Text(
                                     'الي',
                                     style: TextStyle(
-                                        fontSize: 13.sp,
-                                        fontFamily: 'Tajawal',
-                                        fontWeight: FontWeight.w400),
+                                      fontSize: 13.sp,
+                                      fontFamily: 'Tajawal',
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
                                   underline: Container(),
                                   value: controller.shippingTo,
-                                  items: List.generate(5, (index) {
-                                    final value = index + 1;
-                                    return DropdownMenuItem(
-                                      value: value,
-                                      child: Text(
-                                        value.toString(),
-                                        style: TextStyle(
-                                            fontSize: 13.sp,
-                                            fontFamily: 'Tajawal',
-                                            fontWeight: FontWeight.w400),
-                                      ),
-                                    );
-                                  }),
+                                  items: controller.shippingTimes
+                                      .map(
+                                        (e) => DropdownMenuItem(
+                                          value: e,
+                                          child: Text(
+                                            e.toString(),
+                                            style: TextStyle(
+                                                fontSize: 13.sp,
+                                                fontFamily: 'Tajawal',
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
                                   onChanged: (v) {
                                     controller.shippingTo = v;
                                     controller.update();
@@ -259,10 +260,8 @@ class ShopAccountView extends GetView<ShopAccountController> {
             ],
           ),
           image: DecorationImage(
-            image: NetworkImage(
-              controller.currentShop!.image,
-            ),
-            fit: BoxFit.fitHeight,
+            image: NetworkImage(controller.currentShop!.image),
+            fit: BoxFit.cover,
           ),
         ),
         child: Container(
@@ -306,9 +305,9 @@ class ShopAccountView extends GetView<ShopAccountController> {
               color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Row(
+            child: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text('التصنيفات'),
                 Icon(Icons.arrow_drop_down),
               ],
@@ -414,7 +413,7 @@ class ShopAccountView extends GetView<ShopAccountController> {
                     onChange: (allSelectedItems, selectedItem) {
                       controller.choosedCategories = allSelectedItems;
                       controller.update();
-                      print('categories: ${controller.choosedCategories}');
+                      log('categories: ${controller.choosedCategories}');
                     },
                   ),
                 ),
@@ -537,32 +536,32 @@ class ShopAccountView extends GetView<ShopAccountController> {
     );
   }
 
-  Widget _button({
-    required String text,
-    required void Function()? onPressed,
-    bool isWhiteBack = false,
-  }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isWhiteBack ? Colors.white : MataajerTheme.mainColor,
-        padding: EdgeInsets.symmetric(
-          horizontal: 20.sp,
-          vertical: 10.sp,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontFamily: 'Tajawal',
-          fontSize: 13.sp,
-          fontWeight: FontWeight.w500,
-          color: isWhiteBack ? const Color(0xFF626262) : Colors.white,
-        ),
-      ),
-    );
-  }
+  // Widget _button({
+  //   required String text,
+  //   required void Function()? onPressed,
+  //   bool isWhiteBack = false,
+  // }) {
+  //   return ElevatedButton(
+  //     onPressed: onPressed,
+  //     style: ElevatedButton.styleFrom(
+  //       backgroundColor: isWhiteBack ? Colors.white : MataajerTheme.mainColor,
+  //       padding: EdgeInsets.symmetric(
+  //         horizontal: 20.sp,
+  //         vertical: 10.sp,
+  //       ),
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(10),
+  //       ),
+  //     ),
+  //     child: Text(
+  //       text,
+  //       style: TextStyle(
+  //         fontFamily: 'Tajawal',
+  //         fontSize: 13.sp,
+  //         fontWeight: FontWeight.w500,
+  //         color: isWhiteBack ? const Color(0xFF626262) : Colors.white,
+  //       ),
+  //     ),
+  //   );
+  // }
 }

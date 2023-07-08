@@ -10,13 +10,11 @@ import 'package:mataajer_saudi/app/controllers/main_notification_controller.dart
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_popup_ads_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
-import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
-import 'package:mataajer_saudi/database/helper/hive_helper.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/translation/tr.dart';
 import 'package:mataajer_saudi/database/notification.dart';
-import 'package:mataajer_saudi/firebase_options.dart';
 import 'app/routes/app_pages.dart';
+import 'firebase_options.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -46,8 +44,6 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await HiveHelper.initHive();
-  await CloudMessaging.initialize();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
 }
@@ -83,9 +79,8 @@ class MyApp extends StatelessWidget {
         //   );
         // },
         onInit: () async {
-          print('current date: ${DateTime.now().millisecondsSinceEpoch}');
-          print(
-              'current date +12: ${DateTime.now().add(const Duration(days: 12)).millisecondsSinceEpoch}');
+          log('current date: ${DateTime.now().millisecondsSinceEpoch}');
+          log('current date +12: ${DateTime.now().add(const Duration(days: 12)).millisecondsSinceEpoch}');
           // --------------- //
 
           // final popUpAds = List.generate(
@@ -100,7 +95,7 @@ class MyApp extends StatelessWidget {
           //         ));
 
           // for (var ad in popUpAds) {
-          //   print('added ad ');
+          //   log('added ad ');
           //   await FirebaseFirestoreHelper.instance.addPopUpAd(ad);
           // }
 
@@ -160,7 +155,7 @@ class MyApp extends StatelessWidget {
           // final models = [first, second, third];
           // for (var i = 0; i < 3; i++) {
           //   var count = i + 1;
-          //   print('add subscription index: $i');
+          //   log('add subscription index: $i');
           //   await FirebaseFirestore.instance
           //       .collection('subscriptions')
           //       .doc('$count')
@@ -172,7 +167,7 @@ class MyApp extends StatelessWidget {
           // List<NotificationModule> notifications = List.generate(
           //   10,
           //   (index) {
-          //     print('add notification index: $index');
+          //     log('add notification index: $index');
           //     return NotificationModule(
           //       title: 'title $index',
           //       body: 'body $index',

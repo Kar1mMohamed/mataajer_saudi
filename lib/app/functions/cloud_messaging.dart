@@ -62,7 +62,7 @@ class CloudMessaging {
 
       sendFCMTokenToFirebase(); // TO SEND ANY VISITOR TO DATABASE
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 
@@ -99,16 +99,16 @@ class CloudMessaging {
   static void sendFCMTokenToFirebase() async {
     try {
       String? token = await FirebaseMessaging.instance.getToken();
-      print('token: $token');
+      log('token: $token');
       if (token == null) {
         throw Exception('Token is null');
       }
 
       await FirebaseFirestoreHelper.instance.sendFCMToken(token);
 
-      print('FCM Token sent to Firebase $token');
+      log('FCM Token sent to Firebase $token');
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 
@@ -150,7 +150,7 @@ class CloudMessaging {
 
       return isHasLimit;
     } catch (e) {
-      print(e);
+      log(e);
       return false;
     }
   }
@@ -179,7 +179,7 @@ class CloudMessaging {
         },
       );
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 
@@ -201,7 +201,7 @@ class CloudMessaging {
         log('Notification sent failed');
       }
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 }

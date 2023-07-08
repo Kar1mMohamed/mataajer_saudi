@@ -22,10 +22,10 @@ class AddOfferView extends GetView<AddOfferController> {
         if (controller.loading) {
           return MataajerTheme.loadingWidget;
         }
-        return SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.w),
+        return Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            child: SingleChildScrollView(
               child: Column(
                 children: [
                   SizedBox(height: 50.h),
@@ -74,7 +74,49 @@ class AddOfferView extends GetView<AddOfferController> {
                         sucessDialog();
                       }
                     },
-                  )
+                  ),
+                  SizedBox(height: 10.h),
+                  const Divider(thickness: 1),
+                  SizedBox(height: 10.h),
+                  Container(
+                    margin: EdgeInsets.only(bottom: 20.h),
+                    padding: EdgeInsets.symmetric(vertical: 12.w),
+                    height: context.height * 0.5,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: controller.offers.length,
+                        itemBuilder: (context, index) {
+                          final offer = controller.offers[index];
+                          return ListTile(
+                            leading: Container(
+                              width: 50.w,
+                              height: 50.h,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image: NetworkImage(offer.imageURL),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            title: Text(offer.name),
+                            subtitle: Text((offer.isVisible ?? false)
+                                ? 'تم الموافقة'
+                                : 'جاري المراجعة'),
+                            trailing: IconButton(
+                              onPressed: () async {
+                                // await controller.deletePopUpAd(popUpAd);
+                              },
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                            ),
+                          );
+                        }),
+                  ),
                 ],
               ),
             ),

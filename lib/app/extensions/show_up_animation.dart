@@ -22,8 +22,8 @@ extension CustomShowUpAnimation on Widget {
 
   Widget get showUpAnimation2 {
     return ShowUpAnimation(
-      delayStart: Duration(milliseconds: 0),
-      animationDuration: Duration(milliseconds: 450),
+      delayStart: const Duration(milliseconds: 0),
+      animationDuration: const Duration(milliseconds: 450),
       curve: Curves.bounceIn,
       direction: Direction.vertical,
       offset: 0.5,

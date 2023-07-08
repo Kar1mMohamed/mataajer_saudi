@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
@@ -50,7 +51,9 @@ class ShopLoginAndRegisterController extends GetxController {
 
   final loginEmailController = TextEditingController();
   final loginPasswordController = TextEditingController();
+  bool loginRememberMe = false;
 
+  final phoneController = TextEditingController();
   String? shopImageURL;
   final shopNameController = TextEditingController();
   final emailController = TextEditingController();
@@ -68,6 +71,12 @@ class ShopLoginAndRegisterController extends GetxController {
 
   int? shippingFrom;
   int? shippingTo;
+
+  void loginRememberMeFunction(bool? value) async {
+    loginRememberMe = value ?? false;
+    update();
+    await GetStorage().write('loginRememberMe', value);
+  }
 
   Future<void> login() async {
     loading = true;
@@ -88,31 +97,43 @@ class ShopLoginAndRegisterController extends GetxController {
         throw 'Error while login'.tr;
       }
 
-      // if (!user.user!.emailVerified) {
-      //   // throw 'Email not verified';
-      //   print('Email not verified');
-      //   await Get.offAndToNamed(Routes.RESET_PASSWORD,
-      //       arguments: {'isEmailVerify': true});
-      // }
+      if (!user.user!.emailVerified) {
+        // throw 'Email not verified';
+        log('Email not verified');
+        await Get.offAndToNamed(Routes.RESET_PASSWORD,
+            arguments: {'isEmailVerify': true});
+      }
 
       final userModule = await FirebaseFirestoreHelper.instance
           .getShopModule(user.user!.uid, getSubscriptions: true);
 
-      print('userModule: $userModule');
+      log('userModule: $userModule');
+
+      bool isLastSubscriptionExpired = (userModule.subscriptions ?? []).isEmpty
+          ? true
+          : ShopModule.isExpired(userModule.subscriptions!.last.from,
+              userModule.subscriptions!.last.to);
+
+      log('isLastSubscriptionExpired: $isLastSubscriptionExpired');
+
+      if (isLastSubscriptionExpired) {
+        await userModule.updatePrivileges();
+        await userModule.updateValidTill();
+      }
 
       await goHomeForShop();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        // print('No user found for that email.');
+        // log('No user found for that email.');
         // throw 'لا يوجد حساب مسجل بهذا البريد الالكتروني';
         KSnackBar.error('لا يوجد حساب مسجل بهذا البريد الالكتروني');
       } else if (e.code == 'wrong-password') {
-        // print('Wrong password provided for that user.');
+        // log('Wrong password provided for that user.');
         // throw 'كلمة المرور غير صحيحة';
         KSnackBar.error('كلمة المرور غير صحيحة');
       }
     } catch (e) {
-      print(e);
+      log(e);
       KSnackBar.error(e.toString().tr);
     } finally {
       loading = false;
@@ -147,6 +168,7 @@ class ShopLoginAndRegisterController extends GetxController {
       final shopModule = ShopModule(
         name: shopNameController.text,
         email: emailController.text,
+        phone: phoneController.text,
         description: shopDescriptionController.text,
         image: shopImageURL!,
         avgShippingPrice: double.parse(avgShippingPriceController.text),
@@ -154,6 +176,8 @@ class ShopLoginAndRegisterController extends GetxController {
         cuponCode: cuponCodeController.text,
         cuponText: cuponCodeDetailsController.text,
         categoriesUIDs: choosedCategories.map((e) => e.uid!).toList(),
+        keywords: keywords,
+        shopLink: shopLinkController.text,
       );
 
       await FirebaseFirestoreHelper.instance
@@ -236,14 +260,14 @@ class ShopLoginAndRegisterController extends GetxController {
           arguments: {'isEmailVerify': true});
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        // print('The password provided is too weak.');
+        // log('The password provided is too weak.');
         throw 'كلمة المرور ضعيفة';
       } else if (e.code == 'email-already-in-use') {
-        // print('The account already exists for that email.');
+        // log('The account already exists for that email.');
         throw 'البريد الالكتروني مستخدم من قبل';
       }
     } catch (e) {
-      print(e);
+      log(e);
       KSnackBar.error(e.toString().tr);
     } finally {
       loading = false;
@@ -274,7 +298,7 @@ class ShopLoginAndRegisterController extends GetxController {
       Get.back(); // dismiss laoding dialog
       KSnackBar.success('تم رفع الصورة بنجاح');
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       update();
     }
@@ -318,10 +342,63 @@ class ShopLoginAndRegisterController extends GetxController {
     }
   }
 
+  void resetPasswordFunction() async {
+    if (loginEmailController.text.isEmpty) {
+      KSnackBar.error('برجاء ادخال البريد الالكتروني');
+      return;
+    }
+    loading = true;
+    update();
+
+    await FirebaseAuth.instance
+        .sendPasswordResetEmail(email: loginEmailController.text);
+
+    loading = false;
+    update();
+
+    Get.toNamed(Routes.RESET_PASSWORD, arguments: {'isEmailVerify': false});
+  }
+
+  Future<void> automaticLogin(String uid) async {
+    loading = true;
+    update();
+    try {
+      final userModule = await FirebaseFirestoreHelper.instance
+          .getShopModule(uid, getSubscriptions: true);
+
+      log('userModule: $userModule');
+
+      bool isLastSubscriptionExpired = (userModule.subscriptions ?? []).isEmpty
+          ? true
+          : ShopModule.isExpired(userModule.subscriptions!.last.from,
+              userModule.subscriptions!.last.to);
+
+      log('isLastSubscriptionExpired: $isLastSubscriptionExpired');
+
+      if (isLastSubscriptionExpired) {
+        await userModule.updatePrivileges();
+        await userModule.updateValidTill();
+      }
+      await goHomeForShop();
+    } catch (e) {
+      log('automaticLogin error: $e');
+    } finally {
+      loading = false;
+      update();
+    }
+  }
+
   @override
   void onInit() async {
     super.onInit();
-    await goHomeForShop();
+
+    loginRememberMe = GetStorage().read('loginRememberMe') ?? false;
+
+    final currentUser = FirebaseAuth.instance.currentUser;
+
+    if (loginRememberMe && currentUser != null) {
+      await automaticLogin(currentUser.uid);
+    }
 
     if (isNavigateToRegister) {
       await Future.delayed(const Duration(milliseconds: 50));

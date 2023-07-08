@@ -53,7 +53,7 @@ class AdminActiveUsersController extends GetxController {
       await getAllPopUpAds();
       await getAllOffers();
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       sortShops();
 
@@ -70,7 +70,7 @@ class AdminActiveUsersController extends GetxController {
           await FirebaseFirestoreHelper.instance.getShops(forAdmin: true);
       activeShops = shopsList.where((element) => element.isVisible!).toList();
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       loading = false;
       updateActiveShops();
@@ -86,7 +86,7 @@ class AdminActiveUsersController extends GetxController {
     try {
       await FirebaseFirestoreHelper.instance.updateShopVisiblity(module);
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       loading = false;
       isCurrentPageAllShops
@@ -112,7 +112,7 @@ class AdminActiveUsersController extends GetxController {
           ? allShops.remove(module)
           : activeShops.remove(module);
     } catch (e) {
-      print(e);
+      log(e);
     } finally {
       loading = false;
       isCurrentPageAllShops ? updateAllShops() : updateActiveShops();
@@ -179,13 +179,13 @@ class AdminActiveUsersController extends GetxController {
                     await getAllShops();
                     Get.back();
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.delete,
                     color: Colors.red,
                   ),
                 ),
                 leading: IconButton(
-                  icon: Icon(Icons.info),
+                  icon: const Icon(Icons.info),
                   onPressed: () {
                     Get.dialog(PreviewShopDialog(shop: shops[index]));
                   },
@@ -269,11 +269,11 @@ class AdminActiveUsersController extends GetxController {
                     IconButton(
                       onPressed: () async {
                         await FirebaseFirestoreHelper.instance
-                            .deletePopUpAd(ads[index]);
+                            .deletePopUpAd(ads[index].uid!);
                         await getAllShops();
                         Get.back();
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.delete,
                         color: Colors.red,
                       ),
@@ -287,7 +287,7 @@ class AdminActiveUsersController extends GetxController {
                           await getAllShops();
                           Get.back();
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.check,
                           color: Colors.green,
                         ),
@@ -367,7 +367,7 @@ class AdminActiveUsersController extends GetxController {
                         await getAllShops();
                         Get.back();
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.delete,
                         color: Colors.red,
                       ),
@@ -381,7 +381,7 @@ class AdminActiveUsersController extends GetxController {
                           await getAllShops();
                           Get.back();
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.check,
                           color: Colors.green,
                         ),
