@@ -230,6 +230,7 @@ class FirebaseFirestoreHelper {
         });
       }
     } catch (e) {
+      GetStorage().remove('fcm_token_uid');
       log(e);
       rethrow;
     }

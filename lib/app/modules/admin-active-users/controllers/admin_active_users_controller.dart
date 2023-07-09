@@ -44,6 +44,18 @@ class AdminActiveUsersController extends GetxController {
         update();
       };
 
+  Future<void> onRefresh() async {
+    try {
+      if (isCurrentPageAllShops) {
+        await getAllShops();
+      } else {
+        await getActiveShops();
+      }
+    } catch (e) {
+      log('onRefresh $e');
+    }
+  }
+
   Future<void> getAllShops() async {
     loading = true;
     updateAllShops();

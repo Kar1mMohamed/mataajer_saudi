@@ -19,24 +19,26 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
       appBar: appBar(),
       backgroundColor: const Color(0xFFF5F5F5),
       drawer: const MyDrawer(shops: [], isShop: false, isAdmin: true),
-      body: GetBuilder<AdminNotificationController>(builder: (_) {
-        if (controller.loading) {
-          return MataajerTheme.loadingWidget;
-        }
-        if (controller.notifications.isEmpty) {
-          return const Center(
-            child: Text('لا يوجد اشعارات'),
+      body: RefreshIndicator(
+        onRefresh: controller.onRefresh,
+        child: GetBuilder<AdminNotificationController>(builder: (_) {
+          if (controller.loading) {
+            return MataajerTheme.loadingWidget;
+          }
+          if (controller.notifications.isEmpty) {
+            return const Center(child: Text('لا يوجد اشعارات'));
+          }
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.0.sp),
+            child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              itemCount: controller.notifications.length,
+              itemBuilder: (context, index) =>
+                  _notificationCard(context, index),
+            ),
           );
-        }
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.0.sp),
-          child: ListView.builder(
-            physics: const BouncingScrollPhysics(),
-            itemCount: controller.notifications.length,
-            itemBuilder: (context, index) => _notificationCard(context, index),
-          ),
-        );
-      }).forAdmin,
+        }).forAdmin,
+      ),
     );
   }
 

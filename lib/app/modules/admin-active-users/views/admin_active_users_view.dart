@@ -39,13 +39,19 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
                     GetBuilder<AdminActiveUsersController>(
                       id: 'allShops',
                       builder: (context) {
-                        return allShops();
+                        return RefreshIndicator.adaptive(
+                          onRefresh: controller.onRefresh,
+                          child: allShops(),
+                        );
                       },
                     ),
                     GetBuilder<AdminActiveUsersController>(
                       id: 'activeShops',
                       builder: (context) {
-                        return activeShops();
+                        return RefreshIndicator.adaptive(
+                          onRefresh: controller.onRefresh,
+                          child: activeShops(),
+                        );
                       },
                     ),
                   ],
@@ -60,7 +66,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
 
   Widget allShops() {
     if (controller.loading) {
-      return const Center(child: CircularProgressIndicator());
+      return MataajerTheme.loadingWidget;
     }
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
@@ -69,7 +75,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
           id: 'allShopsCard-$index',
           builder: (_) {
             if (controller.loading) {
-              return const Center(child: CircularProgressIndicator());
+              return MataajerTheme.loadingWidget;
             }
             return _shopCard(controller.allShops[index], index);
           }),
@@ -79,7 +85,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
 
   Widget activeShops() {
     if (controller.loading) {
-      return const Center(child: CircularProgressIndicator());
+      return MataajerTheme.loadingWidget;
     }
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
@@ -88,7 +94,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
           id: 'activeShopsCard-$index',
           builder: (_) {
             if (controller.loading) {
-              return const Center(child: CircularProgressIndicator());
+              return MataajerTheme.loadingWidget;
             }
             return _shopCard(controller.activeShops[index], index);
           }),

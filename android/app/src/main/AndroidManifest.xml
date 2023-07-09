@@ -14,7 +14,7 @@
         </intent>
     </queries>
    <application
-        android:label="mataajer_saudi"
+        android:label="متاجر السعودية"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -44,8 +44,10 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="mataajer" android:host="m.mataajer-sa.com" />
-                <data android:scheme="mataajer" android:host="m.mataajer-sa.com" />
+                <data android:scheme="mataajer"/>
+                <data android:host="m.mataajer-sa.com"/>
+                <data android:scheme="mataajer"/>
+                <data android:host="m.mataajer-sa.com"/>
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

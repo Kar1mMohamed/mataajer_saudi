@@ -7,6 +7,7 @@ class AdminNotificationBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<AdminNotificationController>(
       () => AdminNotificationController(),
+      fenix: true,
     );
   }
 }

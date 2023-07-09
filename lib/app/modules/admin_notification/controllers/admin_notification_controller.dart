@@ -159,6 +159,21 @@ class AdminNotificationController extends GetxController {
     }
   }
 
+  Future<void> onRefresh() async {
+    loading = true;
+    update();
+    try {
+      await deleteExpiredTokens();
+      await getAllShops();
+      await getNotifications();
+    } catch (e) {
+      log('onRefresh: $e');
+    } finally {
+      loading = false;
+      update();
+    }
+  }
+
   @override
   void onInit() async {
     loading = true;

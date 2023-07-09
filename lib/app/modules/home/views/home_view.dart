@@ -44,7 +44,7 @@ class HomeView extends GetView<HomeController> {
           ],
         ),
       ),
-      body: RefreshIndicator(
+      body: RefreshIndicator.adaptive(
         onRefresh: controller.onRefresh,
         child: GetBuilder<HomeController>(builder: (_) {
           if (!controller.isHomeFullyInitilized) {
