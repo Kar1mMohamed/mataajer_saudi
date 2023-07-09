@@ -130,6 +130,9 @@ class ShopAccountController extends GetxController {
         cuponText: cuponCodeDetailsController.text,
         categoriesUIDs: choosedCategories.map((e) => e.uid!).toList(),
         isVisible: isVisible,
+        phone: phoneController.text,
+        avgShippingTime: '$shippingFrom-$shippingTo',
+        token: await FirebaseAuth.instance.currentUser!.getIdToken(),
       );
 
       // if (currentShop!.isVisible != module.isVisible) {

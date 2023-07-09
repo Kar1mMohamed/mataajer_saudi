@@ -25,6 +25,8 @@ class OnBoardingView extends GetView<OnBoardingController> {
                     style: TextStyle(fontSize: 17)),
                 SizedBox(height: 10.h),
                 InkWell(
+                    hoverColor: Colors.transparent,
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
                     onTap: () {
                       controller.isShopOwner.value = false;
                       controller.update();
@@ -33,6 +35,8 @@ class OnBoardingView extends GetView<OnBoardingController> {
                         !controller.isShopOwner.value)),
                 SizedBox(height: 20.h),
                 InkWell(
+                    hoverColor: Colors.transparent,
+                    overlayColor: MaterialStateProperty.all(Colors.transparent),
                     onTap: () {
                       controller.isShopOwner.value = true;
                       controller.update();

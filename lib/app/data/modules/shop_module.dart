@@ -46,6 +46,9 @@ class ShopModule {
   bool? isCanSendNotification = false;
   DateTime? validTill;
   //
+  /// TOKEN USED FOR ADMIN PURPOSES
+  String? token;
+  //
   ShopModule({
     this.uid,
     required this.name,
@@ -69,6 +72,7 @@ class ShopModule {
     this.isFourPopUpAdsMonthly,
     this.isCanSendNotification,
     this.validTill,
+    this.token,
   });
 
   bool get isMostVisitShop {
@@ -500,6 +504,15 @@ class ShopModule {
     }
   }
 
+  Future<void> updateShopModule() async {
+    try {
+      await FirebaseFirestoreHelper.instance.updateShop(this);
+      log('updated shop module: $name - $uid');
+    } catch (e) {
+      log(e);
+    }
+  }
+
   ShopModule copyWith({
     String? uid,
     String? name,
@@ -523,6 +536,7 @@ class ShopModule {
     bool? isFourPopUpAdsMonthly,
     bool? isCanSendNotification,
     DateTime? validTill,
+    String? token,
   }) {
     return ShopModule(
       uid: uid ?? this.uid,
@@ -549,6 +563,7 @@ class ShopModule {
       isCanSendNotification:
           isCanSendNotification ?? this.isCanSendNotification,
       validTill: validTill ?? this.validTill,
+      token: token ?? this.token,
     );
   }
 
@@ -580,6 +595,7 @@ class ShopModule {
       'isCanSendNotification': isCanSendNotification,
       'isTwoPopUpAdsMonthly': isTwoPopUpAdsMonthly,
       'isFourPopUpAdsMonthly': isFourPopUpAdsMonthly,
+      'token': token,
     };
   }
 
@@ -634,6 +650,7 @@ class ShopModule {
       isTwoPopUpAdsMonthly: map['isTwoPopUpAdsMonthly'] != null
           ? map['isTwoPopUpAdsMonthly'] as bool
           : false,
+      token: map['token'] != null ? map['token'] as String : null,
     );
   }
 
@@ -644,7 +661,7 @@ class ShopModule {
 
   @override
   String toString() {
-    return 'ShopModule(uid: $uid, name: $name, email: $email, phone: $phone, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions, shopLink: $shopLink, keywords: $keywords, isVisible: $isVisible, userCategory: $userCategory, hits: $hits, isStaticAd: $isStaticAd, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendNotification: $isCanSendNotification, validTill: $validTill)';
+    return 'ShopModule(uid: $uid, name: $name, email: $email, phone: $phone, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions, shopLink: $shopLink, keywords: $keywords, isVisible: $isVisible, userCategory: $userCategory, hits: $hits, isStaticAd: $isStaticAd, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendNotification: $isCanSendNotification, validTill: $validTill, token: $token)';
   }
 
   @override
@@ -672,7 +689,8 @@ class ShopModule {
         other.isTwoPopUpAdsMonthly == isTwoPopUpAdsMonthly &&
         other.isFourPopUpAdsMonthly == isFourPopUpAdsMonthly &&
         other.isCanSendNotification == isCanSendNotification &&
-        other.validTill == validTill;
+        other.validTill == validTill &&
+        other.token == token;
   }
 
   @override
@@ -698,6 +716,7 @@ class ShopModule {
         isTwoPopUpAdsMonthly.hashCode ^
         isFourPopUpAdsMonthly.hashCode ^
         isCanSendNotification.hashCode ^
-        validTill.hashCode;
+        validTill.hashCode ^
+        token.hashCode;
   }
 }

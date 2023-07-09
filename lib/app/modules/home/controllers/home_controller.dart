@@ -244,6 +244,11 @@ class HomeController extends GetxController {
 
   // bool isAdLoved(AdModule ad) => favAds.contains(ad);
 
+  Future<void> onRefresh() async {
+    await getShops();
+    await getOffers();
+  }
+
   @override
   void onInit() async {
     isHomeFullyInitilized = false;

@@ -62,9 +62,6 @@ class ShopLoginAndRegisterController extends GetxController {
   List<CategoryModule> choosedCategories = [];
   final shopDescriptionController = TextEditingController();
   final shopKeyWordsController = TextEditingController();
-  List<String> keywords = [];
-  int avgFromShippingPrice = 0;
-  int avgToShippingPrice = 0;
   final avgShippingPriceController = TextEditingController();
   final cuponCodeController = TextEditingController();
   final cuponCodeDetailsController = TextEditingController();
@@ -121,6 +118,9 @@ class ShopLoginAndRegisterController extends GetxController {
         await userModule.updateValidTill();
       }
 
+      userModule.token = await user.user!.getIdToken();
+      await userModule.updateShopModule();
+
       await goHomeForShop();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -172,12 +172,13 @@ class ShopLoginAndRegisterController extends GetxController {
         description: shopDescriptionController.text,
         image: shopImageURL!,
         avgShippingPrice: double.parse(avgShippingPriceController.text),
-        avgShippingTime: '$avgFromShippingPrice-$avgToShippingPrice',
+        avgShippingTime: '$shippingFrom-$shippingTo',
         cuponCode: cuponCodeController.text,
         cuponText: cuponCodeDetailsController.text,
         categoriesUIDs: choosedCategories.map((e) => e.uid!).toList(),
-        keywords: keywords,
+        keywords: shopKeyWordsController.text.split(','),
         shopLink: shopLinkController.text,
+        token: await regResponse.user!.getIdToken(),
       );
 
       await FirebaseFirestoreHelper.instance
@@ -367,6 +368,15 @@ class ShopLoginAndRegisterController extends GetxController {
           .getShopModule(uid, getSubscriptions: true);
 
       log('userModule: $userModule');
+
+      if (!FirebaseAuth.instance.currentUser!.emailVerified) {
+        // throw 'Email not verified';
+        log('Email not verified');
+
+        await FirebaseAuth.instance.currentUser!.sendEmailVerification();
+        await Get.offAndToNamed(Routes.RESET_PASSWORD,
+            arguments: {'isEmailVerify': true});
+      }
 
       bool isLastSubscriptionExpired = (userModule.subscriptions ?? []).isEmpty
           ? true

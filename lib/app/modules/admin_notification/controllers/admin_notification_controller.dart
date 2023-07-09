@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
@@ -132,10 +133,37 @@ class AdminNotificationController extends GetxController {
     }
   }
 
+  Future<void> deleteExpiredTokens() async {
+    try {
+      final allToknes = await FirebaseFirestore.instance
+          .collection('fcm_tokens')
+          .get()
+          .then((value) => value.docs);
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      for (var token in allToknes) {
+        var createdAt = DateTime.parse(token.data()['createdAt']);
+        var now = DateTime.now();
+        var difference = now.difference(createdAt).inDays;
+
+        if (difference > 14) {
+          log('deleteExpiredTokens: ${token.data()}');
+          batch.delete(token.reference);
+        }
+      }
+
+      await batch.commit();
+    } catch (e) {
+      log('deleteExpiredTokens: $e');
+    }
+  }
+
   @override
   void onInit() async {
     loading = true;
     update();
+    await deleteExpiredTokens();
     await getAllShops();
     await getNotifications();
     loading = false;

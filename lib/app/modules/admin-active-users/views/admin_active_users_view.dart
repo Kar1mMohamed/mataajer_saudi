@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
+import 'package:mataajer_saudi/app/extensions/for_admin.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/custom_switch.dart';
@@ -53,7 +54,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
             ),
           ],
         );
-      }),
+      }).forAdmin,
     );
   }
 
@@ -285,32 +286,33 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
                       Icons.notifications,
                       size: 30.h,
                     ),
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(4.0),
-                        margin: EdgeInsets.only(left: 10.w),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                          border: Border.fromBorderSide(
-                            BorderSide(
+                    if (length > 0)
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(4.0),
+                          margin: EdgeInsets.only(left: 10.w),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                            border: Border.fromBorderSide(
+                              BorderSide(
+                                color: Colors.white,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            '$length',
+                            style: TextStyle(
+                              fontSize: 8.5.sp,
                               color: Colors.white,
-                              width: 2,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                        child: Text(
-                          '$length',
-                          style: TextStyle(
-                            fontSize: 8.5.sp,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
                       ),
-                    ),
                   ],
                 ),
               );

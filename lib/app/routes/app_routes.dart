@@ -22,6 +22,8 @@ abstract class Routes {
   static const ADD_POPUP_AD = _Paths.ADD_POPUP_AD;
   static const PAYMENTS_REDIRECT = _Paths.PAYMENTS_REDIRECT;
   static const ADD_OFFER = _Paths.ADD_OFFER;
+  static const ADMIN_USERS = _Paths.ADMIN_USERS;
+  static const ADMIN_OFFERS = _Paths.ADMIN_OFFERS;
 }
 
 abstract class _Paths {
@@ -42,4 +44,6 @@ abstract class _Paths {
   static const ADD_POPUP_AD = '/add-popup-ad';
   static const PAYMENTS_REDIRECT = '/payments-redirect';
   static const ADD_OFFER = '/add-offer';
+  static const ADMIN_USERS = '/admin-users';
+  static const ADMIN_OFFERS = '/admin-offers';
 }

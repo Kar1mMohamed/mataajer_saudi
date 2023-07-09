@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
+import 'package:mataajer_saudi/app/extensions/for_admin.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
@@ -35,7 +36,7 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
             itemBuilder: (context, index) => _notificationCard(context, index),
           ),
         );
-      }),
+      }).forAdmin,
     );
   }
 

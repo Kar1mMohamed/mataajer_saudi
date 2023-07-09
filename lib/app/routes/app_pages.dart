@@ -1,5 +1,3 @@
-// ignore_for_file: constant_identifier_names
-
 import 'package:get/get.dart';
 
 import '../modules/AddAd/bindings/add_ad_binding.dart';
@@ -22,6 +20,10 @@ import '../modules/add-popup-ad/bindings/add_popup_ad_binding.dart';
 import '../modules/add-popup-ad/views/add_popup_ad_view.dart';
 import '../modules/admin-active-users/bindings/admin_active_users_binding.dart';
 import '../modules/admin-active-users/views/admin_active_users_view.dart';
+import '../modules/admin-offers/bindings/admin_offers_binding.dart';
+import '../modules/admin-offers/views/admin_offers_view.dart';
+import '../modules/admin-users/bindings/admin_users_binding.dart';
+import '../modules/admin-users/views/admin_users_view.dart';
 import '../modules/admin_notification/bindings/admin_notification_binding.dart';
 import '../modules/admin_notification/views/admin_notification_view.dart';
 import '../modules/favorites/bindings/favorites_binding.dart';
@@ -34,6 +36,8 @@ import '../modules/payments-redirect/bindings/payments_redirect_binding.dart';
 import '../modules/payments-redirect/views/payments_redirect_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
+
+// ignore_for_file: constant_identifier_names
 
 part 'app_routes.dart';
 
@@ -124,6 +128,16 @@ class AppPages {
       name: _Paths.ADD_OFFER,
       page: () => const AddOfferView(),
       binding: AddOfferBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADMIN_USERS,
+      page: () => const AdminUsersView(),
+      binding: AdminUsersBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADMIN_OFFERS,
+      page: () => const AdminOffersView(),
+      binding: AdminOffersBinding(),
     ),
   ];
 }

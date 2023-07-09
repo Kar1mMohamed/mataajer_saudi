@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
@@ -11,6 +12,10 @@ class MainSettingsController extends GetxController {
   static MainSettingsController find = Get.find();
   List<CategoryModule> mainCategories = [];
   List<ChooseSubscriptionModule> subscriptions = [];
+
+  bool get isSignedIn => FirebaseAuth.instance.currentUser != null;
+
+  // bool? loginRememberMe;
 
   Future<void> getCategories() async {
     try {
@@ -45,4 +50,8 @@ class MainSettingsController extends GetxController {
       log(e);
     }
   }
+
+  // void setLoginRememberMe() {
+  //   loginRememberMe = GetStorage().read('loginRememberMe') ?? false;
+  // }
 }

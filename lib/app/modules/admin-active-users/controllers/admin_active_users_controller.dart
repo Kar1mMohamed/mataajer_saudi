@@ -10,6 +10,8 @@ import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/loading_image.dart';
 import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
 
+import '../../../functions/firebase_auth.dart';
+
 class AdminActiveUsersController extends GetxController {
   RxInt get notificationCount =>
       Get.find<MainNotificationController>().notificationCount;
@@ -107,6 +109,7 @@ class AdminActiveUsersController extends GetxController {
     loading = true;
     isCurrentPageAllShops ? updateAllShops() : updateActiveShops();
     try {
+      await FirebaseAuthFuntions.deleteUsersWithoutLogin(token: module.token);
       await FirebaseFirestoreHelper.instance.deleteShop(module);
       isCurrentPageAllShops
           ? allShops.remove(module)
@@ -344,7 +347,7 @@ class AdminActiveUsersController extends GetxController {
                   children: [
                     InkWell(
                       onTap: () {
-                        Get.to(() => PreviewShopDialog(shop: shop));
+                        Get.dialog(PreviewShopDialog(shop: shop));
                       },
                       child: CircleAvatar(
                         radius: 25.r,

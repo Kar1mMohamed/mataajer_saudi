@@ -8,7 +8,6 @@ import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/database/notification.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
-
 import '../../../utils/log.dart';
 
 class ShopCustomersNotificationsController extends GetxController {
@@ -22,6 +21,34 @@ class ShopCustomersNotificationsController extends GetxController {
   bool loading = true;
 
   final notTitleController = TextEditingController();
+
+  List<NotificationModule> notifications = [];
+
+  Future<void> getNotifications() async {
+    loading = true;
+    update();
+
+    try {
+      notifications = await FirebaseFirestoreHelper.instance
+          .getShopNotifications(FirebaseAuth.instance.currentUser!.uid);
+    } catch (e) {
+      log('getNotifications: $e');
+    } finally {
+      loading = false;
+      update();
+    }
+  }
+
+  Future<void> deleteNotification(NotificationModule notification) async {
+    try {
+      await FirebaseFirestoreHelper.instance.deleteNotification(notification);
+      notifications.remove(notification);
+    } catch (e) {
+      log('deleteNotification: $e');
+    } finally {
+      update();
+    }
+  }
 
   Future<void> sendNotification() async {
     if (notTitleController.text.isEmpty) {
@@ -61,12 +88,17 @@ class ShopCustomersNotificationsController extends GetxController {
     } catch (e) {
       log(e);
     } finally {
+      notTitleController.clear();
       loading = false;
       update();
     }
   }
 
-  void getCurrentShop() async {
+  void updateNotificationCard(int index) {
+    update(['notification-card-$index']);
+  }
+
+  Future<void> getCurrentShop() async {
     loading = true;
     update();
     if (!isShop) {
@@ -85,6 +117,7 @@ class ShopCustomersNotificationsController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    getCurrentShop();
+    await getCurrentShop();
+    await getNotifications();
   }
 }

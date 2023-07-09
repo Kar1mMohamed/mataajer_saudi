@@ -13,9 +13,10 @@ class ResetPasswordController extends GetxController {
 
   bool loading = false;
 
-  void listenToAccountIfVerfiy() {
+  void listenToAccountIfVerfiy() async {
     if (isEmailVerify) {
-      FirebaseAuth.instance.authStateChanges().listen((user) async {
+      FirebaseAuth.instance.authStateChanges().listen((User? user) async {
+        log('user: $user');
         if (user != null && user.emailVerified) {
           KSnackBar.success('تم تأكيد البريد الالكتروني');
           await Future.delayed(const Duration(seconds: 1));

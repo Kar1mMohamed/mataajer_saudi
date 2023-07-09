@@ -15,13 +15,6 @@ import '../../main.dart';
 class CloudMessaging {
   CloudMessaging._();
 
-  static Map<String, dynamic> sentData = {
-    'isSent': false,
-    'sentDate': '',
-    'token': '',
-    'docUID': '',
-  };
-
   static const _cloudMessagingKey =
       'AAAAAZHRUrk:APA91bGvrCb7xr1_M8A1sFeaqetTmCy3xP1dgoLz7PHskiMgfLj34k8J2EHJ7KSPu6kYoNXJdBob93EEsj65cf420KIXJegzBTSYTD292Kgly3cAqvWKzOhf4fLr1yZB1TB7Kv6RSx8l';
 

@@ -60,7 +60,7 @@ class ShopAccountView extends GetView<ShopAccountController> {
                 _fieldItem('البريد الالكتروني', controller.emailController,
                     isEmail: true, imageAssetIcon: Assets.emailPNG),
                 SizedBox(height: 20.h),
-                _fieldItem('رقم الجوال', controller.emailController,
+                _fieldItem('رقم الجوال', controller.phoneController,
                     isEmail: true, imageAssetIcon: Assets.emailPNG),
                 SizedBox(height: 20.h),
                 _fieldItem('رابط المتجر', controller.shopLinkController,

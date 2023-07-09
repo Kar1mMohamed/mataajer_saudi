@@ -25,7 +25,6 @@ class HomeView extends GetView<HomeController> {
       backgroundColor: const Color(0xFFF5F5F5),
       drawer: MyDrawer(shops: controller.shops, isShop: controller.isShop),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.green,
         onPressed: () {
           const url = "https://wa.me/+966505544326?text=%20السلام%20عليكم";
           URLLauncherFuntions.launchURL(url);
@@ -45,80 +44,83 @@ class HomeView extends GetView<HomeController> {
           ],
         ),
       ),
-      body: GetBuilder<HomeController>(builder: (_) {
-        if (!controller.isHomeFullyInitilized) {
-          return Center(child: MataajerTheme.loadingWidget);
-        }
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: _search(),
-              ),
-              SizedBox(height: 20.h),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'تصنيفات المتاجر',
-                      style: TextStyle(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    InkWell(
-                      focusColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      hoverColor: Colors.transparent,
-                      splashColor: Colors.transparent,
-                      onTap: () {
-                        Get.bottomSheet(_categoriesBottomSheet());
-                      },
-                      child: Text(
-                        'عرض المزيد ',
+      body: RefreshIndicator(
+        onRefresh: controller.onRefresh,
+        child: GetBuilder<HomeController>(builder: (_) {
+          if (!controller.isHomeFullyInitilized) {
+            return Center(child: MataajerTheme.loadingWidget);
+          }
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _search(),
+                ),
+                SizedBox(height: 20.h),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'تصنيفات المتاجر',
                         style: TextStyle(
-                          color: MataajerTheme.mainColorDarken,
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10.h),
-              SizedBox(
-                height: 40.h,
-                child: GetBuilder<HomeController>(
-                    id: 'categories',
-                    builder: (_) {
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: controller.categoriesList.length,
-                        itemBuilder: (context, index) {
-                          return _categoryCard(index);
+                      InkWell(
+                        focusColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        splashColor: Colors.transparent,
+                        onTap: () {
+                          Get.bottomSheet(_categoriesBottomSheet());
                         },
-                      );
+                        child: Text(
+                          'عرض المزيد ',
+                          style: TextStyle(
+                            color: MataajerTheme.mainColorDarken,
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10.h),
+                SizedBox(
+                  height: 40.h,
+                  child: GetBuilder<HomeController>(
+                      id: 'categories',
+                      builder: (_) {
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: controller.categoriesList.length,
+                          itemBuilder: (context, index) {
+                            return _categoryCard(index);
+                          },
+                        );
+                      }),
+                ),
+                SizedBox(height: 20.h),
+                Padding(
+                  padding: EdgeInsets.all(8.0.sp),
+                  child: _homeBanner(context),
+                ),
+                SizedBox(height: 20.h),
+                GetBuilder<HomeController>(
+                    id: 'all-ads',
+                    builder: (_) {
+                      return _ads(context);
                     }),
-              ),
-              SizedBox(height: 20.h),
-              Padding(
-                padding: EdgeInsets.all(8.0.sp),
-                child: _homeBanner(context),
-              ),
-              SizedBox(height: 20.h),
-              GetBuilder<HomeController>(
-                  id: 'all-ads',
-                  builder: (_) {
-                    return _ads(context);
-                  }),
-            ],
-          ),
-        );
-      }),
+              ],
+            ),
+          );
+        }),
+      ),
     );
   }
 
@@ -689,32 +691,33 @@ class HomeView extends GetView<HomeController> {
                     Icons.notifications,
                     size: 30.h,
                   ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(4.0),
-                      margin: EdgeInsets.only(left: 10.w),
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                        border: Border.fromBorderSide(
-                          BorderSide(
+                  if (length > 0)
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(4.0),
+                        margin: EdgeInsets.only(left: 10.w),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                          border: Border.fromBorderSide(
+                            BorderSide(
+                              color: Colors.white,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          '$length',
+                          style: TextStyle(
+                            fontSize: 8.5.sp,
                             color: Colors.white,
-                            width: 2,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                      child: Text(
-                        '$length',
-                        style: TextStyle(
-                          fontSize: 8.5.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
                     ),
-                  ),
                 ],
               ),
             );

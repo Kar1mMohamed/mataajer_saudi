@@ -155,6 +155,21 @@ class MyDrawer extends StatelessWidget {
               const Icon(Icons.notifications, color: MataajerTheme.mainColor),
         ),
         _drawerItem(
+          '',
+          'العروض',
+          route: Routes.ADMIN_OFFERS,
+          customIcon: const Icon(Icons.local_offer_rounded,
+              color: MataajerTheme.mainColor),
+        ),
+
+        _drawerItem(
+          '',
+          'المتاجر',
+          route: Routes.ADMIN_USERS,
+          customIcon: const Icon(Icons.account_box_rounded,
+              color: MataajerTheme.mainColor),
+        ),
+        _drawerItem(
           Assets.exitVector,
           'تسجيل خروج',
           onTap: () async {

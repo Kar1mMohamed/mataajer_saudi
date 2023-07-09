@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
+import 'package:mataajer_saudi/app/data/constants.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
@@ -21,10 +22,11 @@ class ShopCustomersNotificationsView
         if (controller.loading) {
           return MataajerTheme.loadingWidget;
         }
-        return SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.w),
+        return Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.w),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
                   Image.asset(Assets.bilNotificationVector),
@@ -54,8 +56,97 @@ class ShopCustomersNotificationsView
                   SizedBox(height: 40.h),
                   RoundedButton(
                     text: 'ارسال',
-                    press: () => controller.sendNotification(),
+                    press: () async {
+                      await controller.sendNotification();
+                      await controller.getNotifications();
+                    },
                   ),
+                  SizedBox(
+                    height: context.height * 0.7,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: ListView.separated(
+                          physics: const BouncingScrollPhysics(),
+                          padding: EdgeInsets.symmetric(horizontal: 5.w),
+                          itemCount: controller.notifications.length,
+                          separatorBuilder: (context, index) =>
+                              const Divider(thickness: 0.5),
+                          itemBuilder: (context, index) {
+                            return GetBuilder<
+                                    ShopCustomersNotificationsController>(
+                                id: 'notification-card-$index',
+                                builder: (_) {
+                                  if (controller.loading) {
+                                    return const Center(
+                                        child: CircularProgressIndicator());
+                                  }
+                                  return ListTile(
+                                    title: Text(
+                                      controller.notifications[index].body ??
+                                          '',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    titleAlignment:
+                                        ListTileTitleAlignment.center,
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text(Constants.convertDateToDateString(
+                                            controller
+                                                .notifications[index].date!)),
+                                        Text(
+                                            (controller.notifications[index]
+                                                        .isActive ??
+                                                    false)
+                                                ? 'مفعل'
+                                                : 'غير مفعل',
+                                            style: TextStyle(
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w500,
+                                                color: (controller
+                                                            .notifications[
+                                                                index]
+                                                            .isActive ??
+                                                        false)
+                                                    ? Colors.green
+                                                    : Colors.red)),
+                                      ],
+                                    ),
+                                    trailing: IconButton(
+                                      onPressed: () async {
+                                        controller.loading = true;
+                                        controller
+                                            .updateNotificationCard(index);
+
+                                        await controller.deleteNotification(
+                                            controller.notifications[index]);
+                                        await controller.getNotifications();
+
+                                        controller.loading = false;
+                                        controller
+                                            .updateNotificationCard(index);
+                                      },
+                                      icon: const Icon(Icons.delete,
+                                          color: Colors.red),
+                                    ),
+                                  );
+                                });
+                          },
+                        ),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
@@ -69,9 +160,9 @@ class ShopCustomersNotificationsView
     return AppBar(
       backgroundColor: Colors.transparent,
       shadowColor: Colors.transparent,
-      foregroundColor: Colors.transparent,
+      foregroundColor: Colors.white,
       elevation: 0,
-      title: Text('ارسال اشعار',
+      title: Text('اشعارات العملاء',
           style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500)),
       centerTitle: true,
       toolbarHeight: 50.h,

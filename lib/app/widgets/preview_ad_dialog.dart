@@ -279,7 +279,7 @@ class PreviewAdDialog extends StatelessWidget {
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: Text(
-                            'متاجر مشابهة',
+                            'عروض مشابهة',
                             style: TextStyle(
                                 fontSize: 14.sp, fontWeight: FontWeight.w500),
                           ),

@@ -2,6 +2,9 @@ import 'package:intl/intl.dart';
 
 class Constants {
   Constants._();
+  static String unKnownPersonImageURL =
+      'https://firebasestorage.googleapis.com/v0/b/mataajer-saudi.appspot.com/o/Unknown_person.jpg?alt=media&token=b8b77259-f2fb-447b-ace2-a5b35a90ec9d';
+
   static List<String> categoriesString = [
     'ملابس واحذية',
     'اكسسوارات',

@@ -5,13 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_notification_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_popup_ads_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
+import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/translation/tr.dart';
+import 'package:mataajer_saudi/database/helper/hive_helper.dart';
 import 'package:mataajer_saudi/database/notification.dart';
 import 'app/routes/app_pages.dart';
 import 'firebase_options.dart';
@@ -44,6 +47,9 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await HiveHelper.initHive();
+  await CloudMessaging.initialize();
+  await GetStorage.init();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
 }
