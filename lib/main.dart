@@ -6,6 +6,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:hive/hive.dart';
 import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_notification_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
@@ -26,6 +27,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // await Firebase.initializeApp();
 
   log("Handling a background message: ${message.messageId}");
+  Hive.registerAdapter(NotificationModuleAdapter());
   await NotificationModule.openBox;
   final notificationModule = NotificationModule(
     title: message.notification?.title ?? '',
@@ -199,7 +201,6 @@ class _InitialBindings extends Bindings {
     Get.put<MainAccountController>(MainAccountController(), permanent: true);
     Get.lazyPut<MainNotificationController>(() => MainNotificationController(),
         fenix: true);
-
     Get.put<MainPopupAdsController>(MainPopupAdsController(), permanent: true);
   }
 }

@@ -9,8 +9,8 @@ import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_auth.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
-import 'package:mataajer_saudi/app/utils/custom_snackbar.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
+import 'package:mataajer_saudi/utils/ksnackbar.dart';
 
 class AdminUsersController extends GetxController {
   final mainSettingsController = Get.find<MainSettingsController>();
@@ -112,8 +112,6 @@ class AdminUsersController extends GetxController {
 
       await userCredential.user!.sendEmailVerification();
 
-      registerFirebaseApp.delete(); // Delete temporary firebase app
-
       final shopModule = ShopModule(
         name: shopNameController.text,
         email: emailController.text,
@@ -129,6 +127,8 @@ class AdminUsersController extends GetxController {
         shopLink: shopLinkController.text,
         token: await userCredential.user!.getIdToken(),
       );
+
+      registerFirebaseApp.delete(); // Delete temporary firebase app
 
       await FirebaseFirestoreHelper.instance
           .addShop(shopModule, userCredential.user!.uid);
@@ -148,7 +148,7 @@ class AdminUsersController extends GetxController {
       await finalShopModule.updateValidTill();
       await finalShopModule.updatePrivileges();
 
-      Get.back(); // to close dialog
+      KSnackBar.success('تم اضافة المتجر بنجاح');
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         // log('The password provided is too weak.');
@@ -159,9 +159,10 @@ class AdminUsersController extends GetxController {
       }
     } catch (e) {
       log('Error while registering: $e');
-      CustomSnackBar.error(e.toString().tr);
+      KSnackBar.error(e.toString().tr);
     } finally {
       clearAll();
+      Get.back(); // to close dialog
       loading = false;
       updateAdShopDialog();
     }

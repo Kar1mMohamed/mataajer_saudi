@@ -119,7 +119,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
                   width: double.infinity,
                   child: Column(
                     children: [
-                      SizedBox(height: 35.h),
+                      SizedBox(height: 20.h),
                       Row(
                         children: [
                           _button(
@@ -455,6 +455,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
                 }
               },
             ),
+            SizedBox(height: 20.h),
           ],
         ),
       ),

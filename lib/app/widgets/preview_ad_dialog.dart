@@ -318,7 +318,7 @@ class PreviewAdDialog extends StatelessWidget {
       hoverColor: Colors.transparent,
       splashColor: Colors.transparent,
       onTap: () {
-        Get.back(closeOverlays: true);
+        Get.back(closeOverlays: false);
         Get.dialog(PreviewAdDialog(adModule: ad));
       },
       child: Column(

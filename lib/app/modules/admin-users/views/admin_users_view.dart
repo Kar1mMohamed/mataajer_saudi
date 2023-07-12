@@ -410,7 +410,7 @@ class AdminUsersView extends GetView<AdminUsersController> {
                         showPassword: controller.showPassword,
                         showPasswordTap: () {
                           controller.showPassword = !controller.showPassword;
-                          controller.update();
+                          controller.updateAdShopDialog();
                         },
                       ),
                       SizedBox(height: 20.h),
@@ -579,7 +579,7 @@ class AdminUsersView extends GetView<AdminUsersController> {
 
                           if (res['status'] == 'success') {
                             final sub = res['data'] as ChooseSubscriptionModule;
-                            controller.register(sub);
+                            await controller.register(sub);
                           } else if (res['status'] == 'cancel') {
                             KSnackBar.error('عفواً لم يتم تسجيل الاشتراك');
                           } else {

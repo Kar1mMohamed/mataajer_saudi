@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -25,31 +26,40 @@ class OnBoardingView extends GetView<OnBoardingController> {
                     style: TextStyle(fontSize: 17)),
                 SizedBox(height: 10.h),
                 InkWell(
-                    hoverColor: Colors.transparent,
-                    overlayColor: MaterialStateProperty.all(Colors.transparent),
-                    onTap: () {
-                      controller.isShopOwner.value = false;
-                      controller.update();
-                    },
-                    child: _chooseItem(Assets.groupIcon, 'زائر',
-                        !controller.isShopOwner.value)),
+                  hoverColor: Colors.transparent,
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  onTap: () async {
+                    controller.isShopOwner.value = false;
+                    controller.update();
+                  },
+                  child: _chooseItem(
+                    Assets.groupIcon,
+                    'زائر',
+                    !controller.isShopOwner.value,
+                  ),
+                ),
                 SizedBox(height: 20.h),
                 InkWell(
-                    hoverColor: Colors.transparent,
-                    overlayColor: MaterialStateProperty.all(Colors.transparent),
-                    onTap: () {
-                      controller.isShopOwner.value = true;
-                      controller.update();
-                    },
-                    child: _chooseItem(Assets.personIcon, 'صاحب متجر',
-                        controller.isShopOwner.value)),
+                  hoverColor: Colors.transparent,
+                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  onTap: () {
+                    controller.isShopOwner.value = true;
+                    controller.update();
+                  },
+                  child: _chooseItem(
+                    Assets.personIcon,
+                    'صاحب متجر',
+                    controller.isShopOwner.value,
+                  ),
+                ),
                 SizedBox(height: 30.h),
                 RoundedButton(
                   text: 'دخول',
-                  press: () {
+                  press: () async {
                     if (controller.isShopOwner.value) {
                       Get.offAndToNamed(Routes.SHOP_LOGIN_AND_REGISTER);
                     } else {
+                      await FirebaseAuth.instance.signOut();
                       Get.offAndToNamed(Routes.HOME);
                     }
                   },

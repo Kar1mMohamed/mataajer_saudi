@@ -32,7 +32,7 @@ abstract class PaymentsHelper {
   //     );
 
   static Future<Map> sendRequest(TapChargeReq module) async {
-    String mobileRedirectUrl = 'mataajer://m.mataajer-sa.com/success';
+    String mobileRedirectUrl = 'mataajer://m.mataajer-sa.com/payments-redirect';
 
     module.post = Post(url: mobileRedirectUrl);
 
@@ -66,7 +66,7 @@ abstract class PaymentsHelper {
       Map responseMap = json.decode(responseString);
 
       if (response.statusCode == 200) {
-        // log(responseMap);
+        log('responseMap: $responseMap');
         return responseMap;
       } else {
         log(responseMap);

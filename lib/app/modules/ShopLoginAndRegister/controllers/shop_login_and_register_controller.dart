@@ -6,6 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
+import 'package:mataajer_saudi/app/data/constants.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
@@ -94,7 +95,8 @@ class ShopLoginAndRegisterController extends GetxController {
         throw 'Error while login'.tr;
       }
 
-      if (!user.user!.emailVerified) {
+      if (!user.user!.emailVerified &&
+          !Constants.admins.contains(user.user!.uid)) {
         // throw 'Email not verified';
         log('Email not verified');
         await Get.offAndToNamed(Routes.RESET_PASSWORD,
@@ -162,8 +164,6 @@ class ShopLoginAndRegisterController extends GetxController {
       if (regResponse.user == null) {
         throw 'Error while registering';
       }
-
-      await regResponse.user!.sendEmailVerification();
 
       final shopModule = ShopModule(
         name: shopNameController.text,
@@ -257,15 +257,18 @@ class ShopLoginAndRegisterController extends GetxController {
       await finalShopModule.updateValidTill();
       await finalShopModule.updatePrivileges();
 
+      await regResponse.user!.sendEmailVerification();
       await Get.offAndToNamed(Routes.RESET_PASSWORD,
           arguments: {'isEmailVerify': true});
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         // log('The password provided is too weak.');
-        throw 'كلمة المرور ضعيفة';
+        KSnackBar.error('كلمة المرور ضعيفة');
+        // throw 'كلمة المرور ضعيفة';
       } else if (e.code == 'email-already-in-use') {
         // log('The account already exists for that email.');
-        throw 'البريد الالكتروني مستخدم من قبل';
+        KSnackBar.error('البريد الالكتروني مستخدم من قبل');
+        // throw 'البريد الالكتروني مستخدم من قبل';
       }
     } catch (e) {
       log(e);

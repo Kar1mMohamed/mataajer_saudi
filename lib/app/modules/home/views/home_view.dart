@@ -878,7 +878,7 @@ class HomeView extends GetView<HomeController> {
         }
 
         KSnackBar.success('تم تجديد الاشتراك بنجاح برجاء الدخول مره اخرى');
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 1));
 
         Get.offAndToNamed(Routes.ON_BARDING);
       },
