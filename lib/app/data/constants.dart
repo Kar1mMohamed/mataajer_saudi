@@ -23,7 +23,10 @@ class Constants {
     return '${formateNumber.format(hour)}:${formateNumber.format(date.minute)} $timeTitle';
   }
 
-  static String convertDateToDateString(DateTime date) {
+  static String? convertDateToDateString(DateTime? date) {
+    if (date == null) {
+      return null;
+    }
     final formateNumber = NumberFormat('00');
 
     return '${formateNumber.format(date.day)}/${formateNumber.format(date.day)}/${date.year} ${convertDateToTimeString(date)}';

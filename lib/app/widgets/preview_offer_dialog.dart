@@ -6,15 +6,15 @@ import 'package:mataajer_saudi/app/controllers/preview_ad_dialog_controller.dart
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 
-class PreviewAdDialog extends StatelessWidget {
-  const PreviewAdDialog({super.key, required this.adModule});
-  final AdModule adModule;
+class PreviewOfferDialog extends StatelessWidget {
+  const PreviewOfferDialog({super.key, required this.offerModule});
+  final AdModule offerModule;
 
   @override
   Widget build(BuildContext context) {
-    PreviewAdDialogController controller =
-        Get.put(PreviewAdDialogController(adModule: adModule));
-    return GetBuilder<PreviewAdDialogController>(builder: (context) {
+    PreviewOfferDialogController controller =
+        Get.put(PreviewOfferDialogController(offerModule: offerModule));
+    return GetBuilder<PreviewOfferDialogController>(builder: (context) {
       return Dialog(
         insetPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 35.h),
         shape:
@@ -51,7 +51,7 @@ class PreviewAdDialog extends StatelessWidget {
                             child: SizedBox.fromSize(
                               size: const Size.fromRadius(48),
                               child: Image.network(
-                                adModule.imageURL,
+                                offerModule.imageURL,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -61,7 +61,7 @@ class PreviewAdDialog extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              adModule.name,
+                              offerModule.name,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 15.sp,
@@ -69,7 +69,7 @@ class PreviewAdDialog extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              adModule.categories.first.name,
+                              offerModule.categories.first.name,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 13.sp,
@@ -86,7 +86,7 @@ class PreviewAdDialog extends StatelessWidget {
                           child: Padding(
                             padding: EdgeInsets.all(8.0.sp),
                             child: Text(
-                              'عدد الزيارات  ${adModule.hits ?? 0}',
+                              'عدد الزيارات  ${offerModule.hits ?? 0}',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 13.sp,
@@ -115,7 +115,7 @@ class PreviewAdDialog extends StatelessWidget {
                       ),
                       SizedBox(height: 5.0.h),
                       Text(
-                        adModule.description,
+                        offerModule.description,
                         style: TextStyle(
                           color: Colors.black.withOpacity(0.7),
                           fontSize: 15.sp,
@@ -147,7 +147,7 @@ class PreviewAdDialog extends StatelessWidget {
                             child: Column(
                               children: [
                                 Text(
-                                  '${adModule.avgShippingPrice}',
+                                  '${offerModule.avgShippingPrice}',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16.sp,
@@ -185,7 +185,7 @@ class PreviewAdDialog extends StatelessWidget {
                             child: Column(
                               children: [
                                 Text(
-                                  '${adModule.avgShippingTime}',
+                                  '${offerModule.avgShippingTime}',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16.sp,
@@ -213,7 +213,7 @@ class PreviewAdDialog extends StatelessWidget {
                   onTap: () {
                     // set clippboard
                     Clipboard.setData(
-                        ClipboardData(text: adModule.cuponCode ?? ''));
+                        ClipboardData(text: offerModule.cuponCode ?? ''));
                     Get.snackbar(
                       'نسخ الكود',
                       'تم نسخ الكود بنجاح',
@@ -256,7 +256,7 @@ class PreviewAdDialog extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                adModule.description,
+                                offerModule.description,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 12.sp,
@@ -319,21 +319,21 @@ class PreviewAdDialog extends StatelessWidget {
       splashColor: Colors.transparent,
       onTap: () {
         Get.back(closeOverlays: false);
-        Get.dialog(PreviewAdDialog(adModule: ad));
+        Get.dialog(PreviewOfferDialog(offerModule: ad));
       },
       child: Column(
         children: [
           CircleAvatar(
             radius: 40.r,
             backgroundImage: NetworkImage(
-              adModule.imageURL,
+              offerModule.imageURL,
               // height: 75,
               // width: 75,
             ),
           ),
           SizedBox(height: 10.h),
           Text(
-            adModule.name,
+            offerModule.name,
             style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,

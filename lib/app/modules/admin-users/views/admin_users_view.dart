@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:mataajer_saudi/app/data/constants.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
 import 'package:mataajer_saudi/app/extensions/for_admin.dart';
@@ -65,9 +66,13 @@ class AdminUsersView extends GetView<AdminUsersController> {
                                 return const Center(
                                     child: CircularProgressIndicator());
                               }
+                              DateTime? validTill =
+                                  controller.shops[index].validTill;
+
                               return ListTile(
                                 onTap: () => Get.toNamed(Routes.SHOP_ACCOUNT,
                                     arguments: controller.shops[index]),
+                                onLongPress: () {},
                                 leading: CircleAvatar(
                                   radius: 22.r,
                                   backgroundImage: NetworkImage(
@@ -86,6 +91,11 @@ class AdminUsersView extends GetView<AdminUsersController> {
                                   children: [
                                     Text(controller.shops[index].email ?? ''),
                                     Text(controller.shops[index].phone ?? ''),
+                                    Text(
+                                      Constants.convertDateToDateString(
+                                              validTill) ??
+                                          '',
+                                    ),
                                   ],
                                 ),
                                 trailing: IconButton(

@@ -88,6 +88,7 @@ class AddPopupAdController extends GetxController {
         validTill: currentShop!.validTill,
         url: shopLinkController.text,
         isVisible: false,
+        date: DateTime.now(),
       );
 
       await FirebaseFirestoreHelper.instance.addPopUpAd(module);
@@ -129,6 +130,35 @@ class AddPopupAdController extends GetxController {
       loading = false;
       update();
     }
+  }
+
+  void showPopUpAd(PopUpAdModule ad) {
+    Get.dialog(Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 10),
+            Image.network(
+              ad.image,
+              height: 300,
+              width: 300,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              ad.url ?? '',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'التاريخ: ${ad.date?.toString().split(' ')[0] ?? ''}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    ));
   }
 
   @override

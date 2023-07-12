@@ -13,7 +13,9 @@ class ChooseSubscriptionModule {
   bool? isStatic = false;
   bool? isTwoPopUpAdsMonthly = false;
   bool? isFourPopUpAdsMonthly = false;
-  bool? isCanSendNotification = false;
+  bool? isCanSendTwoNotification = false;
+  bool? isCanSendFourNotification = false;
+
   DateTime? subscriptionDate = DateTime.now();
 
   double? get getPriceByDays => allowedDays == 30 ? monthlyPrice : yearlyPrice;
@@ -28,7 +30,8 @@ class ChooseSubscriptionModule {
     this.isStatic,
     this.isTwoPopUpAdsMonthly,
     this.isFourPopUpAdsMonthly,
-    this.isCanSendNotification,
+    this.isCanSendTwoNotification,
+    this.isCanSendFourNotification,
     this.subscriptionDate,
   });
 
@@ -42,7 +45,8 @@ class ChooseSubscriptionModule {
     bool? isStatic,
     bool? isTwoPopUpAdsMonthly,
     bool? isFourPopUpAdsMonthly,
-    bool? isCanSendNotification,
+    bool? isCanSendTwoNotification,
+    bool? isCanSendFourNotification,
   }) {
     return ChooseSubscriptionModule(
       uid: uid ?? this.uid,
@@ -55,14 +59,16 @@ class ChooseSubscriptionModule {
       isTwoPopUpAdsMonthly: isTwoPopUpAdsMonthly ?? this.isTwoPopUpAdsMonthly,
       isFourPopUpAdsMonthly:
           isFourPopUpAdsMonthly ?? this.isFourPopUpAdsMonthly,
-      isCanSendNotification:
-          isCanSendNotification ?? this.isCanSendNotification,
+      isCanSendTwoNotification:
+          isCanSendTwoNotification ?? this.isCanSendTwoNotification,
+      isCanSendFourNotification:
+          isCanSendFourNotification ?? this.isCanSendFourNotification,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'uid': uid,
+      // 'uid': uid,
       'name': name,
       'allowedDays': allowedDays,
       'monthlyPrice': monthlyPrice,
@@ -71,9 +77,9 @@ class ChooseSubscriptionModule {
       'isStatic': isStatic,
       'isTwoPopUpAdsMonthly': isTwoPopUpAdsMonthly,
       'isFourPopUpAdsMonthly': isFourPopUpAdsMonthly,
-      'isCanSendNotification': isCanSendNotification,
-      'subscriptionDate':
-          Timestamp.fromDate(subscriptionDate ?? DateTime.now()),
+      'isCanSendTwoNotification': isCanSendTwoNotification,
+      'isCanSendFourNotification': isCanSendFourNotification,
+      // 'subscriptionDate': subscriptionDate,
     };
   }
 
@@ -98,12 +104,15 @@ class ChooseSubscriptionModule {
       isFourPopUpAdsMonthly: map['isFourPopUpAdsMonthly'] != null
           ? map['isFourPopUpAdsMonthly'] as bool
           : null,
-      isCanSendNotification: map['isCanSendNotification'] != null
-          ? map['isCanSendNotification'] as bool
+      isCanSendTwoNotification: map['isCanSendTwoNotification'] != null
+          ? map['isCanSendTwoNotification'] as bool
+          : null,
+      isCanSendFourNotification: map['isCanSendFourNotification'] != null
+          ? map['isCanSendFourNotification'] as bool
           : null,
       subscriptionDate: map['subscriptionDate'] != null
           ? (map['subscriptionDate'] as Timestamp).toDate()
-          : DateTime.now(),
+          : null,
     );
   }
   String toJson() => json.encode(toMap());
@@ -114,7 +123,7 @@ class ChooseSubscriptionModule {
 
   @override
   String toString() {
-    return 'ChooseSubscriptionModule(uid: $uid, name: $name, allowedDays: $allowedDays, monthlyPrice: $monthlyPrice, yearlyPrice: $yearlyPrice, isPublishable: $isPublishable, isStatic: $isStatic, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendNotification: $isCanSendNotification)';
+    return 'ChooseSubscriptionModule(uid: $uid, name: $name, allowedDays: $allowedDays, monthlyPrice: $monthlyPrice, yearlyPrice: $yearlyPrice, isPublishable: $isPublishable, isStatic: $isStatic, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendTwoNotification: $isCanSendTwoNotification, isCanSendFourNotification: $isCanSendFourNotification,subscriptionDate: $subscriptionDate)';
   }
 
   @override
@@ -130,7 +139,9 @@ class ChooseSubscriptionModule {
         other.isStatic == isStatic &&
         other.isTwoPopUpAdsMonthly == isTwoPopUpAdsMonthly &&
         other.isFourPopUpAdsMonthly == isFourPopUpAdsMonthly &&
-        other.isCanSendNotification == isCanSendNotification;
+        other.isCanSendTwoNotification == isCanSendTwoNotification &&
+        other.isCanSendFourNotification == isCanSendFourNotification &&
+        other.subscriptionDate == subscriptionDate;
   }
 
   @override
@@ -144,6 +155,8 @@ class ChooseSubscriptionModule {
         isStatic.hashCode ^
         isTwoPopUpAdsMonthly.hashCode ^
         isFourPopUpAdsMonthly.hashCode ^
-        isCanSendNotification.hashCode;
+        isCanSendTwoNotification.hashCode ^
+        isCanSendFourNotification.hashCode ^
+        subscriptionDate.hashCode;
   }
 }

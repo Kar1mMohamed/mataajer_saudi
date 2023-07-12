@@ -33,7 +33,7 @@ class NotificationsController extends GetxController {
           !yesterdayNotifications.contains(element))
       .toList();
 
-  void getNotifications() async {
+  Future<void> getNotifications() async {
     try {
       _notifications = NotificationModule.notifications;
     } catch (e) {
@@ -45,8 +45,8 @@ class NotificationsController extends GetxController {
   }
 
   @override
-  void onInit() {
-    getNotifications();
+  void onInit() async {
     super.onInit();
+    await getNotifications();
   }
 }

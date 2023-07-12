@@ -77,36 +77,10 @@ class AddPopupAdView extends GetView<AddPopupAdController> {
                         border: Border.all(color: Colors.grey),
                       ),
                       child: ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: controller.popUpAds.length,
-                          itemBuilder: (context, index) {
-                            final popUpAd = controller.popUpAds[index];
-                            return ListTile(
-                              leading: Container(
-                                width: 50.w,
-                                height: 50.h,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  image: DecorationImage(
-                                    image: NetworkImage(popUpAd.image),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              title: Text(popUpAd.url ?? ''),
-                              subtitle: Text((popUpAd.isVisible ?? false)
-                                  ? 'تم الموافقة'
-                                  : 'جاري المراجعة'),
-                              trailing: IconButton(
-                                onPressed: () async {
-                                  await controller.deletePopUpAd(popUpAd);
-                                },
-                                icon:
-                                    const Icon(Icons.delete, color: Colors.red),
-                              ),
-                            );
-                          }),
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: controller.popUpAds.length,
+                        itemBuilder: (context, index) => adCard(index),
+                      ),
                     ),
                   ),
                 ],
@@ -153,6 +127,36 @@ class AddPopupAdView extends GetView<AddPopupAdController> {
         ),
       ],
       leadingWidth: 50.w,
+    );
+  }
+
+  Widget adCard(int index) {
+    final popUpAd = controller.popUpAds[index];
+    return ListTile(
+      onTap: () {
+        controller.showPopUpAd(popUpAd);
+      },
+      leading: Container(
+        width: 50.w,
+        height: 50.h,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          image: DecorationImage(
+            image: NetworkImage(popUpAd.image),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+      title: Text(popUpAd.url ?? ''),
+      subtitle:
+          Text((popUpAd.isVisible ?? false) ? 'تم الموافقة' : 'جاري المراجعة'),
+      trailing: IconButton(
+        onPressed: () async {
+          await controller.deletePopUpAd(popUpAd);
+        },
+        icon: const Icon(Icons.delete, color: Colors.red),
+      ),
     );
   }
 

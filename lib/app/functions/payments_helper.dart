@@ -32,7 +32,7 @@ abstract class PaymentsHelper {
   //     );
 
   static Future<Map> sendRequest(TapChargeReq module) async {
-    String mobileRedirectUrl = 'mataajer://m.mataajer-sa.com/payments-redirect';
+    String mobileRedirectUrl = 'mataajer://m.mataajer-sa.com/success';
 
     module.post = Post(url: mobileRedirectUrl);
 

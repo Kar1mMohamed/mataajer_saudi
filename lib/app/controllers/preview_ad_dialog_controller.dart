@@ -3,18 +3,19 @@ import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/modules/home/controllers/home_controller.dart';
 
-class PreviewAdDialogController extends GetxController {
-  final AdModule adModule;
-  PreviewAdDialogController({required this.adModule});
+class PreviewOfferDialogController extends GetxController {
+  final AdModule offerModule;
+  PreviewOfferDialogController({required this.offerModule});
   void addView() =>
-      FirebaseFirestoreHelper.instance.addHit('offers', adModule.uid!);
+      FirebaseFirestoreHelper.instance.addHit('offers', offerModule.uid!);
 
   List<AdModule> get similarAds {
     try {
       return Get.find<HomeController>().offers.where(
         (element) {
-          if (element.uid == adModule.shopUID) return false;
-          if (element.categoryUIDs.contains(adModule.categoryUIDs.first)) {
+          if (element.shopUID == offerModule.shopUID) return false;
+          if (element.uid == offerModule.uid) return false;
+          if (element.categoryUIDs.contains(offerModule.categoryUIDs.first)) {
             return true;
           }
           return false;

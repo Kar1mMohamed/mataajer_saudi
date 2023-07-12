@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
-import 'package:mataajer_saudi/app/widgets/preview_ad_dialog.dart';
+import 'package:mataajer_saudi/app/widgets/preview_offer_dialog.dart';
 import '../../../data/assets.dart';
 import '../../../widgets/back_button.dart';
 import '../controllers/admin_offers_controller.dart';
@@ -50,8 +50,8 @@ class AdminOffersView extends GetView<AdminOffersController> {
                               }
                               return ListTile(
                                 onTap: () => Get.dialog(
-                                  PreviewAdDialog(
-                                    adModule: controller.offers[index],
+                                  PreviewOfferDialog(
+                                    offerModule: controller.offers[index],
                                   ),
                                 ),
                                 leading: CircleAvatar(

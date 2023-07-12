@@ -247,7 +247,6 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
               imageAssetIcon: Assets.emailPNG,
             ),
             SizedBox(height: 20.h),
-
             _fieldItem(
               'رقم الجوال',
               controller.phoneController,
@@ -423,19 +422,35 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
               ),
             ),
             SizedBox(height: 20.h),
-            // _fieldItem(
-            //   'اضافة كود خصم',
-            //   controller.cuponCodeController,
-            // ),
-            // SizedBox(height: 20.h),
-            // _fieldItem(
-            //   'تفاصيل كود خصم',
-            //   controller.cuponCodeDetailsController,
-            //   height: 80.h,
-            // ),
-            // SizedBox(height: 20.h),
+            _fieldItem(
+              'اضافة كود خصم',
+              controller.cuponCodeController,
+            ),
+            SizedBox(height: 20.h),
+            _fieldItem(
+              'تفاصيل كود خصم',
+              controller.cuponCodeDetailsController,
+              height: 80.h,
+            ),
+            SizedBox(height: 20.h),
             pricesTable(),
-            SizedBox(height: 40.h),
+            SizedBox(height: 20.h),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(
+                '* الاسعار بعد خصم ٥٠٪',
+                style: TextStyle(color: Colors.red, fontSize: 12.sp),
+              ),
+            ),
+            SizedBox(height: 4.h),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(
+                '* مدة الاشتراك سنة واحدة',
+                style: TextStyle(color: Colors.red, fontSize: 12.sp),
+              ),
+            ),
+            SizedBox(height: 20.h),
             RoundedButton(
               text: 'تسجيل اشتراك',
               // press: () => controller.register(),
@@ -447,7 +462,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
 
                 if (res['status'] == 'success') {
                   final sub = res['data'] as ChooseSubscriptionModule;
-                  controller.register(sub);
+                  await controller.register(sub);
                 } else if (res['status'] == 'cancel') {
                   KSnackBar.error('عفواً لم يتم تسجيل الاشتراك');
                 } else {
@@ -717,7 +732,9 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
                     _pricesDetailsRow('2اعلان منبثق شهريا', false, true, true),
                     _pricesDetailsRow('4اعلان منبثق شهريا', false, false, true,
                         isWhite: true),
-                    _pricesDetailsRow('ارسال اشعارات', false, false, true),
+                    _pricesDetailsRow('ارسال اشعارين', false, true, true),
+                    _pricesDetailsRow('ارسال 4 اشعارات', false, false, true,
+                        isWhite: true),
                   ],
                 ),
               ),

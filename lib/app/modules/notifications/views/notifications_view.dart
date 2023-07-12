@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
-import 'package:mataajer_saudi/app/widgets/loading_image.dart';
 import 'package:mataajer_saudi/database/notification.dart';
 
 import '../controllers/notifications_controller.dart';
@@ -77,7 +76,7 @@ class NotificationsView extends GetView<NotificationsController> {
   }
 
   Widget _notificationCard(NotificationModule notification) {
-    String? image = notification.data?['image'];
+    // String? image = notification.data?['image'];
     return Container(
       height: 95.h,
       decoration: BoxDecoration(
@@ -88,30 +87,22 @@ class NotificationsView extends GetView<NotificationsController> {
         padding: EdgeInsets.symmetric(horizontal: 10.0.sp),
         child: Row(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(50.r),
-              child: LoadingImage(
-                src: image,
-                height: 65.h,
-                width: 65.w,
-                fit: BoxFit.cover,
-              ),
-            ),
-            SizedBox(width: 10.w),
+            // ClipRRect(
+            //   borderRadius: BorderRadius.circular(50.r),
+            //   child: LoadingImage(
+            //     src: image,
+            //     height: 65.h,
+            //     width: 65.w,
+            //     fit: BoxFit.cover,
+            //   ),
+            // ),
+            // SizedBox(width: 10.w),
             Flexible(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    notification.formateDate,
-                    style: TextStyle(
-                      color: const Color(0xFFB4B4B4),
-                      fontSize: 11.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(height: 5.h),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Flexible(
                         child: Text(
@@ -130,6 +121,14 @@ class NotificationsView extends GetView<NotificationsController> {
                       '${notification.body}',
                       style: TextStyle(
                           fontSize: 14.sp, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  Text(
+                    notification.formateDate,
+                    style: TextStyle(
+                      color: const Color(0xFFB4B4B4),
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],

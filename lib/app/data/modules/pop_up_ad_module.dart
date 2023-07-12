@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:mataajer_saudi/app/utils/log.dart';
 
 class PopUpAdModule {
@@ -14,6 +15,7 @@ class PopUpAdModule {
   String? url;
   String shopUID;
   int? hits;
+  DateTime? date;
   PopUpAdModule({
     this.uid,
     this.title,
@@ -24,6 +26,7 @@ class PopUpAdModule {
     this.url,
     required this.shopUID,
     this.hits,
+    this.date,
   });
 
   void addView() async {
@@ -49,6 +52,7 @@ class PopUpAdModule {
     String? url,
     String? shopUID,
     int? hits,
+    DateTime? date,
   }) {
     return PopUpAdModule(
       uid: uid ?? this.uid,
@@ -60,6 +64,7 @@ class PopUpAdModule {
       url: url ?? this.url,
       shopUID: shopUID ?? this.shopUID,
       hits: hits ?? this.hits,
+      date: date ?? this.date,
     );
   }
 
@@ -70,10 +75,11 @@ class PopUpAdModule {
       'description': description,
       'image': image,
       'isVisible': isVisible,
-      'validTill': validTill != null ? Timestamp.fromDate(validTill!) : null,
+      if (validTill != null) 'validTill': Timestamp.fromDate(validTill!),
       'url': url,
       'shopUID': shopUID,
       'hits': hits,
+      'date': date?.millisecondsSinceEpoch,
     };
   }
 
@@ -91,6 +97,9 @@ class PopUpAdModule {
       url: map['url'] != null ? map['url'] as String : null,
       shopUID: map['shopUID'],
       hits: map['hits'] != null ? map['hits'] as int : null,
+      date: map['date'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['date'] as int)
+          : null,
     );
   }
 
@@ -102,7 +111,7 @@ class PopUpAdModule {
 
   @override
   String toString() {
-    return 'PopUpAdModule(uid: $uid, title: $title, description: $description, image: $image, isVisible: $isVisible, validTill: $validTill, url: $url, shopUID: $shopUID, hits: $hits)';
+    return 'PopUpAdModule(uid: $uid, title: $title, description: $description, image: $image, isVisible: $isVisible, validTill: $validTill, url: $url, shopUID: $shopUID, hits: $hits, date: $date)';
   }
 
   @override
@@ -117,7 +126,8 @@ class PopUpAdModule {
         other.validTill == validTill &&
         other.url == url &&
         other.shopUID == shopUID &&
-        other.hits == hits;
+        other.hits == hits &&
+        other.date == date;
   }
 
   @override
@@ -130,6 +140,7 @@ class PopUpAdModule {
         validTill.hashCode ^
         url.hashCode ^
         shopUID.hashCode ^
-        hits.hashCode;
+        hits.hashCode ^
+        date.hashCode;
   }
 }

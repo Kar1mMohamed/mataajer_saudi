@@ -88,7 +88,7 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
                 ),
                 SizedBox(height: 10.h),
                 RoundedButton(
-                    text: 'تاكيد',
+                    text: 'الدخول',
                     press: () => controller.checkIFEmailVerified()),
               ],
             ),

@@ -42,7 +42,7 @@ class NotificationModule extends HiveObject {
       date != null ? Constants.convertDateToTimeString(date!) : null;
 
   String get formateDate =>
-      date != null ? Constants.convertDateToDateString(date!) : '';
+      date != null ? (Constants.convertDateToDateString(date!) ?? '') : '';
 
   @HiveField(0)
   int? index;

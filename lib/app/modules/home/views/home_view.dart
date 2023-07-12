@@ -10,7 +10,7 @@ import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
-import 'package:mataajer_saudi/app/widgets/preview_ad_dialog.dart';
+import 'package:mataajer_saudi/app/widgets/preview_offer_dialog.dart';
 import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
 import 'package:mataajer_saudi/database/notification.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
@@ -555,7 +555,7 @@ class HomeView extends GetView<HomeController> {
             highlightColor: Colors.transparent,
             hoverColor: Colors.transparent,
             splashColor: Colors.transparent,
-            onTap: () => Get.dialog(PreviewAdDialog(adModule: offer)),
+            onTap: () => Get.dialog(PreviewOfferDialog(offerModule: offer)),
             child: Container(
               padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
               margin:
@@ -964,7 +964,7 @@ class HomeView extends GetView<HomeController> {
           ),
         ).marginAll(4.sp),
         Text(
-          'سعودي',
+          'السعودية',
           style: TextStyle(
             fontSize: 20.sp,
             fontWeight: FontWeight.w500,

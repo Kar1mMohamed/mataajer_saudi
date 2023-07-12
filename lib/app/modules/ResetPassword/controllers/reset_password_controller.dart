@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
@@ -13,16 +15,22 @@ class ResetPasswordController extends GetxController {
 
   bool loading = false;
 
+  StreamSubscription<User?> get authStateChanges =>
+      FirebaseAuth.instance.authStateChanges().listen(_listen);
+
   void listenToAccountIfVerfiy() async {
     if (isEmailVerify) {
-      FirebaseAuth.instance.authStateChanges().listen((User? user) async {
-        log('user: $user');
-        if (user != null && user.emailVerified) {
-          KSnackBar.success('تم تأكيد البريد الالكتروني');
-          await Future.delayed(const Duration(seconds: 1));
-          Get.offAllNamed(Routes.HOME);
-        }
-      });
+      authStateChanges;
+    }
+  }
+
+  void _listen(User? user) async {
+    log('user: $user');
+    if (user != null && user.emailVerified) {
+      KSnackBar.success('تم تأكيد البريد الالكتروني');
+      await Future.delayed(const Duration(seconds: 1));
+      Get.offAllNamed(Routes.HOME);
+      authStateChanges.cancel();
     }
   }
 
@@ -34,6 +42,7 @@ class ResetPasswordController extends GetxController {
 
       if (currentUser != null) {
         await currentUser.reload();
+
         if (currentUser.emailVerified) {
           Get.offAllNamed(Routes.HOME);
         } else {
@@ -72,5 +81,11 @@ class ResetPasswordController extends GetxController {
       listenToAccountIfVerfiy();
     }
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    authStateChanges.cancel();
   }
 }

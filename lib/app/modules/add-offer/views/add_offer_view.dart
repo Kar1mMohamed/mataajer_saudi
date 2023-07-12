@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
+import 'package:mataajer_saudi/utils/input_format.dart';
 
 import '../../../data/assets.dart';
 import '../../../theme/theme.dart';
@@ -32,7 +33,7 @@ class AddOfferView extends GetView<AddOfferController> {
                   Image.asset(Assets.adVector),
                   SizedBox(height: 30.h),
                   Text(
-                    'اضف اعلانك وقم بترويج متجرك الالكتروني',
+                    'اضف عرضك وقم بترويج متجرك الالكتروني',
                     style:
                         TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500),
                   ),
@@ -55,13 +56,14 @@ class AddOfferView extends GetView<AddOfferController> {
                   ),
                   SizedBox(height: 30.h),
                   _fieldItem(
-                    'كود العرض',
+                    'نسبة الخصم',
                     controller.cuponCodeController,
                     height: 50.h,
+                    isNumbersOnly: true,
                   ),
                   SizedBox(height: 30.h),
                   _fieldItem(
-                    'تفاصيل كود العرض',
+                    'تفاصيل الخصم',
                     controller.cuponCodeDescription,
                     height: 50.h,
                   ),
@@ -92,6 +94,9 @@ class AddOfferView extends GetView<AddOfferController> {
                         itemBuilder: (context, index) {
                           final offer = controller.offers[index];
                           return ListTile(
+                            onTap: () {
+                              controller.showOffer(offer);
+                            },
                             leading: Container(
                               width: 50.w,
                               height: 50.h,
@@ -110,7 +115,7 @@ class AddOfferView extends GetView<AddOfferController> {
                                 : 'جاري المراجعة'),
                             trailing: IconButton(
                               onPressed: () async {
-                                // await controller.deletePopUpAd(popUpAd);
+                                await controller.deleteOffer(offer);
                               },
                               icon: const Icon(Icons.delete, color: Colors.red),
                             ),
@@ -211,6 +216,7 @@ class AddOfferView extends GetView<AddOfferController> {
     String? imageAssetIcon,
     void Function(String)? onFieldSubmitted,
     double? height,
+    bool? isNumbersOnly,
   }) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -237,6 +243,9 @@ class AddOfferView extends GetView<AddOfferController> {
             obscuringCharacter: '*',
             controller: controller,
             maxLines: height != null ? 10 : 1,
+            inputFormatters: (isNumbersOnly != null && isNumbersOnly == true)
+                ? numbersOnlyInputFormat
+                : null,
             decoration: !(imageAssetIcon != null)
                 ? null
                 : InputDecoration(

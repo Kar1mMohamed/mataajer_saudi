@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
@@ -13,10 +12,10 @@ import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/payments_helper.dart';
 import 'package:mataajer_saudi/app/modules/home/controllers/home_controller.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
+import 'package:mataajer_saudi/app/utils/custom_snackbar.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/check_out_webview.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
-
 import '../../modules/ChooseSubscription/views/choose_subscription_view.dart';
 import 'choose_subscription_module.dart';
 import 'tap/tap_charge_req.dart';
@@ -43,7 +42,9 @@ class ShopModule {
   bool? isStaticAd = false;
   bool? isTwoPopUpAdsMonthly = false;
   bool? isFourPopUpAdsMonthly = false;
-  bool? isCanSendNotification = false;
+  bool? isCanSendTwoNotification = false;
+  bool? isCanSendFourNotification = false;
+
   DateTime? validTill;
   //
   /// TOKEN USED FOR ADMIN PURPOSES
@@ -70,7 +71,8 @@ class ShopModule {
     this.isStaticAd,
     this.isTwoPopUpAdsMonthly,
     this.isFourPopUpAdsMonthly,
-    this.isCanSendNotification,
+    this.isCanSendTwoNotification,
+    this.isCanSendFourNotification,
     this.validTill,
     this.token,
   });
@@ -183,12 +185,16 @@ class ShopModule {
       return false;
     }
 
-    final isSubscriptionCanSendNotification =
-        subscriptionSetting.isCanSendNotification;
+    final isSubscriptionCanSendTowNotification =
+        subscriptionSetting.isCanSendTwoNotification;
 
-    log('isSubscriptionCanSendNotification: $isSubscriptionCanSendNotification');
+    final isSubscriptionCanSendFourNotification =
+        subscriptionSetting.isCanSendFourNotification;
 
-    return isSubscriptionCanSendNotification ?? false;
+    log('isSubscriptionCanSendNotification: $isSubscriptionCanSendTowNotification, and Four: $isSubscriptionCanSendFourNotification');
+
+    return (isSubscriptionCanSendTowNotification ?? false) ||
+        (isSubscriptionCanSendFourNotification ?? false);
   }
 
   int get remainingDaysForSubscription {
@@ -245,6 +251,9 @@ class ShopModule {
             email: email,
           ),
         );
+
+        CustomSnackBar.floatingSnackBar(
+            'برجاء الانتظار جاري تحويلك لبوابة الدفع', MataajerTheme.mainColor);
 
         final paymentReqRes = await PaymentsHelper.sendRequest(tapModule);
 
@@ -332,7 +341,8 @@ class ShopModule {
       if (isCurrentSubscriptionExpired) {
         log('subscription is expired');
         isStaticAd = false;
-        this.isCanSendNotification = false;
+        isCanSendTwoNotification = false;
+        this.isCanSendFourNotification = false;
         this.isFourPopUpAdsMonthly = false;
         this.isTwoPopUpAdsMonthly = false;
         return;
@@ -343,15 +353,18 @@ class ShopModule {
               (element) => element.uid == currentSubscription.subscriptionUID);
 
       bool isStatic = subscriptionSettings?.isStatic ?? false;
-      bool isCanSendNotification =
-          subscriptionSettings?.isCanSendNotification ?? false;
+      bool isCanSendTowNotification =
+          subscriptionSettings?.isCanSendTwoNotification ?? false;
+      bool isCanSendFourNotification =
+          subscriptionSettings?.isCanSendFourNotification ?? false;
       bool isFourPopUpAdsMonthly =
           subscriptionSettings?.isFourPopUpAdsMonthly ?? false;
       bool isTwoPopUpAdsMonthly =
           subscriptionSettings?.isTwoPopUpAdsMonthly ?? false;
 
       isStaticAd = isStatic;
-      this.isCanSendNotification = isCanSendNotification;
+      isCanSendTwoNotification = isCanSendTowNotification;
+      this.isCanSendFourNotification = isCanSendFourNotification;
       this.isFourPopUpAdsMonthly = isFourPopUpAdsMonthly;
       this.isTwoPopUpAdsMonthly = isTwoPopUpAdsMonthly;
 
@@ -534,7 +547,8 @@ class ShopModule {
     bool? isStaticAd,
     bool? isTwoPopUpAdsMonthly,
     bool? isFourPopUpAdsMonthly,
-    bool? isCanSendNotification,
+    bool? isCanSendTwoNotification,
+    bool? isCanSendFourNotification,
     DateTime? validTill,
     String? token,
   }) {
@@ -560,8 +574,10 @@ class ShopModule {
       isTwoPopUpAdsMonthly: isTwoPopUpAdsMonthly ?? this.isTwoPopUpAdsMonthly,
       isFourPopUpAdsMonthly:
           isFourPopUpAdsMonthly ?? this.isFourPopUpAdsMonthly,
-      isCanSendNotification:
-          isCanSendNotification ?? this.isCanSendNotification,
+      isCanSendTwoNotification:
+          isCanSendTwoNotification ?? this.isCanSendTwoNotification,
+      isCanSendFourNotification:
+          isCanSendFourNotification ?? this.isCanSendFourNotification,
       validTill: validTill ?? this.validTill,
       token: token ?? this.token,
     );
@@ -592,7 +608,8 @@ class ShopModule {
       'hits': hits,
       'isStaticAd': isStaticAd,
       'validTill': validTill,
-      'isCanSendNotification': isCanSendNotification,
+      'isCanSendTwoNotification': isCanSendTwoNotification,
+      'isCanSendFourNotification': isCanSendFourNotification,
       'isTwoPopUpAdsMonthly': isTwoPopUpAdsMonthly,
       'isFourPopUpAdsMonthly': isFourPopUpAdsMonthly,
       'token': token,
@@ -641,8 +658,11 @@ class ShopModule {
       validTill: map['validTill'] != null
           ? (map['validTill'] as Timestamp).toDate()
           : null,
-      isCanSendNotification: map['isCanSendNotification'] != null
-          ? map['isCanSendNotification'] as bool
+      isCanSendTwoNotification: map['isCanSendTwoNotification'] != null
+          ? map['isCanSendTwoNotification'] as bool
+          : false,
+      isCanSendFourNotification: map['isCanSendFourNotification'] != null
+          ? map['isCanSendFourNotification'] as bool
           : false,
       isFourPopUpAdsMonthly: map['isFourPopUpAdsMonthly'] != null
           ? map['isFourPopUpAdsMonthly'] as bool
@@ -661,7 +681,7 @@ class ShopModule {
 
   @override
   String toString() {
-    return 'ShopModule(uid: $uid, name: $name, email: $email, phone: $phone, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions, shopLink: $shopLink, keywords: $keywords, isVisible: $isVisible, userCategory: $userCategory, hits: $hits, isStaticAd: $isStaticAd, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendNotification: $isCanSendNotification, validTill: $validTill, token: $token)';
+    return 'ShopModule(uid: $uid, name: $name, email: $email, phone: $phone, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions, shopLink: $shopLink, keywords: $keywords, isVisible: $isVisible, userCategory: $userCategory, hits: $hits, isStaticAd: $isStaticAd, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendTwoNotification: $isCanSendTwoNotification, isCanSendFourNotification: $isCanSendFourNotification, validTill: $validTill, token: $token)';
   }
 
   @override
@@ -688,7 +708,8 @@ class ShopModule {
         other.isStaticAd == isStaticAd &&
         other.isTwoPopUpAdsMonthly == isTwoPopUpAdsMonthly &&
         other.isFourPopUpAdsMonthly == isFourPopUpAdsMonthly &&
-        other.isCanSendNotification == isCanSendNotification &&
+        other.isCanSendTwoNotification == isCanSendTwoNotification &&
+        other.isCanSendFourNotification == isCanSendFourNotification &&
         other.validTill == validTill &&
         other.token == token;
   }
@@ -715,7 +736,8 @@ class ShopModule {
         isStaticAd.hashCode ^
         isTwoPopUpAdsMonthly.hashCode ^
         isFourPopUpAdsMonthly.hashCode ^
-        isCanSendNotification.hashCode ^
+        isCanSendTwoNotification.hashCode ^
+        isCanSendFourNotification.hashCode ^
         validTill.hashCode ^
         token.hashCode;
   }

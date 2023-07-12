@@ -24,6 +24,27 @@ class ShopCustomersNotificationsController extends GetxController {
 
   List<NotificationModule> notifications = [];
 
+  int? noOfMonthlyCandSend;
+
+  void initNoOfMonthlySend() async {
+    try {
+      bool isCanSendTowNotification =
+          currentShop!.isCanSendTwoNotification ?? false;
+      bool isCanSendFourNotification =
+          currentShop!.isCanSendFourNotification ?? false;
+
+      if (isCanSendTowNotification && !isCanSendFourNotification) {
+        noOfMonthlyCandSend = 2;
+      } else if (isCanSendTowNotification && isCanSendFourNotification) {
+        noOfMonthlyCandSend = 2 + 4;
+      } else {
+        noOfMonthlyCandSend = 0;
+      }
+    } catch (e) {
+      log(e);
+    }
+  }
+
   Future<void> getNotifications() async {
     loading = true;
     update();
@@ -114,10 +135,32 @@ class ShopCustomersNotificationsController extends GetxController {
     update();
   }
 
+  void showNotification(NotificationModule notification) {
+    Get.dialog(Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              notification.title ?? '',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            Text('نص الاشعار: ${notification.body}'),
+            const SizedBox(height: 10),
+            Text('تاريخ الارسال: ${notification.date}'),
+          ],
+        ),
+      ),
+    ));
+  }
+
   @override
   void onInit() async {
     super.onInit();
     await getCurrentShop();
+    initNoOfMonthlySend();
     await getNotifications();
   }
 }

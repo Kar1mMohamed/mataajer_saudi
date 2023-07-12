@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/modules/home/controllers/home_controller.dart';
@@ -18,6 +19,20 @@ class PreviewShopDialogController extends GetxController {
               .contains(shopModule.categoriesUIDs.first)) {
             return true;
           }
+          return false;
+        },
+      ).toList();
+    } catch (e) {
+      // Mostly because of HomeController not initialized yet
+      return [];
+    }
+  }
+
+  List<AdModule> get allOffers {
+    try {
+      return Get.find<HomeController>().offers.where(
+        (element) {
+          if (element.shopUID == shopModule.uid) return true;
           return false;
         },
       ).toList();

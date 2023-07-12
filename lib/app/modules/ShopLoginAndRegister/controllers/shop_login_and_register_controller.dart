@@ -184,6 +184,8 @@ class ShopLoginAndRegisterController extends GetxController {
       await FirebaseFirestoreHelper.instance
           .addShop(shopModule, regResponse.user!.uid);
 
+      KSnackBar.show('جاري تحويلك لبوابة الدفع برجاء الانتظار');
+
       final subscriptionModule = SubscriptionModule(
         from: DateTime.now(),
         to: DateTime.now().add(Duration(days: sub.allowedDays!)),

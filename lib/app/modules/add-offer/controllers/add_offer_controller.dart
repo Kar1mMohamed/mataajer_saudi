@@ -8,6 +8,7 @@ import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
+import 'package:mataajer_saudi/app/widgets/preview_offer_dialog.dart';
 import 'package:mataajer_saudi/app/widgets/shop_animated_widget.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -95,6 +96,7 @@ class AddOfferController extends GetxController {
         avgShippingTime: currentShop!.avgShippingTime,
         cuponCode: cuponCodeController.text,
         validTill: currentShop!.validTill,
+        isVisible: true,
       );
 
       await FirebaseFirestoreHelper.instance.addOffer(module);
@@ -135,6 +137,10 @@ class AddOfferController extends GetxController {
       loading = false;
       update();
     }
+  }
+
+  void showOffer(AdModule offer) {
+    Get.dialog(PreviewOfferDialog(offerModule: offer));
   }
 
   @override

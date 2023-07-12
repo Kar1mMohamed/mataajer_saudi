@@ -36,9 +36,9 @@ class ShopCustomersNotificationsView
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                   ),
                   SizedBox(height: 7.h),
-                  const Text(
-                    "يمكن ارسال 3 اشعارات شهريا",
-                    style: TextStyle(
+                  Text(
+                    "يمكن ارسال ${controller.noOfMonthlyCandSend} اشعارات شهريا",
+                    style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                         color: Colors.grey),
@@ -78,71 +78,8 @@ class ShopCustomersNotificationsView
                           itemCount: controller.notifications.length,
                           separatorBuilder: (context, index) =>
                               const Divider(thickness: 0.5),
-                          itemBuilder: (context, index) {
-                            return GetBuilder<
-                                    ShopCustomersNotificationsController>(
-                                id: 'notification-card-$index',
-                                builder: (_) {
-                                  if (controller.loading) {
-                                    return const Center(
-                                        child: CircularProgressIndicator());
-                                  }
-                                  return ListTile(
-                                    title: Text(
-                                      controller.notifications[index].body ??
-                                          '',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 15.sp,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                    titleAlignment:
-                                        ListTileTitleAlignment.center,
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(Constants.convertDateToDateString(
-                                            controller
-                                                .notifications[index].date!)),
-                                        Text(
-                                            (controller.notifications[index]
-                                                        .isActive ??
-                                                    false)
-                                                ? 'مفعل'
-                                                : 'غير مفعل',
-                                            style: TextStyle(
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w500,
-                                                color: (controller
-                                                            .notifications[
-                                                                index]
-                                                            .isActive ??
-                                                        false)
-                                                    ? Colors.green
-                                                    : Colors.red)),
-                                      ],
-                                    ),
-                                    trailing: IconButton(
-                                      onPressed: () async {
-                                        controller.loading = true;
-                                        controller
-                                            .updateNotificationCard(index);
-
-                                        await controller.deleteNotification(
-                                            controller.notifications[index]);
-                                        await controller.getNotifications();
-
-                                        controller.loading = false;
-                                        controller
-                                            .updateNotificationCard(index);
-                                      },
-                                      icon: const Icon(Icons.delete,
-                                          color: Colors.red),
-                                    ),
-                                  );
-                                });
-                          },
+                          itemBuilder: (context, index) =>
+                              notificationCard(index),
                         ),
                       ),
                     ),
@@ -192,6 +129,60 @@ class ShopCustomersNotificationsView
       ],
       leadingWidth: 50.w,
     );
+  }
+
+  Widget notificationCard(int index) {
+    return GetBuilder<ShopCustomersNotificationsController>(
+        id: 'notification-card-$index',
+        builder: (_) {
+          if (controller.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return ListTile(
+            onTap: () {
+              controller.showNotification(controller.notifications[index]);
+            },
+            title: Text(
+              controller.notifications[index].body ?? '',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w500),
+            ),
+            titleAlignment: ListTileTitleAlignment.center,
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(Constants.convertDateToDateString(
+                        controller.notifications[index].date!) ??
+                    ''),
+                Text(
+                    (controller.notifications[index].isActive ?? false)
+                        ? 'مفعل'
+                        : 'غير مفعل',
+                    style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                        color:
+                            (controller.notifications[index].isActive ?? false)
+                                ? Colors.green
+                                : Colors.red)),
+              ],
+            ),
+            trailing: IconButton(
+              onPressed: () async {
+                controller.loading = true;
+                controller.updateNotificationCard(index);
+
+                await controller
+                    .deleteNotification(controller.notifications[index]);
+                await controller.getNotifications();
+
+                controller.loading = false;
+                controller.updateNotificationCard(index);
+              },
+              icon: const Icon(Icons.delete, color: Colors.red),
+            ),
+          );
+        });
   }
 
   Widget _fieldItem(

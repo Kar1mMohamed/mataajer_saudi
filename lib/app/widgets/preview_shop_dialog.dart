@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/preview_shop_dialog_controller.dart';
+import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
+import 'package:mataajer_saudi/app/widgets/preview_offer_dialog.dart';
 
 class PreviewShopDialog extends StatelessWidget {
   const PreviewShopDialog({super.key, required this.shop});
@@ -256,7 +258,7 @@ class PreviewShopDialog extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                shop.description,
+                                shop.cuponText ?? '',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 12.sp,
@@ -271,44 +273,80 @@ class PreviewShopDialog extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20.h),
-                if (controller.similarShops.isNotEmpty)
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 22.0),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            'متاجر مشابهة',
-                            style: TextStyle(
-                                fontSize: 14.sp, fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: SizedBox(
-                          height: Get.context!.height * 0.18,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) =>
-                                _similarAdCard(controller.similarShops[index]),
-                            separatorBuilder: (context, index) =>
-                                SizedBox(width: 20.w),
-                            itemCount: controller.similarShops.length,
-                            shrinkWrap: true,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
+                if (controller.allOffers.isNotEmpty) allOffers(),
+                if (controller.similarShops.isNotEmpty) similarShops(),
               ],
             ),
           ),
         ),
       );
     });
+  }
+
+  Widget similarShops() {
+    final controller = Get.find<PreviewShopDialogController>();
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 22.0),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              'متاجر مشابهة',
+              style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+            ),
+          ),
+        ),
+        SizedBox(height: 10.h),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SizedBox(
+            height: Get.context!.height * 0.18,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) =>
+                  _similarAdCard(controller.similarShops[index]),
+              separatorBuilder: (context, index) => SizedBox(width: 20.w),
+              itemCount: controller.similarShops.length,
+              shrinkWrap: true,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget allOffers() {
+    final controller = Get.find<PreviewShopDialogController>();
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 22.0),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              'جميع العروض',
+              style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+            ),
+          ),
+        ),
+        SizedBox(height: 10.h),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SizedBox(
+            height: Get.context!.height * 0.18,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) =>
+                  _offerCard(controller.allOffers[index]),
+              separatorBuilder: (context, index) => SizedBox(width: 20.w),
+              itemCount: controller.similarShops.length,
+              shrinkWrap: true,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _similarAdCard(ShopModule shop) {
@@ -319,7 +357,42 @@ class PreviewShopDialog extends StatelessWidget {
       splashColor: Colors.transparent,
       onTap: () {
         Get.back(closeOverlays: true);
-        Get.dialog(PreviewShopDialog(shop: shop));
+        Get.dialog(PreviewShopDialog(shop: shop),
+            barrierColor: Colors.transparent);
+      },
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 40.r,
+            backgroundImage: NetworkImage(
+              shop.image,
+              // height: 75,
+              // width: 75,
+            ),
+          ),
+          SizedBox(height: 10.h),
+          Text(
+            shop.name,
+            style: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _offerCard(AdModule offer) {
+    return InkWell(
+      focusColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      onTap: () {
+        Get.back(closeOverlays: true);
+        Get.dialog(PreviewOfferDialog(offerModule: offer),
+            barrierColor: Colors.transparent);
       },
       child: Column(
         children: [

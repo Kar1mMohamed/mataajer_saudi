@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/translation/tr.dart';
 import 'package:mataajer_saudi/database/helper/hive_helper.dart';
 import 'package:mataajer_saudi/database/notification.dart';
+import 'app/data/modules/choose_subscription_module.dart';
 import 'app/routes/app_pages.dart';
 import 'firebase_options.dart';
 
@@ -138,7 +140,8 @@ class MyApp extends StatelessWidget {
           //   isStatic: false,
           //   isTwoPopUpAdsMonthly: false,
           //   isFourPopUpAdsMonthly: false,
-          //   isCanSendNotification: false,
+          //   isCanSendTwoNotification: false,
+          //   isCanSendFourNotification: false,
           // );
           // final second = ChooseSubscriptionModule(
           //   name: 'الفضية',
@@ -148,7 +151,8 @@ class MyApp extends StatelessWidget {
           //   isStatic: true,
           //   isTwoPopUpAdsMonthly: true,
           //   isFourPopUpAdsMonthly: false,
-          //   isCanSendNotification: false,
+          //   isCanSendTwoNotification: true,
+          //   isCanSendFourNotification: false,
           // );
           // final third = ChooseSubscriptionModule(
           //   name: 'الذهبية',
@@ -158,7 +162,8 @@ class MyApp extends StatelessWidget {
           //   isStatic: true,
           //   isTwoPopUpAdsMonthly: true,
           //   isFourPopUpAdsMonthly: true,
-          //   isCanSendNotification: true,
+          //   isCanSendTwoNotification: false,
+          //   isCanSendFourNotification: true,
           // );
           // final models = [first, second, third];
           // for (var i = 0; i < 3; i++) {
