@@ -32,7 +32,7 @@ class Constants {
     return '${formateNumber.format(date.day)}/${formateNumber.format(date.day)}/${date.year} ${convertDateToTimeString(date)}';
   }
 
-  static List<String> admins = [
+  static const List<String> admins = [
     '0zapKo4rAjhMxC9GFwChmYxKOP23',
     't8scmFWTBjhk4srk3bcTTRfw4fM2'
   ];

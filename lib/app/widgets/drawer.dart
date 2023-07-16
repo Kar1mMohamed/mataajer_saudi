@@ -170,6 +170,13 @@ class MyDrawer extends StatelessWidget {
               color: MataajerTheme.mainColor),
         ),
         _drawerItem(
+          '',
+          'الفواتير',
+          route: Routes.ADMIN_INVOICES,
+          customIcon:
+              const Icon(Icons.wallet_rounded, color: MataajerTheme.mainColor),
+        ),
+        _drawerItem(
           Assets.exitVector,
           'تسجيل خروج',
           onTap: () async {
@@ -199,29 +206,43 @@ class MyDrawer extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.r),
         ),
         child: ListTile(
-          title: Row(
-            children: [
-              if (customIcon != null)
-                customIcon
-              else
-                Image.asset(
-                  imageAsset,
-                  width: 20.w,
-                  height: 20.h,
-                  color: isActive
-                      ? Colors.white
-                      : (assetColor ?? MataajerTheme.mainColor),
-                ),
-              SizedBox(width: 5.w),
-              Text(
-                text,
-                style: MataajerTheme.drawerTextStyle.copyWith(
-                  color:
-                      isActive ? Colors.white : MataajerTheme.mainColorLighten,
-                ),
+          leading: customIcon ??
+              Image.asset(
+                imageAsset,
+                height: 20.h,
+                color: isActive
+                    ? Colors.white
+                    : (assetColor ?? MataajerTheme.mainColor),
               ),
-            ],
+          title: Text(
+            text,
+            style: MataajerTheme.drawerTextStyle.copyWith(
+              color: isActive ? Colors.white : MataajerTheme.mainColorLighten,
+            ),
           ),
+          // title: Row(
+          //   children: [
+          //     if (customIcon != null)
+          //       customIcon
+          //     else
+          //       Image.asset(
+          //         imageAsset,
+          //         width: 20.w,
+          //         height: 20.h,
+          //         color: isActive
+          //             ? Colors.white
+          //             : (assetColor ?? MataajerTheme.mainColor),
+          //       ),
+          //     SizedBox(width: 5.w),
+          //     Text(
+          //       text,
+          //       style: MataajerTheme.drawerTextStyle.copyWith(
+          //         color:
+          //             isActive ? Colors.white : MataajerTheme.mainColorLighten,
+          //       ),
+          //     ),
+          //   ],
+          // ),
           hoverColor: Colors.transparent,
           focusColor: Colors.transparent,
           splashColor: Colors.transparent,

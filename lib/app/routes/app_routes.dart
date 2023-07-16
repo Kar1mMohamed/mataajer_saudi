@@ -24,6 +24,9 @@ abstract class Routes {
   static const ADD_OFFER = _Paths.ADD_OFFER;
   static const ADMIN_USERS = _Paths.ADMIN_USERS;
   static const ADMIN_OFFERS = _Paths.ADMIN_OFFERS;
+  static const ONLINE_NOW = _Paths.ONLINE_NOW;
+  static const ADMIN_INVOICES = _Paths.ADMIN_INVOICES;
+  static const ADMIN_INVOICES_DETAILS = _Paths.ADMIN_INVOICES_DETAILS;
 }
 
 abstract class _Paths {
@@ -46,4 +49,7 @@ abstract class _Paths {
   static const ADD_OFFER = '/add-offer';
   static const ADMIN_USERS = '/admin-users';
   static const ADMIN_OFFERS = '/admin-offers';
+  static const ONLINE_NOW = '/online-now';
+  static const ADMIN_INVOICES = '/admin-invoices';
+  static const ADMIN_INVOICES_DETAILS = '/admin-invoices-details';
 }

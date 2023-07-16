@@ -53,6 +53,16 @@ class ShopCustomersNotificationsView
                       FocusScope.of(context).unfocus();
                     },
                   ),
+                  SizedBox(height: 20.h),
+                  _fieldItem(
+                    "رابط الاشعار",
+                    controller.notLinkController,
+                    maxLines: 1,
+                    onFieldSubmitted: (p0) {
+                      // unfocus keyboard
+                      FocusScope.of(context).unfocus();
+                    },
+                  ),
                   SizedBox(height: 40.h),
                   RoundedButton(
                     text: 'ارسال',
@@ -221,26 +231,23 @@ class ShopCustomersNotificationsView
             obscuringCharacter: '*',
             controller: controller,
             maxLines: maxLines,
-            decoration: !(imageAssetIcon != null)
-                ? null
-                : InputDecoration(
-                    fillColor: const Color(0xFFF5F5F5),
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Image.asset(imageAssetIcon),
+            decoration: InputDecoration(
+              fillColor: Colors.white,
+              prefixIcon: imageAssetIcon != null
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    ),
-                    suffixIcon: !isPassword
-                        ? null
-                        : InkWell(
-                            onTap: showPasswordTap,
-                            child: Image.asset(Assets.hidePNG)),
-                  ),
+                      child: Image.asset(imageAssetIcon),
+                    )
+                  : null,
+              suffixIcon: !isPassword
+                  ? null
+                  : InkWell(
+                      onTap: showPasswordTap,
+                      child: Image.asset(Assets.hidePNG)),
+            ),
             validator: (string) {
               if (string!.isEmpty) {
                 return 'الرجاء ادخال البيانات';

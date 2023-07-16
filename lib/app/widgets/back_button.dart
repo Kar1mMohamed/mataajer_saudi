@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mataajer_saudi/app/utils/log.dart';
 
 class CustomBackButton extends StatelessWidget {
   const CustomBackButton({super.key});
@@ -29,7 +28,7 @@ class CustomBackButton extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Get.back();
-            log('back');
+            // log('back');
           },
         ),
       ),

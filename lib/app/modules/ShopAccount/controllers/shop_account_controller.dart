@@ -45,6 +45,9 @@ class ShopAccountController extends GetxController {
   bool showPassword = false;
   bool showCategories = false;
 
+  bool isHasTamara = false;
+  bool isHasTabby = false;
+
   void updateShowCategories() {
     showCategories = !showCategories;
     update(['showCategories']);
@@ -91,6 +94,8 @@ class ShopAccountController extends GetxController {
     cuponCodeController.text = currentShop?.cuponCode ?? '';
     cuponCodeDetailsController.text = currentShop?.cuponText ?? '';
     keywords = currentShop?.keywords ?? [];
+    isHasTabby = currentShop?.isHasTabby ?? false;
+    isHasTamara = currentShop?.isHasTamara ?? false;
 
     log('shippingFrom: ${currentShop?.avgShippingTime?.split('-')[0].trim() ?? '1'}, shippingTo: ${currentShop?.avgShippingTime?.split('-')[1].trim() ?? '1'}');
 
@@ -133,6 +138,8 @@ class ShopAccountController extends GetxController {
         phone: phoneController.text,
         avgShippingTime: '$shippingFrom-$shippingTo',
         token: await FirebaseAuth.instance.currentUser!.getIdToken(),
+        isHasTabby: isHasTabby,
+        isHasTamara: isHasTamara,
       );
 
       // if (currentShop!.isVisible != module.isVisible) {

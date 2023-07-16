@@ -72,7 +72,8 @@ class AdminOffersView extends GetView<AdminOffersController> {
                                   children: [
                                     Text(controller
                                         .offers[index].categories.first.name),
-                                    Text(controller.offers[index].cuponCode ??
+                                    Text(controller.offers[index]
+                                            .offerPercentageDescription ??
                                         ''),
                                   ],
                                 ),

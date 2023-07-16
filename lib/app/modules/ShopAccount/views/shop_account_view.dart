@@ -19,7 +19,6 @@ class ShopAccountView extends GetView<ShopAccountController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: appBar(),
       drawer: MyDrawer(shops: const [], isShop: controller.isShop),
       body: GetBuilder<ShopAccountController>(builder: (_) {
@@ -99,7 +98,7 @@ class ShopAccountView extends GetView<ShopAccountController> {
                                 padding:
                                     EdgeInsets.symmetric(horizontal: 10.sp),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF5F5F5),
+                                  color: Colors.white,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: DropdownButton(
@@ -138,7 +137,7 @@ class ShopAccountView extends GetView<ShopAccountController> {
                                 padding:
                                     EdgeInsets.symmetric(horizontal: 10.sp),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF5F5F5),
+                                  color: Colors.white,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: DropdownButton(
@@ -192,20 +191,19 @@ class ShopAccountView extends GetView<ShopAccountController> {
                           Container(
                             width: 150.w,
                             padding: EdgeInsets.symmetric(horizontal: 10.sp),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF5F5F5),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
                             child: Row(
                               children: [
                                 Flexible(
                                   child: TextFormField(
+                                    decoration: const InputDecoration(
+                                        fillColor: Colors.white),
                                     inputFormatters: numbersOnlyInputFormat,
                                     controller:
                                         controller.avgShippingPriceController,
                                     onChanged: (v) {},
                                   ),
                                 ),
+                                SizedBox(width: 5.w),
                                 const Text('ريال سعودي'),
                               ],
                             ),
@@ -226,6 +224,8 @@ class ShopAccountView extends GetView<ShopAccountController> {
                   controller.cuponCodeDetailsController,
                   height: 80.h,
                 ),
+                SizedBox(height: 20.h),
+                isHasTamaraAndTabby(),
                 SizedBox(height: 20.h),
                 RoundedButton(
                   text: 'حفظ',
@@ -302,7 +302,7 @@ class ShopAccountView extends GetView<ShopAccountController> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 20.sp),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Row(
@@ -423,6 +423,69 @@ class ShopAccountView extends GetView<ShopAccountController> {
     );
   }
 
+  Widget isHasTamaraAndTabby() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'هل انت مشترك في احدهم ؟',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            InkWell(
+              onTap: () {
+                controller.isHasTamara = !controller.isHasTamara;
+                controller.update();
+              },
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 100.h,
+                    width: 150.w,
+                    child: Image.asset(Assets.tamaraARLogo),
+                  ),
+                  Checkbox(
+                      value: controller.isHasTamara,
+                      onChanged: (v) {
+                        controller.isHasTamara = v!;
+                        controller.update();
+                      })
+                ],
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                controller.isHasTabby = !controller.isHasTabby;
+                controller.update();
+              },
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 100.h,
+                    width: 150.w,
+                    child: Image.asset(Assets.tabbyLogo),
+                  ),
+                  Checkbox(
+                      value: controller.isHasTabby,
+                      onChanged: (v) {
+                        controller.isHasTabby = v!;
+                        controller.update();
+                      })
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   AppBar appBar() {
     return AppBar(
       backgroundColor: Colors.transparent,
@@ -497,26 +560,23 @@ class ShopAccountView extends GetView<ShopAccountController> {
             obscuringCharacter: '*',
             controller: controller,
             maxLines: height != null ? 10 : 1,
-            decoration: !(imageAssetIcon != null)
-                ? null
-                : InputDecoration(
-                    fillColor: const Color(0xFFF5F5F5),
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Image.asset(imageAssetIcon),
+            decoration: InputDecoration(
+              fillColor: Colors.white,
+              prefixIcon: imageAssetIcon != null
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    ),
-                    suffixIcon: !isPassword
-                        ? null
-                        : InkWell(
-                            onTap: showPasswordTap,
-                            child: Image.asset(Assets.hidePNG)),
-                  ),
+                      child: Image.asset(imageAssetIcon),
+                    )
+                  : null,
+              suffixIcon: !isPassword
+                  ? null
+                  : InkWell(
+                      onTap: showPasswordTap,
+                      child: Image.asset(Assets.hidePNG)),
+            ),
             validator: (string) {
               if (string!.isEmpty) {
                 return 'الرجاء ادخال البيانات';

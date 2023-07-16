@@ -136,7 +136,7 @@ class AdminUsersController extends GetxController {
       final subscriptionModule = SubscriptionModule(
         from: DateTime.now(),
         to: DateTime.now().add(Duration(days: sub.allowedDays!)),
-        subscriptionUID: sub.uid!,
+        subscriptionSettingUID: sub.uid!,
       );
 
       await FirebaseFirestoreHelper.instance

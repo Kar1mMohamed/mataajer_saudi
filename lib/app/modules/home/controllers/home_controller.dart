@@ -1,16 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_notification_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
-import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
+import 'package:mataajer_saudi/app/controllers/online_now_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
-import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/popup_ads.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
+import '../../../data/modules/offer_module.dart';
 
 class HomeController extends GetxController {
   final mainAccountController = Get.find<MainAccountController>();
@@ -30,6 +31,9 @@ class HomeController extends GetxController {
   bool loading = false;
   bool adsLoading = false;
 
+  Stream<DocumentSnapshot<Map<String, dynamic>>> get onlineNowStream =>
+      Get.find<OnlineNowController>().onlineNowStream();
+
   //
   List<ShopModule> get staticAds =>
       shops.where((element) => element.isStaticAd ?? false).toList();
@@ -46,9 +50,9 @@ class HomeController extends GetxController {
       shops.where((element) => element.isOtherAd).toList();
   //
 
-  // List<AdModule> get _dumpAds => List.generate(
+  // List<OfferModule> get _dumpAds => List.generate(
   //       10,
-  //       (index) => AdModule(
+  //       (index) => OfferModule(
   //         uid: 'uid$index',
   //         name: 'name$index',
   //         hits: index,
@@ -68,21 +72,21 @@ class HomeController extends GetxController {
   //     );
 
   ///
-  // List<AdModule> _ads = <AdModule>[];
+  // List<OfferModule> _ads = <OfferModule>[];
 
-  // List<AdModule> ads = <AdModule>[];
+  // List<OfferModule> ads = <OfferModule>[];
 
   List<ShopModule> _shops = <ShopModule>[];
 
   List<ShopModule> shops = <ShopModule>[];
 
-  List<AdModule> _offers = <AdModule>[];
+  List<OfferModule> _offers = <OfferModule>[];
 
-  List<AdModule> offers = <AdModule>[];
+  List<OfferModule> offers = <OfferModule>[];
 
   ///
 
-  // List<AdModule> get favAds => mainAccountController.getFavAds(_ads);
+  // List<OfferModule> get favAds => mainAccountController.getFavAds(_ads);
 
   List<ShopModule> get favShops => mainAccountController.getFavShops(_shops);
 
@@ -242,7 +246,7 @@ class HomeController extends GetxController {
     Get.offAllNamed(Routes.ON_BARDING);
   }
 
-  // bool isAdLoved(AdModule ad) => favAds.contains(ad);
+  // bool isAdLoved(OfferModule ad) => favAds.contains(ad);
 
   Future<void> onRefresh() async {
     await getShops();
@@ -254,12 +258,19 @@ class HomeController extends GetxController {
     isHomeFullyInitilized = false;
     update();
 
-    CloudMessaging.sendFCMTokenToFirebase();
+    await Get.find<MainNotificationController>().getNotificationsCount();
+
+    // var deviceUUID = GetStorage().read<String>('deviceUUID');
+    // if (deviceUUID == null) {
+    //   deviceUUID = UUIDFunctions.getDeviceUUID();
+    //   GetStorage().write('deviceUUID', deviceUUID);
+    // }
+
+    // CloudMessaging.sendFCMTokenToFirebase(deviceUUID);
 
     if (isSignedIn) {
       await getCurrentShop();
     }
-    // await getAds();
     await getShops();
     await getOffers();
 

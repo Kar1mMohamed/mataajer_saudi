@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/preview_shop_dialog_controller.dart';
-import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
+import 'package:mataajer_saudi/app/data/modules/offer_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/preview_offer_dialog.dart';
@@ -383,7 +383,7 @@ class PreviewShopDialog extends StatelessWidget {
     );
   }
 
-  Widget _offerCard(AdModule offer) {
+  Widget _offerCard(OfferModule offer) {
     return InkWell(
       focusColor: Colors.transparent,
       highlightColor: Colors.transparent,

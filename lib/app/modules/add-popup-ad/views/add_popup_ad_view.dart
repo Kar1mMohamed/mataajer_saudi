@@ -15,7 +15,6 @@ class AddPopupAdView extends GetView<AddPopupAdController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: appBar(),
       drawer: const MyDrawer(shops: [], isShop: true),
       body: GetBuilder<AddPopupAdController>(builder: (_) {
@@ -233,26 +232,18 @@ class AddPopupAdView extends GetView<AddPopupAdController> {
             obscuringCharacter: '*',
             controller: controller,
             maxLines: height != null ? 10 : 1,
-            decoration: !(imageAssetIcon != null)
-                ? null
-                : InputDecoration(
-                    fillColor: const Color(0xFFF5F5F5),
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Image.asset(imageAssetIcon),
+            decoration: InputDecoration(
+              fillColor: Colors.white,
+              prefixIcon: imageAssetIcon != null
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    ),
-                    // suffixIcon: !isPassword
-                    //     ? null
-                    //     : InkWell(
-                    //         onTap: showPasswordTap,
-                    //         child: Image.asset(Assets.hidePNG)),
-                  ),
+                      child: Image.asset(imageAssetIcon),
+                    )
+                  : null,
+            ),
             validator: (string) {
               if (string!.isEmpty) {
                 return 'الرجاء ادخال البيانات';

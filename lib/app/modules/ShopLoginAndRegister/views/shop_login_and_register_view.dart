@@ -107,7 +107,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   decoration: const BoxDecoration(
-                    color: Colors.white,
+                    color: MataajerTheme.mainBackgroundColor,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(45),
                       topRight: Radius.circular(45),
@@ -284,143 +284,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
               controller.shopKeyWordsController,
             ),
             SizedBox(height: 20.h),
-            SizedBox(
-              height: 80.h,
-              width: double.infinity,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'متوسط مدة الشحن',
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10.sp),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF5F5F5),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: DropdownButton(
-                              hint: Text(
-                                'من',
-                                style: TextStyle(
-                                    fontSize: 13.sp,
-                                    fontFamily: 'Tajawal',
-                                    fontWeight: FontWeight.w400),
-                              ),
-                              underline: Container(),
-                              value: controller.shippingFrom,
-                              items: List.generate(
-                                10,
-                                (index) {
-                                  final value = index + 1;
-
-                                  return DropdownMenuItem(
-                                    value: value,
-                                    child: Text(
-                                      value.toString(),
-                                      style: TextStyle(
-                                          fontSize: 13.sp,
-                                          fontFamily: 'Tajawal',
-                                          fontWeight: FontWeight.w400),
-                                    ),
-                                  );
-                                },
-                              ),
-                              onChanged: (v) {
-                                controller.shippingFrom = v;
-                                controller.update();
-                              },
-                            ),
-                          ),
-                          SizedBox(width: 10.w),
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10.sp),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF5F5F5),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: DropdownButton(
-                              hint: Text(
-                                'الي',
-                                style: TextStyle(
-                                    fontSize: 13.sp,
-                                    fontFamily: 'Tajawal',
-                                    fontWeight: FontWeight.w400),
-                              ),
-                              underline: Container(),
-                              value: controller.shippingTo,
-                              items: List.generate(10, (index) {
-                                final value = index + 1;
-                                return DropdownMenuItem(
-                                  value: value,
-                                  child: Text(
-                                    value.toString(),
-                                    style: TextStyle(
-                                        fontSize: 13.sp,
-                                        fontFamily: 'Tajawal',
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                );
-                              }),
-                              onChanged: (v) {
-                                controller.shippingTo = v;
-                                controller.update();
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  // SizedBox(width: 20.w),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'متوسط سعر الشحن',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      Container(
-                        width: 150.w,
-                        padding: EdgeInsets.symmetric(horizontal: 10.sp),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF5F5F5),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          children: [
-                            Flexible(
-                              child: TextFormField(
-                                inputFormatters: numbersOnlyInputFormat,
-                                controller:
-                                    controller.avgShippingPriceController,
-                                onChanged: (v) {},
-                              ),
-                            ),
-                            const Text('ريال سعودي'),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            registerAverages(),
             SizedBox(height: 20.h),
             _fieldItem(
               'اضافة كود خصم',
@@ -432,6 +296,8 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
               controller.cuponCodeDetailsController,
               height: 80.h,
             ),
+            SizedBox(height: 20.h),
+            registerIsHasTamaraAndTabby(),
             SizedBox(height: 20.h),
             pricesTable(),
             SizedBox(height: 20.h),
@@ -483,7 +349,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
         height: 120,
         width: 120,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: MataajerTheme.mainBackgroundColor,
           borderRadius: BorderRadius.circular(360),
           border: Border.all(color: const Color(0xFFA9A9A9), width: 1),
         ),
@@ -520,6 +386,208 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
     }
   }
 
+  Widget registerIsHasTamaraAndTabby() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'هل انت مشترك في احدهم ؟',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            InkWell(
+              onTap: () {
+                controller.registerIsHasTamara =
+                    !controller.registerIsHasTamara;
+                controller.update();
+              },
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 100.h,
+                    width: 150.w,
+                    child: Image.asset(Assets.tamaraARLogo),
+                  ),
+                  Checkbox(
+                      value: controller.registerIsHasTamara,
+                      onChanged: (v) {
+                        controller.registerIsHasTamara = v!;
+                        controller.update();
+                      })
+                ],
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                controller.registerIsHasTabby = !controller.registerIsHasTabby;
+                controller.update();
+              },
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 100.h,
+                    width: 150.w,
+                    child: Image.asset(Assets.tabbyLogo),
+                  ),
+                  Checkbox(
+                      value: controller.registerIsHasTabby,
+                      onChanged: (v) {
+                        controller.registerIsHasTabby = v!;
+                        controller.update();
+                      })
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget registerAverages() {
+    return SizedBox(
+      height: 80.h,
+      width: double.infinity,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'متوسط مدة الشحن',
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(height: 10.h),
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.sp),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: DropdownButton(
+                      hint: Text(
+                        'من',
+                        style: TextStyle(
+                            fontSize: 13.sp,
+                            fontFamily: 'Tajawal',
+                            fontWeight: FontWeight.w400),
+                      ),
+                      underline: Container(),
+                      value: controller.shippingFrom,
+                      items: List.generate(
+                        10,
+                        (index) {
+                          final value = index + 1;
+
+                          return DropdownMenuItem(
+                            value: value,
+                            child: Text(
+                              value.toString(),
+                              style: TextStyle(
+                                  fontSize: 13.sp,
+                                  fontFamily: 'Tajawal',
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          );
+                        },
+                      ),
+                      onChanged: (v) {
+                        controller.shippingFrom = v;
+                        controller.update();
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 10.w),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.sp),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: DropdownButton(
+                      hint: Text(
+                        'الي',
+                        style: TextStyle(
+                            fontSize: 13.sp,
+                            fontFamily: 'Tajawal',
+                            fontWeight: FontWeight.w400),
+                      ),
+                      underline: Container(),
+                      value: controller.shippingTo,
+                      items: List.generate(10, (index) {
+                        final value = index + 1;
+                        return DropdownMenuItem(
+                          value: value,
+                          child: Text(
+                            value.toString(),
+                            style: TextStyle(
+                                fontSize: 13.sp,
+                                fontFamily: 'Tajawal',
+                                fontWeight: FontWeight.w400),
+                          ),
+                        );
+                      }),
+                      onChanged: (v) {
+                        controller.shippingTo = v;
+                        controller.update();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          // SizedBox(width: 20.w),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'متوسط سعر الشحن',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(height: 10.h),
+              Container(
+                width: 150.w,
+                padding: EdgeInsets.symmetric(horizontal: 10.sp),
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: TextFormField(
+                        decoration:
+                            const InputDecoration(fillColor: Colors.white),
+                        inputFormatters: numbersOnlyInputFormat,
+                        controller: controller.avgShippingPriceController,
+                        onChanged: (v) {},
+                      ),
+                    ),
+                    SizedBox(width: 5.w),
+                    const Text('ريال سعودي'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget chooseCategory() {
     return Column(
       children: [
@@ -528,7 +596,7 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 20.sp),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Row(
@@ -796,26 +864,23 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
             obscuringCharacter: '*',
             controller: controller,
             maxLines: height != null ? 10 : 1,
-            decoration: !(imageAssetIcon != null)
-                ? null
-                : InputDecoration(
-                    fillColor: const Color(0xFFF5F5F5),
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Image.asset(imageAssetIcon),
+            decoration: InputDecoration(
+              fillColor: Colors.white,
+              prefixIcon: imageAssetIcon != null
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    ),
-                    suffixIcon: !isPassword
-                        ? null
-                        : InkWell(
-                            onTap: showPasswordTap,
-                            child: Image.asset(Assets.hidePNG)),
-                  ),
+                      child: Image.asset(imageAssetIcon),
+                    )
+                  : null,
+              suffixIcon: !isPassword
+                  ? null
+                  : InkWell(
+                      onTap: showPasswordTap,
+                      child: Image.asset(Assets.hidePNG)),
+            ),
             validator: (string) {
               if (string!.isEmpty) {
                 return 'الرجاء ادخال البيانات';
@@ -843,7 +908,9 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isWhiteBack ? Colors.white : MataajerTheme.mainColor,
+        backgroundColor: isWhiteBack
+            ? MataajerTheme.mainBackgroundColor
+            : MataajerTheme.mainColor,
         padding: EdgeInsets.symmetric(
           horizontal: 20.sp,
           vertical: 10.sp,

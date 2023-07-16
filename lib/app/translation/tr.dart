@@ -10,6 +10,10 @@ class Translation extends Translations {
           'Email not verified': 'البريد الالكتروني غير مفعل',
           'Error while login': 'حدث خطأ اثناء تسجيل الدخول',
           'Please fill all fields': 'من فضلك املأ جميع الحقول',
+          'Error while updating': 'حدث خطأ اثناء التحديث',
+          'Error while adding': 'حدث خطأ اثناء الاضافة',
+          'Error while deleting': 'حدث خطأ اثناء الحذف',
+          'Error': 'خطأ',
         },
       };
 }

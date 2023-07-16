@@ -17,7 +17,6 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      backgroundColor: const Color(0xFFF5F5F5),
       drawer: const MyDrawer(shops: [], isShop: false, isAdmin: true),
       body: RefreshIndicator(
         onRefresh: controller.onRefresh,

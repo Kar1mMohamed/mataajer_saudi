@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -18,9 +19,6 @@ class NotificationsView extends GetView<NotificationsController> {
       body: GetBuilder<NotificationsController>(builder: (_) {
         if (controller.loading) {
           return MataajerTheme.loadingWidget;
-        }
-        if (controller.isThereNoNotifications) {
-          return const Center(child: Text('لا يوجد اشعارات'));
         }
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.0.sp),

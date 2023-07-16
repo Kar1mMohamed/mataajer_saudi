@@ -21,6 +21,7 @@ class ShopCustomersNotificationsController extends GetxController {
   bool loading = true;
 
   final notTitleController = TextEditingController();
+  final notLinkController = TextEditingController();
 
   List<NotificationModule> notifications = [];
 
@@ -63,6 +64,10 @@ class ShopCustomersNotificationsController extends GetxController {
   Future<void> deleteNotification(NotificationModule notification) async {
     try {
       await FirebaseFirestoreHelper.instance.deleteNotification(notification);
+      // final dateUID = '${notification.date!.year}-${notification.date!.month}';
+      // await CloudMessaging.decreaseSentNumber(
+      //     FirebaseAuth.instance.currentUser!.uid, dateUID);
+
       notifications.remove(notification);
     } catch (e) {
       log('deleteNotification: $e');
@@ -86,7 +91,7 @@ class ShopCustomersNotificationsController extends GetxController {
     update();
     try {
       // if you want to limit the number of notifications sent on the system
-      bool isHasLimit = await CloudMessaging.checkIfUserHasLimit();
+      bool isHasLimit = await CloudMessaging.checkIfUserHasLimit(currentShop!);
 
       if (!isHasLimit) {
         KSnackBar.error('لقد تجاوزت الحد الاقصى للارسال');
@@ -96,7 +101,9 @@ class ShopCustomersNotificationsController extends GetxController {
       final notificationModule = NotificationModule(
         title: 'اشعار من ${currentShop!.name}',
         body: notTitleController.text,
-        data: {},
+        data: {
+          'link': notLinkController.text,
+        },
         date: DateTime.now(),
         isActive: false,
         senderUserUID: FirebaseAuth.instance.currentUser!.uid,
@@ -110,6 +117,7 @@ class ShopCustomersNotificationsController extends GetxController {
       log(e);
     } finally {
       notTitleController.clear();
+      notLinkController.clear();
       loading = false;
       update();
     }

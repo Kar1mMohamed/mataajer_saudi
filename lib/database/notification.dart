@@ -15,6 +15,7 @@ class NotificationModule extends HiveObject {
   static const String boxName = 'notifications';
   static Future<Box<NotificationModule>> openBox =
       Hive.openBox<NotificationModule>(boxName);
+
   static Box<NotificationModule> hiveBox =
       Hive.box<NotificationModule>(boxName);
 

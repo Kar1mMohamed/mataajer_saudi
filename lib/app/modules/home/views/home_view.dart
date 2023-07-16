@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mataajer_saudi/app/controllers/main_notification_controller.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
-import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/url_launcher.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
@@ -12,8 +11,8 @@ import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
 import 'package:mataajer_saudi/app/widgets/preview_offer_dialog.dart';
 import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
-import 'package:mataajer_saudi/database/notification.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
+import '../../../data/modules/offer_module.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -53,6 +52,23 @@ class HomeView extends GetView<HomeController> {
           return SingleChildScrollView(
             child: Column(
               children: [
+                SizedBox(height: 5.h),
+                StreamBuilder(
+                    stream: controller.onlineNowStream,
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const SizedBox.shrink();
+                      }
+                      final onlineNowHits =
+                          snapshot.data!.data()?['hits'] as int?;
+                      return Text(
+                        'المتصلون الان: ${(onlineNowHits ?? 0) + 15000}',
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      );
+                    }),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: _search(),
@@ -277,7 +293,7 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _offerItem(
-      String text, IconData icon, List<AdModule> list, int crossCount) {
+      String text, IconData icon, List<OfferModule> list, int crossCount) {
     double height = crossCount == 1 ? 170.h : (170.h * 2);
 
     return Column(
@@ -533,7 +549,7 @@ class HomeView extends GetView<HomeController> {
         });
   }
 
-  Widget _offerCard(AdModule offer) {
+  Widget _offerCard(OfferModule offer) {
     return GetBuilder<HomeController>(
         id: 'offerCard-${offer.uid}',
         builder: (_) {
@@ -670,59 +686,49 @@ class HomeView extends GetView<HomeController> {
         );
       }),
       actions: [
-        ValueListenableBuilder<Box<NotificationModule>>(
-          valueListenable: NotificationModule.hiveBox.listenable(),
-          builder: (context, box, widget) {
-            var length = 0;
-            if (box.isNotEmpty) {
-              length = box.values
-                  .where((element) =>
-                      element.isRead == null || element.isRead == false)
-                  .length;
-            }
-
-            return IconButton(
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              onPressed: () => Get.toNamed(Routes.NOTIFICATIONS),
-              icon: Stack(
-                children: [
-                  Icon(
-                    Icons.notifications,
-                    size: 30.h,
-                  ),
-                  if (length > 0)
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(4.0),
-                        margin: EdgeInsets.only(left: 10.w),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                          border: Border.fromBorderSide(
-                            BorderSide(
-                              color: Colors.white,
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          '$length',
-                          style: TextStyle(
-                            fontSize: 8.5.sp,
+        GetBuilder<MainNotificationController>(
+            builder: (mainNotificationController) {
+          return IconButton(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            onPressed: () => Get.toNamed(Routes.NOTIFICATIONS),
+            icon: Stack(
+              children: [
+                Icon(
+                  Icons.notifications,
+                  size: 30.h,
+                ),
+                if (mainNotificationController.notificationCount > 0)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4.0),
+                      margin: EdgeInsets.only(left: 10.w),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                        border: Border.fromBorderSide(
+                          BorderSide(
                             color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                            width: 2,
                           ),
                         ),
                       ),
+                      child: Text(
+                        '${mainNotificationController.notificationCount}',
+                        style: TextStyle(
+                          fontSize: 8.5.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
-                ],
-              ),
-            );
-          },
-        )
+                  ),
+              ],
+            ),
+          );
+        })
       ],
     );
   }

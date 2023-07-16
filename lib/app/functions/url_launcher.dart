@@ -20,6 +20,10 @@ class URLLauncherFuntions {
     //   throw 'Could not launch $url';
     // }
 
+    if (url.isEmpty) {
+      return;
+    }
+
     if (!url.contains('http://') || !url.contains('https://')) {
       url = 'https://$url';
     }

@@ -1,15 +1,15 @@
 import 'package:get/get.dart';
-import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
+import 'package:mataajer_saudi/app/data/modules/offer_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/modules/home/controllers/home_controller.dart';
 
 class PreviewOfferDialogController extends GetxController {
-  final AdModule offerModule;
+  final OfferModule offerModule;
   PreviewOfferDialogController({required this.offerModule});
   void addView() =>
       FirebaseFirestoreHelper.instance.addHit('offers', offerModule.uid!);
 
-  List<AdModule> get similarAds {
+  List<OfferModule> get similarAds {
     try {
       return Get.find<HomeController>().offers.where(
         (element) {

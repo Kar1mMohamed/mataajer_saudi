@@ -1,8 +1,5 @@
 import 'package:get/get.dart';
-import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-import '../utils/log.dart';
 
 class MainPermisionsController extends GetxController {
   Permission get photosPerm {

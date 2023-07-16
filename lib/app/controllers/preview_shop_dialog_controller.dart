@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
+import 'package:mataajer_saudi/app/data/modules/offer_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/modules/home/controllers/home_controller.dart';
@@ -28,7 +28,7 @@ class PreviewShopDialogController extends GetxController {
     }
   }
 
-  List<AdModule> get allOffers {
+  List<OfferModule> get allOffers {
     try {
       return Get.find<HomeController>().offers.where(
         (element) {

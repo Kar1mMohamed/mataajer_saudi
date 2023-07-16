@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
+import 'package:mataajer_saudi/app/data/modules/invoice_module.dart';
+import 'package:mataajer_saudi/app/data/modules/offer_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
@@ -46,16 +48,32 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<void> addSubscription(
+  /// Return document uid
+  Future<String?> addSubscription(
       String userUID, SubscriptionModule subModule) async {
     try {
-      await FirebaseFirestore.instance
+      final res = await FirebaseFirestore.instance
           .collection('shops')
           .doc(userUID)
           .collection('subscriptions')
           .add(subModule.toMap());
 
       log('add subscription to $userUID, ${subModule.toJson()}');
+
+      return res.id;
+    } catch (e) {
+      log(e);
+      return null;
+    }
+  }
+
+  Future<void> addInvoiceToShop(String? shopUID, InvoiceModule invoice) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('shops')
+          .doc(shopUID)
+          .collection('invoices')
+          .add(invoice.toMap());
     } catch (e) {
       log(e);
     }
@@ -118,15 +136,15 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<void> addOffer(AdModule ad) async {
+  Future<void> addOffer(OfferModule offer) async {
     try {
-      await FirebaseFirestore.instance.collection('offers').add(ad.toMap());
+      await FirebaseFirestore.instance.collection('offers').add(offer.toMap());
     } catch (e) {
       log(e);
     }
   }
 
-  Future<List<AdModule>> getOffers({bool? forAdmin}) async {
+  Future<List<OfferModule>> getOffers({bool? forAdmin}) async {
     forAdmin ??= false;
 
     try {
@@ -134,7 +152,7 @@ class FirebaseFirestoreHelper {
 
       if (forAdmin) {
         final ads = await collection.get().then((value) => value.docs
-            .map((e) => AdModule.fromMap(e.data(), uid: e.id))
+            .map((e) => OfferModule.fromMap(e.data(), uid: e.id))
             .toList());
 
         log('offers: ${ads.length}');
@@ -147,7 +165,7 @@ class FirebaseFirestoreHelper {
                 isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
             .get()
             .then((value) => value.docs
-                .map((e) => AdModule.fromMap(e.data(), uid: e.id))
+                .map((e) => OfferModule.fromMap(e.data(), uid: e.id))
                 .toList());
 
         log('offers: ${ads.length}');
@@ -170,8 +188,6 @@ class FirebaseFirestoreHelper {
       if (forAdmin) {
         shops = await collection.get().then((value) =>
             value.docs.map((e) => ShopModule.fromMap(e.data(), e.id)).toList());
-
-        log('shops: ${shops.length}');
       } else {
         shops = await collection
             .where('isVisible', isEqualTo: true)
@@ -181,12 +197,12 @@ class FirebaseFirestoreHelper {
             .then((value) => value.docs
                 .map((e) => ShopModule.fromMap(e.data(), e.id))
                 .toList());
-
-        log('shops: ${shops.length}');
       }
 
       shops.removeWhere((element) =>
           element.categories.isEmpty || element.categoriesUIDs.isEmpty);
+
+      log('shops: ${shops.length}');
 
       return shops;
     } catch (e) {
@@ -195,12 +211,43 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  void addHit(String collectionName, String uid) async {
+  Future<int> getShopsCount() async {
+    try {
+      final len = await FirebaseFirestore.instance
+          .collection('shops')
+          .get()
+          .then((value) => value.docs.length);
+      return len + 1;
+    } catch (e) {
+      log(e);
+      rethrow;
+    }
+  }
+
+  Future<List<InvoiceModule>> getShopInvoices(String shopUID) async {
+    try {
+      final invoices = await FirebaseFirestore.instance
+          .collection('shops')
+          .doc(shopUID)
+          .collection('invoices')
+          .get()
+          .then((value) => value.docs
+              .map((e) => InvoiceModule.fromMap(e.data(), uid: e.id))
+              .toList());
+
+      return invoices;
+    } catch (e) {
+      log(e);
+      rethrow;
+    }
+  }
+
+  void addHit(String collectionName, String uid, {int? toAdd}) async {
     try {
       await FirebaseFirestore.instance
           .collection(collectionName)
           .doc(uid)
-          .update({'hits': FieldValue.increment(1)});
+          .update({'hits': FieldValue.increment(toAdd ?? 1)});
 
       log('hit added $uid');
     } catch (e) {
@@ -208,27 +255,48 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<void> sendFCMToken(String token) async {
+  Future<void> decreaseNotificationSent(
+      String userUID, String dateYYYYM) async {
     try {
-      final uid = GetStorage().read('fcm_token_uid') as String?;
+      await FirebaseFirestore.instance
+          .doc(userUID)
+          .collection('notifications')
+          .doc(dateYYYYM)
+          .update({'sent': FieldValue.increment(-1)});
+    } catch (e) {
+      log('decreaseNotificationSent: $e');
+    }
+  }
 
-      if (uid == null) {
-        final res =
-            await FirebaseFirestore.instance.collection('fcm_tokens').add({
-          'token': token,
-          'createdAt': DateTime.now().toIso8601String(),
-        });
+  Future<void> sendFCMToken(String token, String docUID) async {
+    try {
+      // final uid = GetStorage().read('fcm_token_uid') as String?;
 
-        await GetStorage().write('fcm_token_uid', res.id);
-      } else {
-        await FirebaseFirestore.instance
-            .collection('fcm_tokens')
-            .doc(uid)
-            .update({
-          'token': token,
-          'createdAt': DateTime.now().toIso8601String(),
-        });
-      }
+      // if (uid == null) {
+      //   final res =
+      //       await FirebaseFirestore.instance.collection('fcm_tokens').add({
+      //     'token': token,
+      //     'createdAt': DateTime.now().toIso8601String(),
+      //   });
+
+      //   await GetStorage().write('fcm_token_uid', res.id);
+      // } else {
+      //   await FirebaseFirestore.instance
+      //       .collection('fcm_tokens')
+      //       .doc(uid)
+      //       .update({
+      //     'token': token,
+      //     'createdAt': DateTime.now().toIso8601String(),
+      //   });
+      // }
+
+      await FirebaseFirestore.instance
+          .collection('fcm_tokens')
+          .doc(docUID)
+          .set({
+        'token': token,
+        'createdAt': DateTime.now().toIso8601String(),
+      });
     } catch (e) {
       GetStorage().remove('fcm_token_uid');
       log(e);
@@ -334,7 +402,7 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<void> updateOfferVisibility(AdModule offer) async {
+  Future<void> updateOfferVisibility(OfferModule offer) async {
     try {
       await FirebaseFirestore.instance
           .collection('offers')
@@ -453,14 +521,14 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<List<AdModule>> getShopOffers(String shopUID) async {
+  Future<List<OfferModule>> getShopOffers(String shopUID) async {
     try {
       final offers = await FirebaseFirestore.instance
           .collection('offers')
           .where('shopUID', isEqualTo: shopUID)
           .get()
           .then((value) => value.docs
-              .map((e) => AdModule.fromMap(e.data(), uid: e.id))
+              .map((e) => OfferModule.fromMap(e.data(), uid: e.id))
               .toList());
 
       log('offers: ${offers.length}');
@@ -502,7 +570,7 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<void> deleteOffer(AdModule offer) async {
+  Future<void> deleteOffer(OfferModule offer) async {
     try {
       if (offer.uid == null) {
         throw 'docUID is null';

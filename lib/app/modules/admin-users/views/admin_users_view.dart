@@ -183,7 +183,7 @@ class AdminUsersView extends GetView<AdminUsersController> {
             decoration: !(imageAssetIcon != null)
                 ? null
                 : InputDecoration(
-                    fillColor: const Color(0xFFF5F5F5),
+                    fillColor: Colors.white,
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(

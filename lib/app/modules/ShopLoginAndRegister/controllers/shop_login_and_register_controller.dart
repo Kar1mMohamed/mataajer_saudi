@@ -9,6 +9,7 @@ import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/constants.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
+import 'package:mataajer_saudi/app/data/modules/invoice_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 import 'package:mataajer_saudi/app/data/modules/tap/tap_charge_req.dart';
@@ -66,6 +67,9 @@ class ShopLoginAndRegisterController extends GetxController {
   final avgShippingPriceController = TextEditingController();
   final cuponCodeController = TextEditingController();
   final cuponCodeDetailsController = TextEditingController();
+
+  bool registerIsHasTamara = false;
+  bool registerIsHasTabby = false;
 
   int? shippingFrom;
   int? shippingTo;
@@ -126,12 +130,8 @@ class ShopLoginAndRegisterController extends GetxController {
       await goHomeForShop();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        // log('No user found for that email.');
-        // throw 'لا يوجد حساب مسجل بهذا البريد الالكتروني';
         KSnackBar.error('لا يوجد حساب مسجل بهذا البريد الالكتروني');
       } else if (e.code == 'wrong-password') {
-        // log('Wrong password provided for that user.');
-        // throw 'كلمة المرور غير صحيحة';
         KSnackBar.error('كلمة المرور غير صحيحة');
       }
     } catch (e) {
@@ -165,6 +165,8 @@ class ShopLoginAndRegisterController extends GetxController {
         throw 'Error while registering';
       }
 
+      final shopsCount = await FirebaseFirestoreHelper.instance.getShopsCount();
+
       final shopModule = ShopModule(
         name: shopNameController.text,
         email: emailController.text,
@@ -179,6 +181,9 @@ class ShopLoginAndRegisterController extends GetxController {
         keywords: shopKeyWordsController.text.split(','),
         shopLink: shopLinkController.text,
         token: await regResponse.user!.getIdToken(),
+        isHasTamara: registerIsHasTamara,
+        isHasTabby: registerIsHasTabby,
+        shopNumber: shopsCount + 1,
       );
 
       await FirebaseFirestoreHelper.instance
@@ -189,7 +194,7 @@ class ShopLoginAndRegisterController extends GetxController {
       final subscriptionModule = SubscriptionModule(
         from: DateTime.now(),
         to: DateTime.now().add(Duration(days: sub.allowedDays!)),
-        subscriptionUID: sub.uid!,
+        subscriptionSettingUID: sub.uid!,
       );
 
       final tapModule = TapChargeReq(
@@ -205,7 +210,7 @@ class ShopLoginAndRegisterController extends GetxController {
 
       final paymentReqRes = await PaymentsHelper.sendRequest(tapModule);
 
-      final id = paymentReqRes['id'];
+      final tapTransactionID = paymentReqRes['id'];
       final redirectURL = paymentReqRes['transaction']['url'];
 
       final paymentRes = await Get.to(
@@ -217,7 +222,7 @@ class ShopLoginAndRegisterController extends GetxController {
           onPaymentSuccess: (query) async {
             log('success query: $query');
 
-            final isPaid = await PaymentsHelper.checkIFPaid(id);
+            final isPaid = await PaymentsHelper.checkIFPaid(tapTransactionID);
 
             if (!isPaid) {
               KSnackBar.error('حدث خطأ ما الرجاء المحاولة مرة أخرى');
@@ -250,8 +255,20 @@ class ShopLoginAndRegisterController extends GetxController {
         throw Exception('paymentReqRes: $paymentReqRes');
       }
 
-      await FirebaseFirestoreHelper.instance
+      final subscriptionDocUID = await FirebaseFirestoreHelper.instance
           .addSubscription(regResponse.user!.uid, subscriptionModule);
+
+      final invoiceModule = InvoiceModule(
+        shopUID: regResponse.user!.uid,
+        subscriptionDocUID: subscriptionDocUID,
+        subscriptionSettingUID: sub.uid!,
+        amount: sub.getPriceByDays,
+        tapTransactionID: tapTransactionID,
+        date: DateTime.now(),
+      );
+
+      await FirebaseFirestoreHelper.instance
+          .addInvoiceToShop(regResponse.user!.uid, invoiceModule);
 
       final finalShopModule = await FirebaseFirestoreHelper.instance
           .getShopModule(regResponse.user!.uid);

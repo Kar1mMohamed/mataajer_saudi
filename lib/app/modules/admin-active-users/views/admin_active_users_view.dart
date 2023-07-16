@@ -178,12 +178,13 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
                     verticalMargin: 5,
                   ),
                   if (isHasUnVisiblePopUpAds)
-                    Builder(builder: (context) {
-                      int length = controller.noOfUnVisiblePopUpAds(shop);
-                      return Positioned(
-                        top: 0,
-                        right: 0,
-                        child: Container(
+                    Builder(
+                      builder: (context) {
+                        int length = controller.noOfUnVisiblePopUpAds(shop);
+                        return Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Container(
                             height: 30.h,
                             width: 30.w,
                             padding: EdgeInsets.symmetric(
@@ -199,9 +200,11 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
                                 fontWeight: FontWeight.w500,
                                 color: Colors.white,
                               ),
-                            )),
-                      );
-                    }),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                 ],
               ),
               Stack(

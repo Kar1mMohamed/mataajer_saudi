@@ -43,4 +43,8 @@ abstract class Assets {
   static const String riveLoadingShop = 'assets/shop_loading.riv';
 
   static const String noImg = 'assets/images/no_img_av.jpg';
+
+  static const String tamaraARLogo = 'assets/images/tamara-logo-ar.png';
+  static const String tamaraENLogo = 'assets/images/tamara-logo-en.png';
+  static const String tabbyLogo = 'assets/images/tabby-logo.png';
 }

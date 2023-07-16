@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
+import 'package:uuid/uuid.dart';
 import '../../../../database/notification.dart';
 import '../../../../utils/ksnackbar.dart';
 import '../../../data/modules/send_notification_module.dart';
@@ -53,10 +54,14 @@ class AdminNotificationController extends GetxController {
       return;
     }
 
+    module.isActive = true;
+
     try {
+      final shopModule = shops
+          .firstWhereOrNull((element) => element.uid == module.senderUserUID);
+
       // if you want to limit the number of notifications sent on the system
-      bool isHasLimit = await CloudMessaging.checkIfUserHasLimit(
-          userUID: module.senderUserUID!);
+      bool isHasLimit = await CloudMessaging.checkIfUserHasLimit(shopModule!);
 
       if (!isHasLimit) {
         KSnackBar.error('لقد تجاوز المتجر الحد الاقصى للارسال');
@@ -76,6 +81,7 @@ class AdminNotificationController extends GetxController {
           title: module.title!,
           body: module.body!,
           token: e,
+          data: module.data,
         );
       }).toList();
 
@@ -86,7 +92,26 @@ class AdminNotificationController extends GetxController {
         await CloudMessaging.sendNotification(sendModules[i]);
       }
 
-      await CloudMessaging.increaseSentNumber(module.senderUserUID!);
+      final allFCMTokenDocs = await FirebaseFirestore.instance
+          .collection('fcm_tokens')
+          .get()
+          .then((value) => value.docs);
+
+      final batch = FirebaseFirestore.instance.batch();
+
+      for (var doc in allFCMTokenDocs) {
+        final docUID = const Uuid().v5(Uuid.NAMESPACE_X500,
+            '${doc.id}-${DateTime.now().millisecondsSinceEpoch}');
+        final newDoc = doc.reference.collection('notifications').doc(docUID);
+        batch.set(newDoc, module.toMap());
+        log('writing notification to: ${newDoc.id}');
+      }
+
+      await batch.commit();
+
+      final dateUID = '${DateTime.now().year}-${DateTime.now().month}';
+
+      await CloudMessaging.increaseSentNumber(module.senderUserUID!, dateUID);
 
       KSnackBar.success('تم ارسال الاشعارات بنجاح');
     } catch (e) {
@@ -121,6 +146,8 @@ class AdminNotificationController extends GetxController {
     updateNotificationCard(index);
     try {
       await FirebaseFirestoreHelper.instance.deleteNotifications(module);
+      // final dateUID = '${module.date!.year}-${module.date!.month}';
+      // await CloudMessaging.decreaseSentNumber(module.senderUserUID!, dateUID);
       notifications.remove(module);
       update();
       KSnackBar.success('تم الغاء الاشعار بنجاح');

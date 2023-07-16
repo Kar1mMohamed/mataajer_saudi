@@ -5,8 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
+import 'package:mataajer_saudi/app/data/constants.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
+import 'package:mataajer_saudi/app/data/modules/invoice_module.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/payments_helper.dart';
@@ -16,12 +19,14 @@ import 'package:mataajer_saudi/app/utils/custom_snackbar.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/check_out_webview.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
+
 import '../../modules/ChooseSubscription/views/choose_subscription_view.dart';
 import 'choose_subscription_module.dart';
 import 'tap/tap_charge_req.dart';
 
 class ShopModule {
   String? uid;
+  int? shopNumber;
   String name;
   String? email;
   String? phone;
@@ -38,6 +43,8 @@ class ShopModule {
   bool? isVisible;
   String? userCategory;
   int? hits;
+  bool? isHasTamara;
+  bool? isHasTabby;
   //
   bool? isStaticAd = false;
   bool? isTwoPopUpAdsMonthly = false;
@@ -52,6 +59,7 @@ class ShopModule {
   //
   ShopModule({
     this.uid,
+    this.shopNumber,
     required this.name,
     this.email,
     this.phone,
@@ -68,6 +76,8 @@ class ShopModule {
     this.isVisible,
     this.userCategory,
     this.hits,
+    this.isHasTamara,
+    this.isHasTabby,
     this.isStaticAd,
     this.isTwoPopUpAdsMonthly,
     this.isFourPopUpAdsMonthly,
@@ -75,7 +85,46 @@ class ShopModule {
     this.isCanSendFourNotification,
     this.validTill,
     this.token,
-  });
+  }) {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return;
+    if (Constants.admins.contains(currentUser.uid)) {
+      // implement any code for admins only
+    }
+  }
+
+  String get getShopCategoryName {
+    final mainCategories = Get.find<MainSettingsController>().mainCategories;
+    final category = mainCategories
+        .firstWhereOrNull((element) => element.uid == categoriesUIDs.first);
+
+    return category?.name ?? '';
+  }
+
+  int get noOfNotificationCandSend {
+    int no = 0;
+    if (isCanSendTwoNotification ?? false) {
+      no += 2;
+    }
+    if (isCanSendFourNotification ?? false) {
+      no += 4;
+    }
+    return no;
+  }
+
+  Future<void> initShopNumberForAdmins(List<ShopModule> shops) async {
+    var shopNumber = 1;
+    // final shops =
+    //     await FirebaseFirestoreHelper.instance.getShops(forAdmin: true);
+    final shopNumbers = shops.map((e) => e.shopNumber).toList();
+    while (shopNumbers.contains(shopNumber)) {
+      shopNumber++;
+    }
+    this.shopNumber = shopNumber;
+
+    // updateShop
+    await FirebaseFirestoreHelper.instance.updateShop(this);
+  }
 
   bool get isMostVisitShop {
     try {
@@ -176,7 +225,7 @@ class ShopModule {
       return false;
     }
 
-    final lastSubscriptionUID = lastSub.subscriptionUID;
+    final lastSubscriptionUID = lastSub.subscriptionSettingUID;
     final subscriptionSetting = MainSettingsController.find.subscriptions
         .firstWhereOrNull((element) => element.uid == lastSubscriptionUID);
 
@@ -209,7 +258,7 @@ class ShopModule {
       return 0;
     }
 
-    final lastSubscriptionUID = lastSub.subscriptionUID;
+    final lastSubscriptionUID = lastSub.subscriptionSettingUID;
     final subscription = MainSettingsController.find.subscriptions
         .firstWhereOrNull((element) => element.uid == lastSubscriptionUID);
 
@@ -257,7 +306,7 @@ class ShopModule {
 
         final paymentReqRes = await PaymentsHelper.sendRequest(tapModule);
 
-        final id = paymentReqRes['id'];
+        final tapTransactionID = paymentReqRes['id'];
         final redirectURL = paymentReqRes['transaction']['url'];
 
         Get.back();
@@ -271,7 +320,7 @@ class ShopModule {
             onPaymentSuccess: (query) async {
               log('success query: $query');
 
-              final isPaid = await PaymentsHelper.checkIFPaid(id);
+              final isPaid = await PaymentsHelper.checkIFPaid(tapTransactionID);
 
               if (!isPaid) {
                 KSnackBar.error('حدث خطأ ما الرجاء المحاولة مرة أخرى');
@@ -304,17 +353,34 @@ class ShopModule {
           throw Exception('paymentReqRes: $paymentReqRes');
         }
 
-        await FirebaseFirestoreHelper.instance.addSubscription(
+        Get.dialog(MataajerTheme.loadingWidget, barrierDismissible: false);
+
+        final subscriptionDocUID =
+            await FirebaseFirestoreHelper.instance.addSubscription(
           uid!,
           SubscriptionModule(
             from: DateTime.now(),
             to: DateTime.now().add(Duration(days: resData.allowedDays!)),
-            subscriptionUID: resData.uid!,
+            subscriptionSettingUID: resData.uid!,
           ),
         );
 
+        final invoiceModule = InvoiceModule(
+          shopUID: uid,
+          subscriptionDocUID: subscriptionDocUID,
+          subscriptionSettingUID: resData.uid!,
+          amount: resData.getPriceByDays,
+          tapTransactionID: tapTransactionID,
+          date: DateTime.now(),
+        );
+
+        await FirebaseFirestoreHelper.instance
+            .addInvoiceToShop(uid, invoiceModule);
+
         await updateValidTill();
         await updatePrivileges();
+
+        Get.back();
 
         return resData;
       } else {
@@ -348,9 +414,10 @@ class ShopModule {
         return;
       }
 
-      final subscriptionSettings = MainSettingsController.find.subscriptions
-          .firstWhereOrNull(
-              (element) => element.uid == currentSubscription.subscriptionUID);
+      final subscriptionSettings =
+          MainSettingsController.find.subscriptions.firstWhereOrNull(
+        (element) => element.uid == currentSubscription.subscriptionSettingUID,
+      );
 
       bool isStatic = subscriptionSettings?.isStatic ?? false;
       bool isCanSendTowNotification =
@@ -528,6 +595,7 @@ class ShopModule {
 
   ShopModule copyWith({
     String? uid,
+    int? shopNumber,
     String? name,
     String? email,
     String? phone,
@@ -544,6 +612,8 @@ class ShopModule {
     bool? isVisible,
     String? userCategory,
     int? hits,
+    bool? isHasTamara,
+    bool? isHasTabby,
     bool? isStaticAd,
     bool? isTwoPopUpAdsMonthly,
     bool? isFourPopUpAdsMonthly,
@@ -554,6 +624,7 @@ class ShopModule {
   }) {
     return ShopModule(
       uid: uid ?? this.uid,
+      shopNumber: shopNumber ?? this.shopNumber,
       name: name ?? this.name,
       email: email ?? this.email,
       phone: phone ?? this.phone,
@@ -570,6 +641,8 @@ class ShopModule {
       isVisible: isVisible ?? this.isVisible,
       userCategory: userCategory ?? this.userCategory,
       hits: hits ?? this.hits,
+      isHasTamara: isHasTamara ?? this.isHasTamara,
+      isHasTabby: isHasTabby ?? this.isHasTabby,
       isStaticAd: isStaticAd ?? this.isStaticAd,
       isTwoPopUpAdsMonthly: isTwoPopUpAdsMonthly ?? this.isTwoPopUpAdsMonthly,
       isFourPopUpAdsMonthly:
@@ -587,6 +660,7 @@ class ShopModule {
     return <String, dynamic>{
       // 'uid': uid,
       'name': name,
+      'shopNumber': shopNumber,
       'email': email,
       'phone': phone,
       'description': description,
@@ -606,6 +680,8 @@ class ShopModule {
       'isVisible': isVisible,
       if (userCategory != null) 'userCategory': userCategory,
       'hits': hits,
+      'isHasTamara': isHasTamara,
+      'isHasTabby': isHasTabby,
       'isStaticAd': isStaticAd,
       'validTill': validTill,
       'isCanSendTwoNotification': isCanSendTwoNotification,
@@ -620,6 +696,7 @@ class ShopModule {
     return ShopModule(
       uid: uid,
       name: map['name'] as String,
+      shopNumber: map['shopNumber'] != null ? map['shopNumber'] as int : null,
       email: map['email'] != null ? map['email'] as String : null,
       phone: map['phone'] != null ? map['phone'] as String : null,
       description: map['description'] as String,
@@ -654,6 +731,9 @@ class ShopModule {
       userCategory:
           map['userCategory'] != null ? map['userCategory'] as String : null,
       hits: map['hits'] != null ? map['hits'] as int : 0,
+      isHasTamara:
+          map['isHasTamara'] != null ? map['isHasTamara'] as bool : false,
+      isHasTabby: map['isHasTabby'] != null ? map['isHasTabby'] as bool : false,
       isStaticAd: map['isStaticAd'] != null ? map['isStaticAd'] as bool : false,
       validTill: map['validTill'] != null
           ? (map['validTill'] as Timestamp).toDate()
@@ -681,7 +761,7 @@ class ShopModule {
 
   @override
   String toString() {
-    return 'ShopModule(uid: $uid, name: $name, email: $email, phone: $phone, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions, shopLink: $shopLink, keywords: $keywords, isVisible: $isVisible, userCategory: $userCategory, hits: $hits, isStaticAd: $isStaticAd, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendTwoNotification: $isCanSendTwoNotification, isCanSendFourNotification: $isCanSendFourNotification, validTill: $validTill, token: $token)';
+    return 'ShopModule(uid: $uid, name: $name,shopNumber: $shopNumber, email: $email, phone: $phone, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions, shopLink: $shopLink, keywords: $keywords, isVisible: $isVisible, userCategory: $userCategory, hits: $hits, isHasTamara: $isHasTamara, isHasTabby: $isHasTabby, isStaticAd: $isStaticAd, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendTwoNotification: $isCanSendTwoNotification, isCanSendFourNotification: $isCanSendFourNotification, validTill: $validTill, token: $token)';
   }
 
   @override
@@ -689,6 +769,7 @@ class ShopModule {
     if (identical(this, other)) return true;
 
     return other.uid == uid &&
+        other.shopNumber == shopNumber &&
         other.name == name &&
         other.email == email &&
         other.phone == phone &&
@@ -705,6 +786,8 @@ class ShopModule {
         other.isVisible == isVisible &&
         other.userCategory == userCategory &&
         other.hits == hits &&
+        other.isHasTamara == isHasTamara &&
+        other.isHasTabby == isHasTabby &&
         other.isStaticAd == isStaticAd &&
         other.isTwoPopUpAdsMonthly == isTwoPopUpAdsMonthly &&
         other.isFourPopUpAdsMonthly == isFourPopUpAdsMonthly &&
@@ -717,6 +800,7 @@ class ShopModule {
   @override
   int get hashCode {
     return uid.hashCode ^
+        shopNumber.hashCode ^
         name.hashCode ^
         email.hashCode ^
         phone.hashCode ^
@@ -733,6 +817,8 @@ class ShopModule {
         isVisible.hashCode ^
         userCategory.hashCode ^
         hits.hashCode ^
+        isHasTamara.hashCode ^
+        isHasTabby.hashCode ^
         isStaticAd.hashCode ^
         isTwoPopUpAdsMonthly.hashCode ^
         isFourPopUpAdsMonthly.hashCode ^

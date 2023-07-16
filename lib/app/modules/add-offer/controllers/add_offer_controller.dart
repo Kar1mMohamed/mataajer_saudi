@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
-import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
+import 'package:mataajer_saudi/app/data/modules/offer_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
@@ -25,10 +25,11 @@ class AddOfferController extends GetxController {
   String? imageURL;
 
   final shopLinkController = TextEditingController();
-  final cuponCodeController = TextEditingController();
-  final cuponCodeDescription = TextEditingController();
+  final offerPercentage = TextEditingController();
 
-  List<AdModule> offers = [];
+  List<OfferModule> offers = [];
+
+  int chooseDuration = 0;
 
   Future<void> getCurrentShopModule() async {
     try {
@@ -64,10 +65,10 @@ class AddOfferController extends GetxController {
         barrierDismissible: false,
       );
       imageURL = await FirebaseStorageFunctions.uploadImage(image);
+      Get.back(); // dismiss laoding dialog
     } catch (e) {
       log(e);
     } finally {
-      Get.back(); // dismiss laoding dialog
       update();
     }
   }
@@ -83,26 +84,38 @@ class AddOfferController extends GetxController {
       if (currentShop == null) {
         throw 'يجب تسجيل الدخول';
       }
+      if (offerPercentage.text.isEmpty) {
+        throw 'يجب ادخال نسبة الخصم';
+      }
+      // if (cuponCodeDescription.text.isEmpty) {
+      //   throw 'يجب ادخال وصف الكود';
+      // }
+      if (chooseDuration == 0) {
+        throw 'يجب اختيار مدة العرض';
+      }
       loading = true;
       update();
 
-      final module = AdModule(
+      final module = OfferModule(
         shopUID: FirebaseAuth.instance.currentUser!.uid,
         name: currentShop!.name,
         categoryUIDs: currentShop!.categoriesUIDs,
-        description: cuponCodeDescription.text,
+        // cuponCodeDescription: cuponCodeDescription.text,
         imageURL: imageURL!,
         avgShippingPrice: currentShop!.avgShippingPrice,
         avgShippingTime: currentShop!.avgShippingTime,
-        cuponCode: cuponCodeController.text,
+        offerPercentage: double.tryParse(offerPercentage.text),
         validTill: currentShop!.validTill,
+        fromDate: DateTime.now(),
+        toDate: DateTime.now().add(Duration(days: chooseDuration)),
         isVisible: true,
+        offerLink: shopLinkController.text,
       );
 
       await FirebaseFirestoreHelper.instance.addOffer(module);
       return true;
     } catch (e) {
-      // KSnackBar.error(e.toString());
+      KSnackBar.error(e.toString());
       return false;
       // log(e.toString());
     } finally {
@@ -125,7 +138,7 @@ class AddOfferController extends GetxController {
     }
   }
 
-  Future<void> deleteOffer(AdModule offer) async {
+  Future<void> deleteOffer(OfferModule offer) async {
     try {
       loading = true;
       update();
@@ -139,7 +152,7 @@ class AddOfferController extends GetxController {
     }
   }
 
-  void showOffer(AdModule offer) {
+  void showOffer(OfferModule offer) {
     Get.dialog(PreviewOfferDialog(offerModule: offer));
   }
 

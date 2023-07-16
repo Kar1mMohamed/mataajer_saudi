@@ -7,25 +7,26 @@ class SubscriptionModule {
   final String? uid;
   final DateTime from;
   final DateTime to;
-  final String subscriptionUID;
+  final String subscriptionSettingUID;
   SubscriptionModule({
     this.uid,
     required this.from,
     required this.to,
-    required this.subscriptionUID,
+    required this.subscriptionSettingUID,
   });
 
   SubscriptionModule copyWith({
     String? uid,
     DateTime? from,
     DateTime? to,
-    String? subscriptionUID,
+    String? subscriptionSettingUID,
   }) {
     return SubscriptionModule(
         uid: uid ?? this.uid,
         from: from ?? this.from,
         to: to ?? this.to,
-        subscriptionUID: subscriptionUID ?? this.subscriptionUID);
+        subscriptionSettingUID:
+            subscriptionSettingUID ?? this.subscriptionSettingUID);
   }
 
   Map<String, dynamic> toMap(
@@ -38,7 +39,7 @@ class SubscriptionModule {
       'to': transferTimeStampIntoDate
           ? to.microsecondsSinceEpoch
           : Timestamp.fromDate(to),
-      'subscriptionUID': subscriptionUID,
+      'subscriptionSettingUID': subscriptionSettingUID,
     };
   }
 
@@ -47,7 +48,7 @@ class SubscriptionModule {
       uid: map['uid'] != null ? map['uid'] as String : null,
       from: (map['from'] as Timestamp).toDate(),
       to: (map['to'] as Timestamp).toDate(),
-      subscriptionUID: map['subscriptionUID'] as String,
+      subscriptionSettingUID: map['subscriptionSettingUID'] as String,
     );
   }
 

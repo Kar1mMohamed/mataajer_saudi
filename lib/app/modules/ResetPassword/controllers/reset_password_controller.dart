@@ -15,24 +15,24 @@ class ResetPasswordController extends GetxController {
 
   bool loading = false;
 
-  StreamSubscription<User?> get authStateChanges =>
-      FirebaseAuth.instance.authStateChanges().listen(_listen);
+  // StreamSubscription<User?> get authStateChanges =>
+  //     FirebaseAuth.instance.authStateChanges().listen(_listen);
 
-  void listenToAccountIfVerfiy() async {
-    if (isEmailVerify) {
-      authStateChanges;
-    }
-  }
+  // void listenToAccountIfVerfiy() async {
+  //   if (isEmailVerify) {
+  //     authStateChanges;
+  //   }
+  // }
 
-  void _listen(User? user) async {
-    log('user: $user');
-    if (user != null && user.emailVerified) {
-      KSnackBar.success('تم تأكيد البريد الالكتروني');
-      await Future.delayed(const Duration(seconds: 1));
-      Get.offAllNamed(Routes.HOME);
-      authStateChanges.cancel();
-    }
-  }
+  // void _listen(User? user) async {
+  //   log('user: $user');
+  //   if (user != null && user.emailVerified) {
+  //     KSnackBar.success('تم تأكيد البريد الالكتروني');
+  //     await Future.delayed(const Duration(seconds: 1));
+  //     Get.offAllNamed(Routes.HOME);
+  //     authStateChanges.cancel();
+  //   }
+  // }
 
   Future<void> checkIFEmailVerified() async {
     loading = true;
@@ -41,6 +41,7 @@ class ResetPasswordController extends GetxController {
       final currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
+        await currentUser.reload();
         await currentUser.reload();
 
         if (currentUser.emailVerified) {
@@ -73,19 +74,5 @@ class ResetPasswordController extends GetxController {
       loading = false;
       update();
     }
-  }
-
-  @override
-  void onInit() {
-    if (isEmailVerify) {
-      listenToAccountIfVerfiy();
-    }
-    super.onInit();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-    authStateChanges.cancel();
   }
 }

@@ -20,6 +20,10 @@ import '../modules/add-popup-ad/bindings/add_popup_ad_binding.dart';
 import '../modules/add-popup-ad/views/add_popup_ad_view.dart';
 import '../modules/admin-active-users/bindings/admin_active_users_binding.dart';
 import '../modules/admin-active-users/views/admin_active_users_view.dart';
+import '../modules/admin-invoices-details/bindings/admin_invoices_details_binding.dart';
+import '../modules/admin-invoices-details/views/admin_invoices_details_view.dart';
+import '../modules/admin-invoices/bindings/admin_invoices_binding.dart';
+import '../modules/admin-invoices/views/admin_invoices_view.dart';
 import '../modules/admin-offers/bindings/admin_offers_binding.dart';
 import '../modules/admin-offers/views/admin_offers_view.dart';
 import '../modules/admin-users/bindings/admin_users_binding.dart';
@@ -138,6 +142,16 @@ class AppPages {
       name: _Paths.ADMIN_OFFERS,
       page: () => const AdminOffersView(),
       binding: AdminOffersBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADMIN_INVOICES,
+      page: () => const AdminInvoicesView(),
+      binding: AdminInvoicesBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADMIN_INVOICES_DETAILS,
+      page: () => const AdminInvoicesDetailsView(),
+      binding: AdminInvoicesDetailsBinding(),
     ),
   ];
 }

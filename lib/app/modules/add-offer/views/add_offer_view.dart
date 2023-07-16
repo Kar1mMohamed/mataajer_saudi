@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 import 'package:mataajer_saudi/utils/input_format.dart';
-
 import '../../../data/assets.dart';
 import '../../../theme/theme.dart';
 import '../../../widgets/drawer.dart';
@@ -16,7 +14,6 @@ class AddOfferView extends GetView<AddOfferController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: appBar(),
       drawer: const MyDrawer(shops: [], isShop: true),
       body: GetBuilder<AddOfferController>(builder: (_) {
@@ -57,16 +54,18 @@ class AddOfferView extends GetView<AddOfferController> {
                   SizedBox(height: 30.h),
                   _fieldItem(
                     'نسبة الخصم',
-                    controller.cuponCodeController,
+                    controller.offerPercentage,
                     height: 50.h,
                     isNumbersOnly: true,
                   ),
                   SizedBox(height: 30.h),
-                  _fieldItem(
-                    'تفاصيل الخصم',
-                    controller.cuponCodeDescription,
-                    height: 50.h,
-                  ),
+                  // _fieldItem(
+                  //   'تفاصيل الخصم',
+                  //   controller.cuponCodeDescription,
+                  //   height: 50.h,
+                  // ),
+                  // SizedBox(height: 30.h),
+                  chooseDuration(),
                   SizedBox(height: 30.h),
                   RoundedButton(
                     text: 'ارسال',
@@ -193,14 +192,21 @@ class AddOfferView extends GetView<AddOfferController> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Center(
-              child: Text(
-                controller.imageURL != null
-                    ? 'تم اضافة الصورة .. اضغط مره اخرى لتغير الصورة'
-                    : 'اضف صورة',
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Tajawal',
+              child: Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  controller.imageURL != null
+                      ? 'تم اضافة الصورة .. اضغط مره اخرى لتغير الصورة'
+                      : 'اضف صورة',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'Tajawal',
+                  ),
                 ),
               ),
             ),
@@ -246,26 +252,18 @@ class AddOfferView extends GetView<AddOfferController> {
             inputFormatters: (isNumbersOnly != null && isNumbersOnly == true)
                 ? numbersOnlyInputFormat
                 : null,
-            decoration: !(imageAssetIcon != null)
-                ? null
-                : InputDecoration(
-                    fillColor: const Color(0xFFF5F5F5),
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Image.asset(imageAssetIcon),
+            decoration: InputDecoration(
+              fillColor: Colors.white,
+              prefixIcon: imageAssetIcon != null
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    ),
-                    // suffixIcon: !isPassword
-                    //     ? null
-                    //     : InkWell(
-                    //         onTap: showPasswordTap,
-                    //         child: Image.asset(Assets.hidePNG)),
-                  ),
+                      child: Image.asset(imageAssetIcon),
+                    )
+                  : null,
+            ),
             validator: (string) {
               if (string!.isEmpty) {
                 return 'الرجاء ادخال البيانات';
@@ -285,15 +283,71 @@ class AddOfferView extends GetView<AddOfferController> {
     );
   }
 
+  Widget chooseDuration() {
+    return Column(
+      children: [
+        Text(
+          'اختر مدة العرض',
+          textAlign: TextAlign.right,
+          style: TextStyle(
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'Tajawal',
+          ),
+        ),
+        SizedBox(height: 10.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _button(
+              text: 'يوم',
+              onPressed: () {
+                controller.chooseDuration = 1;
+                controller.update();
+              },
+              isClicked: controller.chooseDuration == 1,
+            ),
+            _button(
+              text: 'ثلاثة ايام',
+              onPressed: () {
+                controller.chooseDuration = 3;
+                controller.update();
+              },
+              isClicked: controller.chooseDuration == 3,
+            ),
+            _button(
+              text: 'اسبوع',
+              onPressed: () {
+                controller.chooseDuration = 7;
+                controller.update();
+              },
+              isClicked: controller.chooseDuration == 7,
+            ),
+            _button(
+              text: 'شهر',
+              onPressed: () {
+                controller.chooseDuration = 30;
+                controller.update();
+              },
+              isClicked: controller.chooseDuration == 30,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _button({
     required String text,
     required void Function()? onPressed,
-    bool isWhiteBack = false,
+    bool isClicked = false,
   }) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isWhiteBack ? Colors.white : MataajerTheme.mainColor,
+        backgroundColor: isClicked
+            ? const Color.fromARGB(255, 111, 71, 130)
+            : MataajerTheme.mainColor,
         padding: EdgeInsets.symmetric(
           horizontal: 20.sp,
           vertical: 10.sp,
@@ -308,7 +362,7 @@ class AddOfferView extends GetView<AddOfferController> {
           fontFamily: 'Tajawal',
           fontSize: 13.sp,
           fontWeight: FontWeight.w500,
-          color: isWhiteBack ? const Color(0xFF626262) : Colors.white,
+          color: Colors.white,
         ),
       ),
     );
