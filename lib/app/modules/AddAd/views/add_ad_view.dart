@@ -141,7 +141,7 @@ class AddAdView extends GetView<AddAdController> {
             height: 60,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
+              color: Colors.white,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Center(

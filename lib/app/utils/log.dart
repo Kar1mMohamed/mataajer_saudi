@@ -1,3 +1,3 @@
 import 'dart:developer' as dv;
 
-void log(Object message) => dv.log(message.toString());
+void log(Object message) => dv.log(message.toString(), name: 'Mataajer');

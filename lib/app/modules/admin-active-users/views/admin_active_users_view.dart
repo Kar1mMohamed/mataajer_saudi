@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/extensions/for_admin.dart';
@@ -10,7 +9,7 @@ import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/custom_switch.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
-import 'package:mataajer_saudi/database/notification.dart';
+import '../../../controllers/main_notification_controller.dart';
 import '../controllers/admin_active_users_controller.dart';
 
 class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
@@ -275,57 +274,49 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
         );
       }),
       actions: [
-        ValueListenableBuilder<Box<NotificationModule>>(
-            valueListenable: NotificationModule.hiveBox.listenable(),
-            builder: (context, box, widget) {
-              var length = 0;
-              if (box.isNotEmpty) {
-                length = box.values
-                    .where((element) =>
-                        element.isRead == null || element.isRead == false)
-                    .length;
-              }
-              return IconButton(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                onPressed: () => Get.toNamed(Routes.NOTIFICATIONS),
-                icon: Stack(
-                  children: [
-                    Icon(
-                      Icons.notifications,
-                      size: 30.h,
-                    ),
-                    if (length > 0)
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(4.0),
-                          margin: EdgeInsets.only(left: 10.w),
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                            border: Border.fromBorderSide(
-                              BorderSide(
-                                color: Colors.white,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            '$length',
-                            style: TextStyle(
-                              fontSize: 8.5.sp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
+        GetBuilder<MainNotificationController>(
+            builder: (mainNotificationController) {
+          return IconButton(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            onPressed: () => Get.toNamed(Routes.NOTIFICATIONS),
+            icon: Stack(
+              children: [
+                Icon(
+                  Icons.notifications,
+                  size: 30.h,
+                ),
+                if (mainNotificationController.notificationCount > 0)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4.0),
+                      margin: EdgeInsets.only(left: 10.w),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                        border: Border.fromBorderSide(
+                          BorderSide(
+                            color: Colors.white,
+                            width: 2,
                           ),
                         ),
                       ),
-                  ],
-                ),
-              );
-            })
+                      child: Text(
+                        '${mainNotificationController.notificationCount}',
+                        style: TextStyle(
+                          fontSize: 8.5.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        })
       ],
     );
   }

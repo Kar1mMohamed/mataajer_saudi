@@ -735,25 +735,26 @@ class HomeView extends GetView<HomeController> {
 
   Widget _appBarTitle() {
     return GetBuilder<HomeController>(
-        id: '_appBarTitle',
-        builder: (_) {
-          if (controller.loading) {
-            return const CircularProgressIndicator();
-          }
+      id: '_appBarTitle',
+      builder: (_) {
+        if (controller.loading) {
+          return const CircularProgressIndicator();
+        }
 
-          if (controller.isSignedIn) {
-            if (controller.currentShop == null) {
-              return _errorTitleAppBar;
-            }
-            if (controller.currentShop!.isSubscriptionExpired) {
-              return _expiredTitleAppBar;
-            } else {
-              return _activeTitleAppBar;
-            }
-          } else {
-            return _guestTitleAppBar;
+        if (!controller.isSignedIn) {
+          return _guestTitleAppBar;
+        } else {
+          if (controller.currentShop == null) {
+            return _errorTitleAppBar;
           }
-        });
+          if (controller.currentShop!.isSubscriptionExpired) {
+            return _expiredTitleAppBar;
+          } else {
+            return _activeTitleAppBar;
+          }
+        }
+      },
+    );
   }
 
   BottomSheet _categoriesBottomSheet() {

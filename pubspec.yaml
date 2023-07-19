@@ -8,27 +8,25 @@ environment:
 dependencies:
   cupertino_icons: ^1.0.2
   get: ^4.6.5
-  firebase_core: ^2.7.0
-  firebase_auth: ^4.2.9
-  cloud_firestore: ^4.4.3
-  firebase_messaging: ^14.3.0
+  firebase_core: ^2.15.0
+  firebase_auth: ^4.7.1
+  cloud_firestore: ^4.8.3
+  firebase_messaging: ^14.6.5
   flutter_spinkit: ^5.1.0
   flutter_screenutil: ^5.6.1
   flutter_multi_select_items: ^0.4.2
   permission_handler: ^10.2.0
   image_picker: ^1.0.0
-  firebase_storage: ^11.0.16
+  firebase_storage: ^11.2.5
   file_picker: ^5.2.6
   cached_network_image: ^3.2.3
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
   path: ^1.8.2
   dio: ^5.1.1
   show_up_animation: ^2.0.0
-  rive: ^0.11.2
-  typing_animation: ^0.0.1
+  rive: ^0.11.4
+  # typing_animation: ^0.0.1
   intl: any
-  flutter_local_notifications: ^15.0.0
+  # flutter_local_notifications: ^15.0.0
   url_launcher: ^6.1.11
   webview_flutter:
     path: packages/webview_flutter-4.2.2
@@ -38,12 +36,15 @@ dependencies:
   flutter:
     sdk: flutter
   uuid: ^3.0.7
-  device_info_plus: ^9.0.2
+  # device_info_plus: ^9.0.2
   crypto: ^3.0.3
-  path_provider: ^2.0.15
-  horizontal_data_table: ^4.3.1
+  # path_provider: ^2.0.15
+  firebase_app_check: ^0.1.5+1
+  hive: any
+  hive_flutter: any
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.13.1"
   flutter_lints: ^2.0.0
   hive_generator: ^2.0.0
   build_runner: ^2.3.3
@@ -63,3 +64,10 @@ flutter:
         - asset: assets/fonts/Tajawal-Medium.ttf
         - asset: assets/fonts/Tajawal-Bold.ttf
   uses-material-design: true
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo_appicon.jpg"
+  remove_alpha_ios: true
+  min_sdk_android: 21 # android min sdk min:16, default 21

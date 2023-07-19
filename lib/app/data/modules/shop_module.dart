@@ -10,6 +10,7 @@ import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/constants.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/invoice_module.dart';
+import 'package:mataajer_saudi/app/data/modules/social_media_links.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/payments_helper.dart';
@@ -57,6 +58,7 @@ class ShopModule {
   /// TOKEN USED FOR ADMIN PURPOSES
   String? token;
   //
+  SocialMediaLinks? socialMediaLinks;
   ShopModule({
     this.uid,
     this.shopNumber,
@@ -85,6 +87,7 @@ class ShopModule {
     this.isCanSendFourNotification,
     this.validTill,
     this.token,
+    this.socialMediaLinks,
   }) {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
@@ -621,6 +624,7 @@ class ShopModule {
     bool? isCanSendFourNotification,
     DateTime? validTill,
     String? token,
+    SocialMediaLinks? socialMediaLinks,
   }) {
     return ShopModule(
       uid: uid ?? this.uid,
@@ -653,6 +657,7 @@ class ShopModule {
           isCanSendFourNotification ?? this.isCanSendFourNotification,
       validTill: validTill ?? this.validTill,
       token: token ?? this.token,
+      socialMediaLinks: socialMediaLinks ?? this.socialMediaLinks,
     );
   }
 
@@ -689,6 +694,7 @@ class ShopModule {
       'isTwoPopUpAdsMonthly': isTwoPopUpAdsMonthly,
       'isFourPopUpAdsMonthly': isFourPopUpAdsMonthly,
       'token': token,
+      'socialMediaLinks': socialMediaLinks?.toMap(),
     };
   }
 
@@ -751,6 +757,10 @@ class ShopModule {
           ? map['isTwoPopUpAdsMonthly'] as bool
           : false,
       token: map['token'] != null ? map['token'] as String : null,
+      socialMediaLinks: map['socialMediaLinks'] != null
+          ? SocialMediaLinks.fromMap(
+              map['socialMediaLinks'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -761,7 +771,7 @@ class ShopModule {
 
   @override
   String toString() {
-    return 'ShopModule(uid: $uid, name: $name,shopNumber: $shopNumber, email: $email, phone: $phone, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions, shopLink: $shopLink, keywords: $keywords, isVisible: $isVisible, userCategory: $userCategory, hits: $hits, isHasTamara: $isHasTamara, isHasTabby: $isHasTabby, isStaticAd: $isStaticAd, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendTwoNotification: $isCanSendTwoNotification, isCanSendFourNotification: $isCanSendFourNotification, validTill: $validTill, token: $token)';
+    return 'ShopModule(uid: $uid, shopNumber: $shopNumber, name: $name, email: $email, phone: $phone, description: $description, image: $image, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, cuponText: $cuponText, cuponCode: $cuponCode, categoriesUIDs: $categoriesUIDs, subscriptions: $subscriptions, shopLink: $shopLink, keywords: $keywords, isVisible: $isVisible, userCategory: $userCategory, hits: $hits, isHasTamara: $isHasTamara, isHasTabby: $isHasTabby, isStaticAd: $isStaticAd, isTwoPopUpAdsMonthly: $isTwoPopUpAdsMonthly, isFourPopUpAdsMonthly: $isFourPopUpAdsMonthly, isCanSendTwoNotification: $isCanSendTwoNotification, isCanSendFourNotification: $isCanSendFourNotification, validTill: $validTill, token: $token, socialMediaLinks: $socialMediaLinks)';
   }
 
   @override
@@ -794,7 +804,8 @@ class ShopModule {
         other.isCanSendTwoNotification == isCanSendTwoNotification &&
         other.isCanSendFourNotification == isCanSendFourNotification &&
         other.validTill == validTill &&
-        other.token == token;
+        other.token == token &&
+        other.socialMediaLinks == socialMediaLinks;
   }
 
   @override
@@ -825,6 +836,11 @@ class ShopModule {
         isCanSendTwoNotification.hashCode ^
         isCanSendFourNotification.hashCode ^
         validTill.hashCode ^
-        token.hashCode;
+        token.hashCode ^
+        socialMediaLinks.hashCode;
+  }
+
+  List<ShopModule> operator +(ShopModule other) {
+    return [this, other];
   }
 }

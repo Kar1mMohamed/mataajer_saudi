@@ -2,7 +2,9 @@ abstract class Assets {
   static const String loadingGIF = 'assets/images/loading_image.gif';
 
   static const String loginImage = 'assets/images/loginImage.png';
-  static const String logo = 'assets/images/logo.png';
+  static const String logoPNG = 'assets/images/logo.png';
+  static const String logoVectorSVG = 'assets/images/logo.svg';
+  static const String logoVectorJPG = 'assets/images/logo_vector.jpg';
   static const String groupIcon = 'assets/png/Group.png';
   static const String personIcon = 'assets/png/Person.png';
   static const String rightCheckIcon = 'assets/png/rightCheck.png';

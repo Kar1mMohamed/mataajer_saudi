@@ -7,6 +7,7 @@ import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
+import 'package:mataajer_saudi/app/data/modules/social_media_links.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
@@ -37,6 +38,13 @@ class ShopAccountController extends GetxController {
   final avgShippingPriceController = TextEditingController();
   final cuponCodeController = TextEditingController();
   final cuponCodeDetailsController = TextEditingController();
+
+  final facebookController = TextEditingController();
+  final twitterController = TextEditingController();
+  final instagramController = TextEditingController();
+  final snapchatController = TextEditingController();
+  final youtubeController = TextEditingController();
+  final tiktokController = TextEditingController();
 
   List<int> shippingTimes = List.generate(30, (index) => index + 1);
   int? shippingFrom;
@@ -96,6 +104,12 @@ class ShopAccountController extends GetxController {
     keywords = currentShop?.keywords ?? [];
     isHasTabby = currentShop?.isHasTabby ?? false;
     isHasTamara = currentShop?.isHasTamara ?? false;
+    facebookController.text = currentShop?.socialMediaLinks?.facebook ?? '';
+    twitterController.text = currentShop?.socialMediaLinks?.twitter ?? '';
+    instagramController.text = currentShop?.socialMediaLinks?.instagram ?? '';
+    snapchatController.text = currentShop?.socialMediaLinks?.snapchat ?? '';
+    youtubeController.text = currentShop?.socialMediaLinks?.youtube ?? '';
+    tiktokController.text = currentShop?.socialMediaLinks?.tiktok ?? '';
 
     log('shippingFrom: ${currentShop?.avgShippingTime?.split('-')[0].trim() ?? '1'}, shippingTo: ${currentShop?.avgShippingTime?.split('-')[1].trim() ?? '1'}');
 
@@ -140,15 +154,22 @@ class ShopAccountController extends GetxController {
         token: await FirebaseAuth.instance.currentUser!.getIdToken(),
         isHasTabby: isHasTabby,
         isHasTamara: isHasTamara,
+        socialMediaLinks: SocialMediaLinks(
+          facebook: facebookController.text,
+          twitter: twitterController.text,
+          instagram: instagramController.text,
+          snapchat: snapchatController.text,
+          youtube: youtubeController.text,
+          tiktok: tiktokController.text,
+        ),
       );
 
       // if (currentShop!.isVisible != module.isVisible) {
       //   await currentShop!.changeAllAdsVisibility(isVisible);
       // }
 
-      await module.updateValidTill();
-      await module.updatePrivileges();
-      await FirebaseFirestoreHelper.instance.updateShop(module);
+      await FirebaseFirestoreHelper.instance
+          .updateShop(module, updatePrivileges: true, updateValidTill: true);
     } catch (e) {
       log(e);
     } finally {

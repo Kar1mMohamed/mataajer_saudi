@@ -79,8 +79,16 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<void> updateShop(ShopModule shopModule) async {
+  Future<void> updateShop(ShopModule shopModule,
+      {bool? updatePrivileges, bool? updateValidTill}) async {
     try {
+      if (updatePrivileges ?? false) {
+        await shopModule.updatePrivileges();
+      }
+      if (updateValidTill ?? false) {
+        await shopModule.updateValidTill();
+      }
+
       await FirebaseFirestore.instance
           .collection('shops')
           .doc(shopModule.uid)

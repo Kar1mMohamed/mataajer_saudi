@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +17,10 @@ import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
 // import 'package:mataajer_saudi/app/helper/notitication_helper.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/translation/tr.dart';
-import 'package:mataajer_saudi/database/helper/hive_helper.dart';
 import 'app/controllers/app_life_cycle_controller.dart';
+import 'app/data/constants.dart';
 import 'app/routes/app_pages.dart';
+import 'database/helper/hive_helper.dart';
 import 'firebase_options.dart';
 
 @pragma('vm:entry-point')
@@ -41,6 +43,13 @@ void main() async {
   await GetStorage.init();
   await HiveHelper.initHive();
   await CloudMessaging.initialize();
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: Constants.isDebug
+        ? AndroidProvider.debug
+        : AndroidProvider.playIntegrity,
+    appleProvider: AppleProvider.appAttest,
+  );
+  // FirebaseFirestore.setLoggingEnabled(false);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
 }

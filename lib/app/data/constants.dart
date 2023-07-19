@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 class Constants {
@@ -36,4 +37,6 @@ class Constants {
     '0zapKo4rAjhMxC9GFwChmYxKOP23',
     't8scmFWTBjhk4srk3bcTTRfw4fM2'
   ];
+
+  static bool get isDebug => kDebugMode;
 }

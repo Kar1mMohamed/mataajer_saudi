@@ -297,6 +297,31 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
               height: 80.h,
             ),
             SizedBox(height: 20.h),
+            _fieldItem(
+              'رابط الفيسبوك',
+              controller.facebookController,
+            ),
+            SizedBox(height: 20.h),
+            _fieldItem(
+              'رابط الانستقرام',
+              controller.instagramController,
+            ),
+            SizedBox(height: 20.h),
+            _fieldItem(
+              'رابط السناب شات',
+              controller.snapchatController,
+            ),
+            SizedBox(height: 20.h),
+            _fieldItem(
+              'رابط تويتر',
+              controller.twitterController,
+            ),
+            SizedBox(height: 20.h),
+            _fieldItem(
+              'رابط اليوتيوب',
+              controller.youtubeController,
+            ),
+            SizedBox(height: 20.h),
             registerIsHasTamaraAndTabby(),
             SizedBox(height: 20.h),
             pricesTable(),

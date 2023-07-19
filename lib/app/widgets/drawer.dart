@@ -31,39 +31,7 @@ class MyDrawer extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            SizedBox(
-              height: 70,
-              child: Stack(
-                children: [
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    top: 0,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Image.asset(Assets.logo),
-                    ),
-                  ),
-                  Positioned(
-                    left: 0,
-                    bottom: 0,
-                    top: 0,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 30.0),
-                      child: InkWell(
-                        onTap: () {
-                          Get.back();
-                        },
-                        child: const Icon(
-                          Icons.close,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _header(),
             if (isAdmin ?? false)
               _forAdmin()
             else if (isShop)
@@ -72,6 +40,42 @@ class MyDrawer extends StatelessWidget {
               _forGuest(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _header() {
+    return SizedBox(
+      height: 70,
+      child: Stack(
+        children: [
+          Positioned(
+            right: 0,
+            bottom: 0,
+            top: 0,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Image.asset(Assets.logoVectorJPG),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            bottom: 0,
+            top: 0,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 30.0),
+              child: InkWell(
+                onTap: () {
+                  Get.back();
+                },
+                child: const Icon(
+                  Icons.close,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

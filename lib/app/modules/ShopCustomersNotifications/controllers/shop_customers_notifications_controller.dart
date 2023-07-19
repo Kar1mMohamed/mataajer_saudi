@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
@@ -145,6 +146,7 @@ class ShopCustomersNotificationsController extends GetxController {
 
   void showNotification(NotificationModule notification) {
     Get.dialog(Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(

@@ -11,6 +11,7 @@ import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
 import 'package:mataajer_saudi/app/data/modules/invoice_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
+import 'package:mataajer_saudi/app/data/modules/social_media_links.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 import 'package:mataajer_saudi/app/data/modules/tap/tap_charge_req.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
@@ -68,6 +69,13 @@ class ShopLoginAndRegisterController extends GetxController {
   final cuponCodeController = TextEditingController();
   final cuponCodeDetailsController = TextEditingController();
 
+  final facebookController = TextEditingController();
+  final twitterController = TextEditingController();
+  final instagramController = TextEditingController();
+  final snapchatController = TextEditingController();
+  final youtubeController = TextEditingController();
+  final tiktokController = TextEditingController();
+
   bool registerIsHasTamara = false;
   bool registerIsHasTabby = false;
 
@@ -107,27 +115,27 @@ class ShopLoginAndRegisterController extends GetxController {
             arguments: {'isEmailVerify': true});
       }
 
-      final userModule = await FirebaseFirestoreHelper.instance
+      final shopModule = await FirebaseFirestoreHelper.instance
           .getShopModule(user.user!.uid, getSubscriptions: true);
 
-      log('userModule: $userModule');
+      log('shopModule: $shopModule');
 
-      bool isLastSubscriptionExpired = (userModule.subscriptions ?? []).isEmpty
+      bool isLastSubscriptionExpired = (shopModule.subscriptions ?? []).isEmpty
           ? true
-          : ShopModule.isExpired(userModule.subscriptions!.last.from,
-              userModule.subscriptions!.last.to);
+          : ShopModule.isExpired(shopModule.subscriptions!.last.from,
+              shopModule.subscriptions!.last.to);
 
       log('isLastSubscriptionExpired: $isLastSubscriptionExpired');
 
       if (isLastSubscriptionExpired) {
-        await userModule.updatePrivileges();
-        await userModule.updateValidTill();
+        await shopModule.updatePrivileges();
+        await shopModule.updateValidTill();
       }
 
-      userModule.token = await user.user!.getIdToken();
-      await userModule.updateShopModule();
+      shopModule.token = await user.user!.getIdToken();
+      await shopModule.updateShopModule();
 
-      await goHomeForShop();
+      await goHomeForShop(shopModule);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         KSnackBar.error('لا يوجد حساب مسجل بهذا البريد الالكتروني');
@@ -184,6 +192,14 @@ class ShopLoginAndRegisterController extends GetxController {
         isHasTamara: registerIsHasTamara,
         isHasTabby: registerIsHasTabby,
         shopNumber: shopsCount + 1,
+        socialMediaLinks: SocialMediaLinks(
+          facebook: facebookController.text,
+          twitter: twitterController.text,
+          instagram: instagramController.text,
+          snapchat: snapchatController.text,
+          youtube: youtubeController.text,
+          tiktok: tiktokController.text,
+        ),
       );
 
       await FirebaseFirestoreHelper.instance
@@ -343,15 +359,12 @@ class ShopLoginAndRegisterController extends GetxController {
     update(['showCategories']);
   }
 
-  Future<void> goHomeForShop() async {
+  Future<void> goHomeForShop(ShopModule shopModule) async {
     final currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser != null) {
       loading = true;
       update();
-
-      final shopModule = await FirebaseFirestoreHelper.instance
-          .getShopModule(currentUser.uid, getSubscriptions: true);
 
       if (shopModule.userCategory != null &&
           shopModule.userCategory!.contains('admin')) {
@@ -386,12 +399,15 @@ class ShopLoginAndRegisterController extends GetxController {
     loading = true;
     update();
     try {
-      final userModule = await FirebaseFirestoreHelper.instance
+      final shopModule = await FirebaseFirestoreHelper.instance
           .getShopModule(uid, getSubscriptions: true);
 
-      log('userModule: $userModule');
+      log('shopModule: $shopModule');
 
-      if (!FirebaseAuth.instance.currentUser!.emailVerified) {
+      bool isNotAdmin = shopModule.userCategory == null ||
+          shopModule.userCategory != 'admin-0';
+
+      if (!FirebaseAuth.instance.currentUser!.emailVerified && isNotAdmin) {
         // throw 'Email not verified';
         log('Email not verified');
 
@@ -400,18 +416,18 @@ class ShopLoginAndRegisterController extends GetxController {
             arguments: {'isEmailVerify': true});
       }
 
-      bool isLastSubscriptionExpired = (userModule.subscriptions ?? []).isEmpty
+      bool isLastSubscriptionExpired = (shopModule.subscriptions ?? []).isEmpty
           ? true
-          : ShopModule.isExpired(userModule.subscriptions!.last.from,
-              userModule.subscriptions!.last.to);
+          : ShopModule.isExpired(shopModule.subscriptions!.last.from,
+              shopModule.subscriptions!.last.to);
 
       log('isLastSubscriptionExpired: $isLastSubscriptionExpired');
 
       if (isLastSubscriptionExpired) {
-        await userModule.updatePrivileges();
-        await userModule.updateValidTill();
+        await shopModule.updatePrivileges();
+        await shopModule.updateValidTill();
       }
-      await goHomeForShop();
+      await goHomeForShop(shopModule);
     } catch (e) {
       log('automaticLogin error: $e');
     } finally {

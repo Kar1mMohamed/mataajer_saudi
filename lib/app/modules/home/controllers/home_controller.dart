@@ -258,6 +258,12 @@ class HomeController extends GetxController {
     isHomeFullyInitilized = false;
     update();
 
+    if (isSignedIn) {
+      await getCurrentShop();
+    }
+    await getShops();
+    await getOffers();
+
     await Get.find<MainNotificationController>().getNotificationsCount();
 
     // var deviceUUID = GetStorage().read<String>('deviceUUID');
@@ -267,12 +273,6 @@ class HomeController extends GetxController {
     // }
 
     // CloudMessaging.sendFCMTokenToFirebase(deviceUUID);
-
-    if (isSignedIn) {
-      await getCurrentShop();
-    }
-    await getShops();
-    await getOffers();
 
     PopUpAdsFunctions.showPopUpAd();
 

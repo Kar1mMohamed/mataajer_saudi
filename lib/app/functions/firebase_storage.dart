@@ -20,7 +20,7 @@ class FirebaseStorageFunctions {
   static Future<String> uploadFile(PlatformFile file) async {
     final firebaseStorage = FirebaseStorage.instance;
     Reference ref;
-   ref = firebaseStorage.ref().child('files/${p.basename(file.path!)}');
+    ref = firebaseStorage.ref().child('files/${p.basename(file.path!)}');
     final uploadTask = ref.putFile(File(file.path!));
     final snapshot = await uploadTask.whenComplete(() => null);
     final downloadUrl = await snapshot.ref.getDownloadURL();

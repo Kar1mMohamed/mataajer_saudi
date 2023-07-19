@@ -18,6 +18,7 @@ class AppLifeCylceController extends FullLifeCycleController
 
   @override
   void onInactive() {
+    Get.find<OnlineNowController>().decreaseHit();
     appLifeCyle.value = AppLifeCycleEnum.Inactive;
     log('AppLifeCylceController onInactive');
     update();
@@ -25,7 +26,6 @@ class AppLifeCylceController extends FullLifeCycleController
 
   @override
   void onPaused() {
-    Get.find<OnlineNowController>().decreaseHit();
     appLifeCyle.value = AppLifeCycleEnum.Paused;
     log('AppLifeCylceController onPaused');
     update();

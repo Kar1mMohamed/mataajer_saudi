@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 
@@ -13,6 +15,7 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
   const ResetPasswordView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    log('${FirebaseAuth.instance.currentUser?.email ?? 'no email'}_email: ${FirebaseAuth.instance.currentUser?.uid ?? 'no uid'}');
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: appBar(),
@@ -32,7 +35,7 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
                 SizedBox(height: 10.h),
                 Align(
                   alignment: Alignment.center,
-                  child: Image.asset(Assets.logo),
+                  child: Image.asset(Assets.logoVectorJPG),
                 ),
                 SizedBox(height: 5.h),
                 Align(

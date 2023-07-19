@@ -193,19 +193,22 @@ class AddOfferView extends GetView<AddOfferController> {
             ),
             child: Center(
               child: Container(
-                padding: const EdgeInsets.all(18),
+                height: 60,
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text(
-                  controller.imageURL != null
-                      ? 'تم اضافة الصورة .. اضغط مره اخرى لتغير الصورة'
-                      : 'اضف صورة',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Tajawal',
+                child: Center(
+                  child: Text(
+                    controller.imageURL != null
+                        ? 'تم اضافة الصورة .. اضغط مره اخرى لتغير الصورة'
+                        : 'اضف صورة',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Tajawal',
+                    ),
                   ),
                 ),
               ),

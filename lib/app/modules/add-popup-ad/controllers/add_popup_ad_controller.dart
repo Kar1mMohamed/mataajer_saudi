@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
@@ -134,6 +135,7 @@ class AddPopupAdController extends GetxController {
 
   void showPopUpAd(PopUpAdModule ad) {
     Get.dialog(Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
