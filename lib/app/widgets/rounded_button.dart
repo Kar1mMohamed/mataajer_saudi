@@ -58,15 +58,20 @@ class RoundedButton extends StatelessWidget {
             color: isFilled!
                 ? Colors.white
                 : (textColor ?? MataajerTheme.mainColor),
-            fontSize: 14,
+            fontSize: 14.sp,
             fontWeight: FontWeight.w500,
           ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            icon ?? Container(),
-            SizedBox(width: 5.w),
+            if (icon != null)
+              Column(
+                children: [
+                  icon ?? Container(),
+                  SizedBox(width: 5.w),
+                ],
+              ),
             Text(
               text,
               style: textStyle ??

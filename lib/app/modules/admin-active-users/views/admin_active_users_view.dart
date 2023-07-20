@@ -20,46 +20,49 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
       appBar: appBar(),
       backgroundColor: const Color(0xFFF5F5F5),
       drawer: const MyDrawer(shops: [], isShop: false, isAdmin: true),
-      body: GetBuilder<AdminActiveUsersController>(builder: (_) {
-        return Column(
-          children: [
-            SizedBox(height: 10.h),
-            _switchButtons(),
-            SizedBox(height: 10.h),
-            _search(),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: PageView(
-                  physics: const BouncingScrollPhysics(),
-                  controller: controller.pageController,
-                  onPageChanged: controller.onPageChanged,
-                  children: [
-                    GetBuilder<AdminActiveUsersController>(
-                      id: 'allShops',
-                      builder: (context) {
-                        return RefreshIndicator.adaptive(
-                          onRefresh: controller.onRefresh,
-                          child: allShops(),
-                        );
-                      },
-                    ),
-                    GetBuilder<AdminActiveUsersController>(
-                      id: 'activeShops',
-                      builder: (context) {
-                        return RefreshIndicator.adaptive(
-                          onRefresh: controller.onRefresh,
-                          child: activeShops(),
-                        );
-                      },
-                    ),
-                  ],
+      body: RefreshIndicator(
+        onRefresh: controller.onRefresh,
+        child: GetBuilder<AdminActiveUsersController>(builder: (_) {
+          return Column(
+            children: [
+              SizedBox(height: 10.h),
+              _switchButtons(),
+              SizedBox(height: 10.h),
+              _search(),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: PageView(
+                    physics: const BouncingScrollPhysics(),
+                    controller: controller.pageController,
+                    onPageChanged: controller.onPageChanged,
+                    children: [
+                      GetBuilder<AdminActiveUsersController>(
+                        id: 'allShops',
+                        builder: (context) {
+                          return RefreshIndicator.adaptive(
+                            onRefresh: controller.onRefresh,
+                            child: allShops(),
+                          );
+                        },
+                      ),
+                      GetBuilder<AdminActiveUsersController>(
+                        id: 'activeShops',
+                        builder: (context) {
+                          return RefreshIndicator.adaptive(
+                            onRefresh: controller.onRefresh,
+                            child: activeShops(),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        );
-      }).forAdmin,
+            ],
+          );
+        }).forAdmin,
+      ),
     );
   }
 

@@ -30,7 +30,7 @@ class Constants {
     }
     final formateNumber = NumberFormat('00');
 
-    return '${formateNumber.format(date.day)}/${formateNumber.format(date.day)}/${date.year} ${convertDateToTimeString(date)}';
+    return '${formateNumber.format(date.day)}/${formateNumber.format(date.month)}/${date.year} ${convertDateToTimeString(date)}';
   }
 
   static const List<String> admins = [

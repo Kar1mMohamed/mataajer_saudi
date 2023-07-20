@@ -224,6 +224,7 @@ class ShopAccountView extends GetView<ShopAccountController> {
                   controller.cuponCodeDetailsController,
                   height: 80.h,
                 ),
+                SizedBox(height: 20.h),
                 _fieldItem(
                   'رابط الفيسبوك',
                   controller.facebookController,
@@ -248,7 +249,6 @@ class ShopAccountView extends GetView<ShopAccountController> {
                   'رابط اليوتيوب',
                   controller.youtubeController,
                 ),
-                SizedBox(height: 20.h),
                 SizedBox(height: 20.h),
                 isHasTamaraAndTabby(),
                 SizedBox(height: 20.h),
@@ -449,63 +449,50 @@ class ShopAccountView extends GetView<ShopAccountController> {
   }
 
   Widget isHasTamaraAndTabby() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          'هل انت مشترك في احدهم ؟',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w500,
+        InkWell(
+          onTap: () {
+            controller.isHasTamara = !controller.isHasTamara;
+            controller.update();
+          },
+          child: Column(
+            children: [
+              SizedBox(
+                height: 100.h,
+                width: 150.w,
+                child: Image.asset(Assets.tamaraARLogo),
+              ),
+              Checkbox(
+                  value: controller.isHasTamara,
+                  onChanged: (v) {
+                    controller.isHasTamara = v!;
+                    controller.update();
+                  })
+            ],
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            InkWell(
-              onTap: () {
-                controller.isHasTamara = !controller.isHasTamara;
-                controller.update();
-              },
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 100.h,
-                    width: 150.w,
-                    child: Image.asset(Assets.tamaraARLogo),
-                  ),
-                  Checkbox(
-                      value: controller.isHasTamara,
-                      onChanged: (v) {
-                        controller.isHasTamara = v!;
-                        controller.update();
-                      })
-                ],
+        InkWell(
+          onTap: () {
+            controller.isHasTabby = !controller.isHasTabby;
+            controller.update();
+          },
+          child: Column(
+            children: [
+              SizedBox(
+                height: 100.h,
+                width: 150.w,
+                child: Image.asset(Assets.tabbyLogo),
               ),
-            ),
-            InkWell(
-              onTap: () {
-                controller.isHasTabby = !controller.isHasTabby;
-                controller.update();
-              },
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 100.h,
-                    width: 150.w,
-                    child: Image.asset(Assets.tabbyLogo),
-                  ),
-                  Checkbox(
-                      value: controller.isHasTabby,
-                      onChanged: (v) {
-                        controller.isHasTabby = v!;
-                        controller.update();
-                      })
-                ],
-              ),
-            ),
-          ],
+              Checkbox(
+                  value: controller.isHasTabby,
+                  onChanged: (v) {
+                    controller.isHasTabby = v!;
+                    controller.update();
+                  })
+            ],
+          ),
         ),
       ],
     );

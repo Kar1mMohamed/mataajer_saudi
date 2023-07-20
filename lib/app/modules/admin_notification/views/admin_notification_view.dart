@@ -29,11 +29,48 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
           }
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.0.sp),
-            child: ListView.builder(
-              physics: const BouncingScrollPhysics(),
-              itemCount: controller.notifications.length,
-              itemBuilder: (context, index) =>
-                  _notificationCard(context, index),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Flexible(
+                      child: RoundedButton(
+                        text: 'المستقبلة',
+                        press: () {
+                          controller.showIsNotActive = true;
+                          controller.update();
+                        },
+                        color: controller.showIsNotActive
+                            ? MataajerTheme.mainColor
+                            : Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: RoundedButton(
+                        text: 'جميع الاشعارات',
+                        press: () {
+                          controller.showIsNotActive = false;
+                          controller.update();
+                        },
+                        color: controller.showIsNotActive
+                            ? Colors.grey
+                            : MataajerTheme.mainColor,
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: ListView.separated(
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: controller.notifications.length,
+                    itemBuilder: (context, index) =>
+                        _notificationCard(context, index),
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 10.h),
+                  ),
+                ),
+              ],
             ),
           );
         }).forAdmin,
@@ -47,6 +84,11 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
         builder: (_) {
           final notification = controller.notifications[index];
           final image = controller.getSenderUserImage(notification);
+
+          if (controller.showIsNotActive && notification.isActive == true) {
+            return const SizedBox();
+          }
+
           return Container(
             padding:
                 EdgeInsets.symmetric(vertical: 10.0.sp, horizontal: 10.0.sp),
@@ -57,25 +99,27 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
             child: controller.loading
                 ? Center(
                     child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const CircularProgressIndicator(),
-                        SizedBox(height: 15.h),
-                        Text(
-                          notification.sendingText,
-                          style: MataajerTheme.tajawalTextStyle.copyWith(
-                            fontSize: 13.sp,
-                            fontWeight: FontWeight.w400,
-                            color: MataajerTheme.mainColor,
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const CircularProgressIndicator(),
+                          SizedBox(height: 15.h),
+                          Text(
+                            notification.sendingText,
+                            style: MataajerTheme.tajawalTextStyle.copyWith(
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.w400,
+                              color: MataajerTheme.mainColor,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ))
+                  )
                 : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Row(
                         children: [
@@ -113,33 +157,42 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
                       const SizedBox(height: 10),
                       Text(
                         notification.body ?? 'نص فارغ',
+                        textAlign: TextAlign.center,
+                        style: MataajerTheme.tajawalTextStyle.copyWith(
+                            fontSize: 13, fontWeight: FontWeight.w400),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        notification.data?['link'] ?? 'نص فارغ',
+                        textAlign: TextAlign.center,
                         style: MataajerTheme.tajawalTextStyle.copyWith(
                             fontSize: 13, fontWeight: FontWeight.w400),
                       ),
                       const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          RoundedButton(
-                            text: 'قبول',
-                            press: () {
-                              controller.accept(notification, index);
-                            },
-                            color: Colors.green,
-                            width: 140.w,
-                            verticalPadding: 10.h,
-                          ),
-                          RoundedButton(
-                            text: 'رفض',
-                            press: () {
-                              controller.cancel(notification, index);
-                            },
-                            color: Colors.red,
-                            width: 140.w,
-                            verticalPadding: 10.h,
-                          ),
-                        ],
-                      ),
+                      if (!(notification.isActive ?? false))
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            RoundedButton(
+                              text: 'قبول',
+                              press: () {
+                                controller.accept(notification, index);
+                              },
+                              color: Colors.green,
+                              width: 140.w,
+                              verticalPadding: 10.h,
+                            ),
+                            RoundedButton(
+                              text: 'رفض',
+                              press: () {
+                                controller.cancel(notification, index);
+                              },
+                              color: Colors.red,
+                              width: 140.w,
+                              verticalPadding: 10.h,
+                            ),
+                          ],
+                        ),
                     ],
                   ),
           );

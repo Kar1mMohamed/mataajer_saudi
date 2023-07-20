@@ -33,7 +33,16 @@ class FirebaseFirestoreHelper {
           .collection('shops')
           .doc(uid)
           .get()
-          .then((value) => ShopModule.fromMap(value.data()!, uid));
+          .then((value) {
+        if (value.data() == null) {
+          return null;
+        }
+        return ShopModule.fromMap(value.data()!, uid);
+      });
+
+      if (profile == null) {
+        throw 'profile is null';
+      }
 
       if ((getSubscriptions ?? false)) {
         await profile.getSubscriptions();
@@ -312,19 +321,26 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<List<NotificationModule>> getAllNotifications({bool? isActive}) async {
+  Future<List<NotificationModule>> getAllNotifications(
+      {bool? isActive, bool? forAdmin}) async {
+    var collection = FirebaseFirestore.instance.collection('notifications');
+    var result = <NotificationModule>[];
     try {
-      final res = await FirebaseFirestore.instance
-          .collection('notifications')
+      if (forAdmin ?? false) {
+        result = await collection.get().then((value) => value.docs
+            .map((e) => NotificationModule.fromMap(e.data(), docUID: e.id))
+            .toList());
+      }
+      result = await collection
           .where('isActive', isEqualTo: isActive ?? true)
           .get()
           .then((value) => value.docs
               .map((e) => NotificationModule.fromMap(e.data(), docUID: e.id))
               .toList());
 
-      log('notifications: ${res.length}');
+      log('notifications: ${result.length}');
 
-      return res;
+      return result;
     } catch (e) {
       log(e);
       throw e.toString();

@@ -208,6 +208,10 @@ class AdminUsersController extends GetxController {
     shippingTo = null;
   }
 
+  Future<void> onRefresh() async {
+    await getShops();
+  }
+
   @override
   void onInit() async {
     super.onInit();

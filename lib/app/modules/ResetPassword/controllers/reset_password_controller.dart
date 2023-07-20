@@ -15,6 +15,19 @@ class ResetPasswordController extends GetxController {
 
   bool loading = false;
 
+  bool isEmailVerified = false;
+
+  void timer() async {
+    log('timer initiated');
+    Timer.periodic(const Duration(milliseconds: 1500), (timer) {
+      if (isEmailVerified) {
+        timer.cancel();
+        return;
+      }
+      checkEmailVerified();
+    });
+  }
+
   // StreamSubscription<User?> get authStateChanges =>
   //     FirebaseAuth.instance.authStateChanges().listen(_listen);
 
@@ -41,7 +54,6 @@ class ResetPasswordController extends GetxController {
       final currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
-        await currentUser.reload();
         await currentUser.reload();
 
         if (currentUser.emailVerified) {
@@ -74,5 +86,44 @@ class ResetPasswordController extends GetxController {
       loading = false;
       update();
     }
+  }
+
+  Future<void> sendEmailVerification() async {
+    try {
+      await FirebaseAuth.instance.currentUser
+          ?.sendEmailVerification()
+          .then((value) {
+        KSnackBar.success('تم ارسال رسالة تأكيد البريد الالكتروني');
+      });
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'too-many-requests':
+          KSnackBar.error('تم ارسال رسالة تأكيد البريد الالكتروني');
+          break;
+        default:
+          KSnackBar.error('حدث خطأ ما');
+          break;
+      }
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  Future<void> checkEmailVerified() async {
+    await FirebaseAuth.instance.currentUser?.reload();
+
+    isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
+
+    if (isEmailVerified) {
+      KSnackBar.success('تم تأكيد البريد الالكتروني');
+      await Future.delayed(const Duration(milliseconds: 500));
+      Get.offAllNamed(Routes.HOME);
+    }
+  }
+
+  @override
+  void onInit() async {
+    super.onInit();
+    timer();
   }
 }

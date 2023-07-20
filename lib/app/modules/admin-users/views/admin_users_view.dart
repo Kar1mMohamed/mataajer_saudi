@@ -24,105 +24,109 @@ class AdminUsersView extends GetView<AdminUsersController> {
     return Scaffold(
       appBar: appBar(),
       backgroundColor: const Color(0xFFF5F5F5),
-      body: GetBuilder<AdminUsersController>(
-        builder: (_) {
-          if (controller.loading) {
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: MataajerTheme.loadingWidget,
-            );
-          }
-          return Column(
-            children: [
-              search(),
-              RoundedButton(
-                text: 'اضافة متجر',
-                press: () async {
-                  await registerFunction();
-                  await controller.getShops();
-                },
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: ListView.separated(
-                      physics: const BouncingScrollPhysics(),
-                      padding: EdgeInsets.symmetric(horizontal: 5.w),
-                      itemCount: controller.shops.length,
-                      separatorBuilder: (context, index) =>
-                          const Divider(thickness: 0.5),
-                      itemBuilder: (context, index) {
-                        return GetBuilder<AdminUsersController>(
-                            id: 'shop-card-$index',
-                            builder: (_) {
-                              if (controller.loading) {
-                                return const Center(
-                                    child: CircularProgressIndicator());
-                              }
-                              DateTime? validTill =
-                                  controller.shops[index].validTill;
+      body: RefreshIndicator(
+        onRefresh: controller.onRefresh,
+        child: GetBuilder<AdminUsersController>(
+          builder: (_) {
+            if (controller.loading) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: MataajerTheme.loadingWidget,
+              );
+            }
+            return Column(
+              children: [
+                search(),
+                RoundedButton(
+                  text: 'اضافة متجر',
+                  press: () async {
+                    await registerFunction();
+                    await controller.getShops();
+                  },
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: ListView.separated(
+                        physics: const BouncingScrollPhysics(),
+                        padding: EdgeInsets.symmetric(horizontal: 5.w),
+                        itemCount: controller.shops.length,
+                        separatorBuilder: (context, index) =>
+                            const Divider(thickness: 0.5),
+                        itemBuilder: (context, index) {
+                          return GetBuilder<AdminUsersController>(
+                              id: 'shop-card-$index',
+                              builder: (_) {
+                                if (controller.loading) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                }
+                                DateTime? validTill =
+                                    controller.shops[index].validTill;
 
-                              return ListTile(
-                                onTap: () => Get.toNamed(Routes.SHOP_ACCOUNT,
-                                    arguments: controller.shops[index]),
-                                onLongPress: () {},
-                                leading: CircleAvatar(
-                                  radius: 22.r,
-                                  backgroundImage: NetworkImage(
-                                      controller.shops[index].image),
-                                ),
-                                title: Text(
-                                  controller.shops[index].name,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                titleAlignment: ListTileTitleAlignment.center,
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(controller.shops[index].email ?? ''),
-                                    Text(controller.shops[index].phone ?? ''),
-                                    Text(
-                                      Constants.convertDateToDateString(
-                                              validTill) ??
-                                          '',
-                                    ),
-                                  ],
-                                ),
-                                trailing: IconButton(
-                                    onPressed: () async {
-                                      controller.loading = true;
-                                      controller.updateShopCard(index);
+                                return ListTile(
+                                  onTap: () => Get.toNamed(Routes.SHOP_ACCOUNT,
+                                      arguments: controller.shops[index]),
+                                  onLongPress: () {},
+                                  leading: CircleAvatar(
+                                    radius: 22.r,
+                                    backgroundImage: NetworkImage(
+                                        controller.shops[index].image),
+                                  ),
+                                  title: Text(
+                                    controller.shops[index].name,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  titleAlignment: ListTileTitleAlignment.center,
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(controller.shops[index].email ?? ''),
+                                      Text(controller.shops[index].phone ?? ''),
+                                      Text(
+                                        Constants.convertDateToDateString(
+                                                validTill) ??
+                                            '',
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: IconButton(
+                                      onPressed: () async {
+                                        controller.loading = true;
+                                        controller.updateShopCard(index);
 
-                                      await controller
-                                          .deleteShop(controller.shops[index]);
-                                      await controller.getShops();
+                                        await controller.deleteShop(
+                                            controller.shops[index]);
+                                        await controller.getShops();
 
-                                      controller.loading = false;
-                                      controller.updateShopCard(index);
-                                    },
-                                    icon: const Icon(Icons.delete,
-                                        color: Colors.red)),
-                              );
-                            });
-                      },
+                                        controller.loading = false;
+                                        controller.updateShopCard(index);
+                                      },
+                                      icon: const Icon(Icons.delete,
+                                          color: Colors.red)),
+                                );
+                              });
+                        },
+                      ),
                     ),
                   ),
-                ),
-              )
-            ],
-          );
-        },
-      ).forAdmin,
+                )
+              ],
+            );
+          },
+        ).forAdmin,
+      ),
     );
   }
 

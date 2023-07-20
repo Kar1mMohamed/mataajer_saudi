@@ -99,6 +99,7 @@ class AddOfferController extends GetxController {
       final module = OfferModule(
         shopUID: FirebaseAuth.instance.currentUser!.uid,
         name: currentShop!.name,
+        description: currentShop!.description,
         categoryUIDs: currentShop!.categoriesUIDs,
         // cuponCodeDescription: cuponCodeDescription.text,
         imageURL: imageURL!,

@@ -17,6 +17,8 @@ class AdminNotificationController extends GetxController {
 
   List<ShopModule> shops = [];
 
+  bool showIsNotActive = false;
+
   void updateNotificationCard(int index) {
     update(['$index']);
   }
@@ -24,7 +26,9 @@ class AdminNotificationController extends GetxController {
   Future<void> getNotifications() async {
     try {
       final notifications = await FirebaseFirestoreHelper.instance
-          .getAllNotifications(isActive: false);
+          .getAllNotifications(forAdmin: true);
+
+      notifications.sort((a, b) => b.date!.compareTo(a.date!));
 
       this.notifications = notifications;
     } catch (e) {

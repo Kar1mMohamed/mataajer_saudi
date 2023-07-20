@@ -7,8 +7,6 @@ import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
-import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
-
 import '../controllers/reset_password_controller.dart';
 
 class ResetPasswordView extends GetView<ResetPasswordController> {
@@ -41,7 +39,7 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
                 Align(
                   alignment: Alignment.center,
                   child: Text(
-                    'التحقق من البريد الالكتروني',
+                    ' جاري التحقق من البريد الالكتروني',
                     style:
                         TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w700),
                   ),
@@ -59,24 +57,7 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
                   ),
                 ),
                 SizedBox(height: 10.h),
-                // Directionality(
-                //   textDirection: TextDirection.ltr,
-                //   child: OTPTextField(
-                //     length: 4,
-                //     keyboardType: TextInputType.number,
-                //     width: MediaQuery.of(context).size.width,
-                //     outlineBorderRadius: 50.r,
-                //     style:
-                //         TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w500),
-                //     fieldWidth: 50.w,
-                //     textFieldAlignment: MainAxisAlignment.spaceAround,
-                //     onChanged: (v) {},
-                //     onCompleted: (pin) {
-                //       log("Completed: " + pin);
-                //     },
-                //   ),
-                // ),
-                // SizedBox(height: 10.h),
+
                 TextButton(
                   onPressed: () => controller.resendEmailVerification(),
                   child: Text(
@@ -90,9 +71,11 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
                   ),
                 ),
                 SizedBox(height: 10.h),
-                RoundedButton(
-                    text: 'الدخول',
-                    press: () => controller.checkIFEmailVerified()),
+                // RoundedButton(
+                //   text: 'الدخول',
+                //   press: () => controller.checkIFEmailVerified(),
+                // ),
+                CircularProgressIndicator(),
               ],
             ),
           );

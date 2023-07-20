@@ -67,65 +67,6 @@ class _CheckoutWebviewState extends State<CheckoutWebview> {
                       controller: webViewController,
                       layoutDirection: TextDirection.rtl,
                     ),
-                    // child: WebViewWidget(
-                    //   initialUrl: widget.checkoutUrl,
-                    //   javascriptMode: JavascriptMode.unrestricted,
-                    //   onWebViewCreated: (WebViewController webViewController) {
-                    //     _controller.complete(webViewController);
-                    //     // Future.delayed(Duration(seconds: 3), () {
-                    //     //   webViewController.loadUrl('${widget.successUrl}?status=success');
-                    //     // });
-                    //   },
-                    //   onProgress: (int progress) {
-                    //     log('WebView is loading (progress : $progress%)');
-                    //   },
-                    //   navigationDelegate: (NavigationRequest request) {
-                    //     String url = request.url;
-                    //     if (url.startsWith(widget.successUrl)) {
-                    //       if (widget.onPaymentSuccess != null) {
-                    //         final urlQuery = Uri.parse(url).queryParameters;
-                    //         log('url query: $urlQuery');
-                    //         widget.onPaymentSuccess!(urlQuery);
-                    //         return NavigationDecision.prevent;
-                    //       }
-                    //     } else if (url.startsWith(widget.failUrl)) {
-                    //       if (widget.onPaymentFailed != null) {
-                    //         widget.onPaymentFailed!();
-                    //         return NavigationDecision.prevent;
-                    //       }
-                    //     } else if (url.startsWith(widget.cancelUrl)) {
-                    //       if (widget.onPaymentCanceled != null) {
-                    //         widget.onPaymentCanceled!();
-                    //         return NavigationDecision.prevent;
-                    //       }
-                    //     }
-                    //     return NavigationDecision.navigate;
-                    //   },
-                    //   onPageStarted: (String url) {
-                    //     final urlQuery = Uri.parse(url).queryParameters;
-                    //     log('url: $url ,url query: $urlQuery, successUrl: ${widget.successUrl}, failUrl: ${widget.failUrl}, cancelUrl: ${widget.cancelUrl}');
-
-                    //     if (url.startsWith(widget.successUrl)) {
-                    //       if (widget.onPaymentSuccess != null) {
-                    //         widget.onPaymentSuccess!(urlQuery);
-                    //         return;
-                    //       }
-                    //     } else if (url.startsWith(widget.failUrl)) {
-                    //       if (widget.onPaymentFailed != null) {
-                    //         widget.onPaymentFailed!();
-                    //         return;
-                    //       }
-                    //     } else if (url.startsWith(widget.cancelUrl)) {
-                    //       if (widget.onPaymentCanceled != null) {
-                    //         widget.onPaymentCanceled!();
-                    //         return;
-                    //       }
-                    //     }
-                    //   },
-                    //   onPageFinished: (String url) {},
-                    //   gestureNavigationEnabled: true,
-                    //   backgroundColor: const Color(0x00000000),
-                    // ),
                   );
                 }),
               ],
