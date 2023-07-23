@@ -15,7 +15,7 @@ class AddOfferView extends GetView<AddOfferController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      drawer: const MyDrawer(shops: [], isShop: true),
+      drawer: const MyDrawer(shops: []),
       body: GetBuilder<AddOfferController>(builder: (_) {
         if (controller.loading) {
           return MataajerTheme.loadingWidget;
@@ -45,6 +45,12 @@ class AddOfferView extends GetView<AddOfferController> {
                   ),
                   SizedBox(height: 30.h),
                   _addImage(),
+                  SizedBox(height: 30.h),
+                  _fieldItem(
+                    'عنوان العرض',
+                    controller.offerName,
+                    height: 50.h,
+                  ),
                   SizedBox(height: 30.h),
                   _fieldItem(
                     'ضع رابط صفحة المتجر او المنتج  ',
@@ -300,42 +306,88 @@ class AddOfferView extends GetView<AddOfferController> {
         ),
         SizedBox(height: 10.h),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _button(
-              text: 'يوم',
-              onPressed: () {
-                controller.chooseDuration = 1;
-                controller.update();
-              },
-              isClicked: controller.chooseDuration == 1,
+            Container(
+              height: 50.h,
+              padding: EdgeInsets.symmetric(horizontal: 10.w),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: DropdownButton<int>(
+                value: controller.chooseDuration,
+                underline: Container(),
+                items: List.generate(
+                  100,
+                  (index) => DropdownMenuItem(
+                    value: index + 1,
+                    child: Text(
+                      '${index + 1}',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Tajawal',
+                      ),
+                    ),
+                  ),
+                ),
+                onChanged: (value) {
+                  controller.chooseDuration = value!;
+                  controller.update();
+                },
+              ),
             ),
-            _button(
-              text: 'ثلاثة ايام',
-              onPressed: () {
-                controller.chooseDuration = 3;
-                controller.update();
-              },
-              isClicked: controller.chooseDuration == 3,
-            ),
-            _button(
-              text: 'اسبوع',
-              onPressed: () {
-                controller.chooseDuration = 7;
-                controller.update();
-              },
-              isClicked: controller.chooseDuration == 7,
-            ),
-            _button(
-              text: 'شهر',
-              onPressed: () {
-                controller.chooseDuration = 30;
-                controller.update();
-              },
-              isClicked: controller.chooseDuration == 30,
+            SizedBox(width: 10.w),
+            Text(
+              'يوم',
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Tajawal',
+              ),
             ),
           ],
         ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //   children: [
+        //     _button(
+        //       text: 'يوم',
+        //       onPressed: () {
+        //         controller.chooseDuration = 1;
+        //         controller.update();
+        //       },
+        //       isClicked: controller.chooseDuration == 1,
+        //     ),
+        //     _button(
+        //       text: 'ثلاثة ايام',
+        //       onPressed: () {
+        //         controller.chooseDuration = 3;
+        //         controller.update();
+        //       },
+        //       isClicked: controller.chooseDuration == 3,
+        //     ),
+        //     _button(
+        //       text: 'اسبوع',
+        //       onPressed: () {
+        //         controller.chooseDuration = 7;
+        //         controller.update();
+        //       },
+        //       isClicked: controller.chooseDuration == 7,
+        //     ),
+        //     _button(
+        //       text: 'شهر',
+        //       onPressed: () {
+        //         controller.chooseDuration = 30;
+        //         controller.update();
+        //       },
+        //       isClicked: controller.chooseDuration == 30,
+        //     ),
+        //   ],
+        // ),
       ],
     );
   }

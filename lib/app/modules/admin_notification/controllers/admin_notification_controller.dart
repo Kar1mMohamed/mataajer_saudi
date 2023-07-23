@@ -122,7 +122,8 @@ class AdminNotificationController extends GetxController {
       log(e);
     } finally {
       module.sendingText = '';
-      updateNotificationCard(index);
+
+      await onRefresh();
     }
   }
 
@@ -145,22 +146,18 @@ class AdminNotificationController extends GetxController {
     }
   }
 
-  Future<void> cancel(NotificationModule module, int index) async {
+  Future<void> cancelFunction(NotificationModule module, int index) async {
     loading = true;
     updateNotificationCard(index);
     try {
-      await FirebaseFirestoreHelper.instance.deleteNotifications(module);
-      // final dateUID = '${module.date!.year}-${module.date!.month}';
-      // await CloudMessaging.decreaseSentNumber(module.senderUserUID!, dateUID);
-      notifications.remove(module);
-      update();
+      await FirebaseFirestoreHelper.instance.updateNotification(module);
+
       KSnackBar.success('تم الغاء الاشعار بنجاح');
     } catch (e) {
       log(e);
       KSnackBar.error('حدث خطأ اثناء الغاء الاشعار - $e');
     } finally {
-      loading = false;
-      updateNotificationCard(index);
+      onRefresh();
     }
   }
 

@@ -16,7 +16,7 @@ class AddPopupAdView extends GetView<AddPopupAdController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      drawer: const MyDrawer(shops: [], isShop: true),
+      drawer: const MyDrawer(shops: []),
       body: GetBuilder<AddPopupAdController>(builder: (_) {
         if (controller.loading) {
           return MataajerTheme.loadingWidget;
@@ -148,8 +148,7 @@ class AddPopupAdView extends GetView<AddPopupAdController> {
         ),
       ),
       title: Text(popUpAd.url ?? ''),
-      subtitle:
-          Text((popUpAd.isVisible ?? false) ? 'تم الموافقة' : 'جاري المراجعة'),
+      subtitle: controller.getAdStatus(popUpAd),
       trailing: IconButton(
         onPressed: () async {
           await controller.deletePopUpAd(popUpAd);

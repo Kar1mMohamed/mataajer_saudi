@@ -75,7 +75,7 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
                 //   text: 'الدخول',
                 //   press: () => controller.checkIFEmailVerified(),
                 // ),
-                CircularProgressIndicator(),
+                const CircularProgressIndicator(),
               ],
             ),
           );

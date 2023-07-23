@@ -25,6 +25,7 @@ class AdminInvoicesDetailsView extends GetView<AdminInvoicesDetailsController> {
               DataColumn(label: Text('اسم المتجر')),
               DataColumn(label: Text('المجال')),
               DataColumn(label: Text('الجوال')),
+              DataColumn(label: Text('الايميل')),
             ],
             rows: controller.adminInvoices.invoices
                 .map(
@@ -38,6 +39,7 @@ class AdminInvoicesDetailsView extends GetView<AdminInvoicesDetailsController> {
                       DataCell(Text(
                           controller.adminInvoices.shop.getShopCategoryName)),
                       DataCell(Text(controller.adminInvoices.shop.phone ?? '')),
+                      DataCell(Text(controller.adminInvoices.shop.email ?? '')),
                     ],
                   ),
                 )

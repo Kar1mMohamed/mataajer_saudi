@@ -330,14 +330,14 @@ class FirebaseFirestoreHelper {
         result = await collection.get().then((value) => value.docs
             .map((e) => NotificationModule.fromMap(e.data(), docUID: e.id))
             .toList());
+      } else {
+        result = await collection
+            .where('isActive', isEqualTo: isActive ?? true)
+            .get()
+            .then((value) => value.docs
+                .map((e) => NotificationModule.fromMap(e.data(), docUID: e.id))
+                .toList());
       }
-      result = await collection
-          .where('isActive', isEqualTo: isActive ?? true)
-          .get()
-          .then((value) => value.docs
-              .map((e) => NotificationModule.fromMap(e.data(), docUID: e.id))
-              .toList());
-
       log('notifications: ${result.length}');
 
       return result;
@@ -420,6 +420,18 @@ class FirebaseFirestoreHelper {
           .collection('pop_up_ads')
           .doc(module.uid)
           .update({'isVisible': module.isVisible});
+    } catch (e) {
+      log(e);
+      rethrow;
+    }
+  }
+
+  Future<void> updatePopUpAd(PopUpAdModule module) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('pop_up_ads')
+          .doc(module.uid)
+          .update(module.toMap());
     } catch (e) {
       log(e);
       rethrow;

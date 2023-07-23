@@ -24,12 +24,13 @@ class AddOfferController extends GetxController {
 
   String? imageURL;
 
+  final offerName = TextEditingController();
   final shopLinkController = TextEditingController();
   final offerPercentage = TextEditingController();
 
   List<OfferModule> offers = [];
 
-  int chooseDuration = 0;
+  int chooseDuration = 1;
 
   Future<void> getCurrentShopModule() async {
     try {
@@ -98,7 +99,7 @@ class AddOfferController extends GetxController {
 
       final module = OfferModule(
         shopUID: FirebaseAuth.instance.currentUser!.uid,
-        name: currentShop!.name,
+        name: offerName.text,
         description: currentShop!.description,
         categoryUIDs: currentShop!.categoriesUIDs,
         // cuponCodeDescription: cuponCodeDescription.text,

@@ -9,12 +9,12 @@ import 'package:mataajer_saudi/app/theme/theme.dart';
 import '../data/modules/shop_module.dart';
 
 class MyDrawer extends StatelessWidget {
-  const MyDrawer(
-      {super.key, required this.shops, required this.isShop, this.isAdmin});
+  const MyDrawer({super.key, required this.shops, this.isAdmin});
 
   final List<ShopModule> shops;
-  final bool isShop;
   final bool? isAdmin;
+
+  bool get isShop => FirebaseAuth.instance.currentUser != null;
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +165,11 @@ class MyDrawer extends StatelessWidget {
           customIcon: const Icon(Icons.local_offer_rounded,
               color: MataajerTheme.mainColor),
         ),
-
+        _drawerItem(
+          Assets.addAdVector,
+          'الاعلانات المنبثقة',
+          route: Routes.ADMIN_POPUPADS,
+        ),
         _drawerItem(
           '',
           'المتاجر',

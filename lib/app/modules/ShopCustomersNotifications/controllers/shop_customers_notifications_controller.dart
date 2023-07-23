@@ -28,7 +28,7 @@ class ShopCustomersNotificationsController extends GetxController {
 
   int? noOfMonthlyCandSend;
 
-  void initNoOfMonthlySend() async {
+  void initNoOfMonthlySend() {
     try {
       bool isCanSendTowNotification =
           currentShop!.isCanSendTwoNotification ?? false;
@@ -111,7 +111,9 @@ class ShopCustomersNotificationsController extends GetxController {
         senderUserImage: currentShop!.image,
       );
 
-      firestore.collection('notifications').add(notificationModule.toMap());
+      await firestore
+          .collection('notifications')
+          .add(notificationModule.toMap());
 
       KSnackBar.success('تم ارسال الاشعار بنجاح سيتم مراجعتة من قبل الادارة');
     } catch (e) {

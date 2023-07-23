@@ -17,7 +17,7 @@ class AddAdView extends GetView<AddAdController> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: appBar(),
-      drawer: const MyDrawer(shops: [], isShop: true),
+      drawer: const MyDrawer(shops: []),
       body: GetBuilder<AddAdController>(builder: (_) {
         if (controller.loading) {
           return MataajerTheme.loadingWidget;

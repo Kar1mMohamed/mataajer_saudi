@@ -30,7 +30,7 @@ class PreviewShopDialogController extends GetxController {
 
   List<OfferModule> get allOffers {
     try {
-      return Get.find<HomeController>().offers.where(
+      return Get.find<HomeController>().getAllOffers.where(
         (element) {
           if (element.shopUID == shopModule.uid) return true;
           return false;

@@ -163,6 +163,29 @@ class AddPopupAdController extends GetxController {
     ));
   }
 
+  Text getAdStatus(PopUpAdModule module) {
+    if (module.isVisible == true) {
+      return const Text(
+        'مفعل',
+        style: TextStyle(color: Colors.green),
+      );
+    } else if (module.cancelReason != null) {
+      return Text(
+        'مرفوض: ${module.cancelReason}',
+        style: const TextStyle(color: Colors.red),
+      );
+    } else if (module.isVisible == false) {
+      return const Text(
+        'جاري المراجعة',
+      );
+    } else {
+      return const Text(
+        'غير محدد',
+        style: TextStyle(color: Colors.grey),
+      );
+    }
+  }
+
   @override
   void onInit() async {
     super.onInit();

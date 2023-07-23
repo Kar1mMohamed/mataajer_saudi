@@ -4,9 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/extensions/for_admin.dart';
+import 'package:mataajer_saudi/app/functions/url_launcher.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
+import 'package:mataajer_saudi/app/widgets/textfield.dart';
 
 import '../../../widgets/back_button.dart';
 import '../controllers/admin_notification_controller.dart';
@@ -17,7 +19,7 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      drawer: const MyDrawer(shops: [], isShop: false, isAdmin: true),
+      drawer: const MyDrawer(shops: [], isAdmin: true),
       body: RefreshIndicator(
         onRefresh: controller.onRefresh,
         child: GetBuilder<AdminNotificationController>(builder: (_) {
@@ -61,14 +63,20 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
                   ],
                 ),
                 Expanded(
-                  child: ListView.separated(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: controller.notifications.length,
-                    itemBuilder: (context, index) =>
-                        _notificationCard(context, index),
-                    separatorBuilder: (context, index) =>
-                        SizedBox(height: 10.h),
-                  ),
+                  child: Builder(builder: (context) {
+                    if (controller.notifications.isEmpty) {
+                      return const Center(child: Text('لا يوجد اشعارات'));
+                    }
+
+                    return ListView.separated(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: controller.notifications.length,
+                      itemBuilder: (context, index) =>
+                          _notificationCard(context, index),
+                      separatorBuilder: (context, index) =>
+                          SizedBox(height: 10.h),
+                    );
+                  }),
                 ),
               ],
             ),
@@ -85,8 +93,8 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
           final notification = controller.notifications[index];
           final image = controller.getSenderUserImage(notification);
 
-          if (controller.showIsNotActive && notification.isActive == true) {
-            return const SizedBox();
+          if (controller.showIsNotActive && !notification.isCanAcceptOrCancel) {
+            return const SizedBox.shrink();
           }
 
           return Container(
@@ -162,14 +170,35 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
                             fontSize: 13, fontWeight: FontWeight.w400),
                       ),
                       const SizedBox(height: 5),
-                      Text(
-                        notification.data?['link'] ?? 'نص فارغ',
-                        textAlign: TextAlign.center,
-                        style: MataajerTheme.tajawalTextStyle.copyWith(
-                            fontSize: 13, fontWeight: FontWeight.w400),
+                      InkWell(
+                        onTap: () {
+                          final url = notification.data?['link'];
+                          URLLauncherFuntions.launchURL(url);
+                        },
+                        child: Text(
+                          notification.data?['link'] ?? 'رابط فارغ',
+                          textAlign: TextAlign.center,
+                          style: MataajerTheme.tajawalTextStyle.copyWith(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.blue,
+                          ),
+                        ),
                       ),
+                      const SizedBox(height: 5),
+                      if (notification.cancelReason != null)
+                        Text(
+                          'تم الرفض بسبب: ${notification.cancelReason ?? ''}',
+                          textAlign: TextAlign.center,
+                          style: MataajerTheme.tajawalTextStyle.copyWith(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.red,
+                          ),
+                        ),
                       const SizedBox(height: 10),
-                      if (!(notification.isActive ?? false))
+                      if (!(notification.isActive ?? false) &&
+                          notification.cancelReason == null)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -185,7 +214,42 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
                             RoundedButton(
                               text: 'رفض',
                               press: () {
-                                controller.cancel(notification, index);
+                                final cancelReasonController =
+                                    TextEditingController();
+                                Get.dialog(
+                                  Dialog(
+                                    backgroundColor: Colors.white,
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 20.0.sp,
+                                          vertical: 10.0.sp),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          textField(
+                                            hint: 'سبب الرفض',
+                                            controller: cancelReasonController,
+                                          ),
+                                          RoundedButton(
+                                            text: 'رفض',
+                                            press: () async {
+                                              await controller.cancelFunction(
+                                                notification
+                                                  ..cancelReason =
+                                                      cancelReasonController
+                                                          .text,
+                                                index,
+                                              );
+                                              Get.back();
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
                               },
                               color: Colors.red,
                               width: 140.w,

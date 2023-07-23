@@ -20,7 +20,7 @@ class ShopAccountView extends GetView<ShopAccountController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      drawer: MyDrawer(shops: const [], isShop: controller.isShop),
+      drawer: const MyDrawer(shops: []),
       body: GetBuilder<ShopAccountController>(builder: (_) {
         if (controller.loading) {
           return MataajerTheme.loadingWidget;

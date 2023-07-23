@@ -22,7 +22,7 @@ class HomeView extends GetView<HomeController> {
     return Scaffold(
       appBar: appBar(),
       backgroundColor: const Color(0xFFF5F5F5),
-      drawer: MyDrawer(shops: controller.shops, isShop: controller.isShop),
+      drawer: MyDrawer(shops: controller.shops),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           const url = "https://wa.me/+966505544326?text=%20السلام%20عليكم";
@@ -47,7 +47,7 @@ class HomeView extends GetView<HomeController> {
         onRefresh: controller.onRefresh,
         child: GetBuilder<HomeController>(builder: (_) {
           if (!controller.isHomeFullyInitilized) {
-            return Center(child: MataajerTheme.loadingWidget);
+            return MataajerTheme.loadingWidget;
           }
           return SingleChildScrollView(
             child: Column(
@@ -218,11 +218,11 @@ class HomeView extends GetView<HomeController> {
   Widget _ads(BuildContext context) {
     return Column(
       children: [
+        _offerItem('العروض', Icons.percent, controller.offers, 1),
         _shopItem(
             'متاجر مثبتة', Icons.keyboard_arrow_up, controller.staticAds, 2),
         _shopItem('الاكثر زيارة', Icons.remove_red_eye_outlined,
             controller.mostViewed, 2),
-        _offerItem('العروض', Icons.percent, controller.offers, 1),
         _shopItem('الاكثر عروضا', Icons.percent, controller.mostOffers, 2),
         _shopItem(
             'متاجر اخرى', Icons.maps_home_work_outlined, controller.others, 1),

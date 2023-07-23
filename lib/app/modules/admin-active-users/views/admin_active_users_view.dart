@@ -19,7 +19,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
     return Scaffold(
       appBar: appBar(),
       backgroundColor: const Color(0xFFF5F5F5),
-      drawer: const MyDrawer(shops: [], isShop: false, isAdmin: true),
+      drawer: const MyDrawer(shops: [], isAdmin: true),
       body: RefreshIndicator(
         onRefresh: controller.onRefresh,
         child: GetBuilder<AdminActiveUsersController>(builder: (_) {

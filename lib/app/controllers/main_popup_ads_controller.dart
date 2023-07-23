@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/modules/pop_up_ad_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
@@ -16,7 +17,9 @@ class MainPopupAdsController extends GetxController {
   void initTimer() {
     Timer.periodic(const Duration(minutes: 5), (timer) async {
       await init();
-      PopUpAdsFunctions.showPopUpAd(ads: ads);
+      if (FirebaseAuth.instance.currentUser == null) {
+        PopUpAdsFunctions.showPopUpAd(ads: ads);
+      }
     });
   }
 

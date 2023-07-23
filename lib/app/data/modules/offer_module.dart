@@ -132,7 +132,7 @@ class OfferModule {
       'offerPercentage': offerPercentage,
       'imageURL': imageURL,
       'hits': hits,
-      'validTill': validTill?.millisecondsSinceEpoch,
+      'validTill': validTill != null ? Timestamp.fromDate(validTill!) : null,
       'isStaticAd': isStaticAd,
       'isVisible': isVisible,
       'offerLink': offerLink,

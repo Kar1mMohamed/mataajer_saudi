@@ -81,6 +81,7 @@ class HomeController extends GetxController {
   List<ShopModule> shops = <ShopModule>[];
 
   List<OfferModule> _offers = <OfferModule>[];
+  List<OfferModule> get getAllOffers => _offers;
 
   List<OfferModule> offers = <OfferModule>[];
 
@@ -221,9 +222,13 @@ class HomeController extends GetxController {
     if (query == null || query.isEmpty) {
       shops = _shops;
     } else {
+      log(_shops.map((e) => e.keywords).toList());
       shops = _shops
-          .where((element) =>
-              element.name.toLowerCase().contains(query.toLowerCase()))
+          .where(
+            (element) =>
+                element.name.toLowerCase().contains(query.toLowerCase()) ||
+                (element.keywords ?? []).contains(query),
+          )
           .toList();
     }
     update(['all-ads']);
@@ -234,8 +239,10 @@ class HomeController extends GetxController {
       offers = _offers;
     } else {
       offers = _offers
-          .where((element) =>
-              element.name.toLowerCase().contains(query.toLowerCase()))
+          .where(
+            (element) =>
+                element.name.toLowerCase().contains(query.toLowerCase()),
+          )
           .toList();
     }
     update(['offers']);
@@ -253,8 +260,7 @@ class HomeController extends GetxController {
     await getOffers();
   }
 
-  @override
-  void onInit() async {
+  void onINIT() async {
     isHomeFullyInitilized = false;
     update();
 
@@ -264,21 +270,19 @@ class HomeController extends GetxController {
     await getShops();
     await getOffers();
 
-    await Get.find<MainNotificationController>().getNotificationsCount();
+    Get.find<MainNotificationController>().getNotificationsCount();
 
-    // var deviceUUID = GetStorage().read<String>('deviceUUID');
-    // if (deviceUUID == null) {
-    //   deviceUUID = UUIDFunctions.getDeviceUUID();
-    //   GetStorage().write('deviceUUID', deviceUUID);
-    // }
-
-    // CloudMessaging.sendFCMTokenToFirebase(deviceUUID);
-
-    PopUpAdsFunctions.showPopUpAd();
+    if (FirebaseAuth.instance.currentUser == null) {
+      PopUpAdsFunctions.showPopUpAd();
+    }
 
     isHomeFullyInitilized = true;
     update();
+  }
 
+  @override
+  void onInit() {
     super.onInit();
+    onINIT();
   }
 }

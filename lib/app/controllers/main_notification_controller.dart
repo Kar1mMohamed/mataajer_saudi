@@ -13,13 +13,19 @@ class MainNotificationController extends GetxController {
   Future<void> getNotificationsCount() async {
     try {
       final deviceUUID = GetStorage().read<String>('deviceUUID');
+      log('deviceUUID: $deviceUUID');
+      if (deviceUUID == null) {
+        throw 'deviceUUID is null';
+      }
       final notificationCount = await FirebaseFirestore.instance
           .collection('fcm_tokens')
-          .doc(deviceUUID!)
+          .doc(deviceUUID)
           .collection('notifications')
           .where('isRead', isNotEqualTo: true)
           .get()
           .then((value) => value.docs.length);
+
+      log('got notificationCount: $notificationCount');
 
       this.notificationCount.value = notificationCount;
     } catch (e) {

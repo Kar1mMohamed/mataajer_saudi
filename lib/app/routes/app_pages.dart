@@ -26,6 +26,8 @@ import '../modules/admin-invoices/bindings/admin_invoices_binding.dart';
 import '../modules/admin-invoices/views/admin_invoices_view.dart';
 import '../modules/admin-offers/bindings/admin_offers_binding.dart';
 import '../modules/admin-offers/views/admin_offers_view.dart';
+import '../modules/admin-popupads/bindings/admin_popupads_binding.dart';
+import '../modules/admin-popupads/views/admin_popupads_view.dart';
 import '../modules/admin-users/bindings/admin_users_binding.dart';
 import '../modules/admin-users/views/admin_users_view.dart';
 import '../modules/admin_notification/bindings/admin_notification_binding.dart';
@@ -152,6 +154,11 @@ class AppPages {
       name: _Paths.ADMIN_INVOICES_DETAILS,
       page: () => const AdminInvoicesDetailsView(),
       binding: AdminInvoicesDetailsBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADMIN_POPUPADS,
+      page: () => const AdminPopupadsView(),
+      binding: AdminPopupadsBinding(),
     ),
   ];
 }

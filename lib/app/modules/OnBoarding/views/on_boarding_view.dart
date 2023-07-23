@@ -57,10 +57,10 @@ class OnBoardingView extends GetView<OnBoardingController> {
                   text: 'دخول',
                   press: () async {
                     if (controller.isShopOwner.value) {
-                      Get.offAndToNamed(Routes.SHOP_LOGIN_AND_REGISTER);
+                      Get.toNamed(Routes.SHOP_LOGIN_AND_REGISTER);
                     } else {
                       await FirebaseAuth.instance.signOut();
-                      Get.offAndToNamed(Routes.HOME);
+                      Get.toNamed(Routes.HOME);
                     }
                   },
                 ),

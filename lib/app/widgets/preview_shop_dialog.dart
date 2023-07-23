@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/preview_shop_dialog_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/offer_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
+import 'package:mataajer_saudi/app/functions/url_launcher.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/preview_offer_dialog.dart';
+
+import '../data/assets.dart';
 
 class PreviewShopDialog extends StatelessWidget {
   const PreviewShopDialog({super.key, required this.shop});
@@ -273,6 +278,25 @@ class PreviewShopDialog extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20.h),
+                socailMediaSection(),
+                SizedBox(height: 20.h),
+                Row(
+                  children: [
+                    if (shop.isHasTamara ?? false)
+                      SizedBox(
+                        height: 100.h,
+                        width: 150.w,
+                        child: Image.asset(Assets.tamaraARLogo),
+                      ),
+                    if (shop.isHasTabby ?? false)
+                      SizedBox(
+                        height: 100.h,
+                        width: 150.w,
+                        child: Image.asset(Assets.tabbyLogo),
+                      )
+                  ],
+                ),
+                SizedBox(height: 20.h),
                 if (controller.allOffers.isNotEmpty) allOffers(),
                 if (controller.similarShops.isNotEmpty) similarShops(),
               ],
@@ -318,6 +342,7 @@ class PreviewShopDialog extends StatelessWidget {
 
   Widget allOffers() {
     final controller = Get.find<PreviewShopDialogController>();
+    log('showing all offers ${controller.allOffers.length}');
     return Column(
       children: [
         Padding(
@@ -340,7 +365,7 @@ class PreviewShopDialog extends StatelessWidget {
               itemBuilder: (context, index) =>
                   _offerCard(controller.allOffers[index]),
               separatorBuilder: (context, index) => SizedBox(width: 20.w),
-              itemCount: controller.similarShops.length,
+              itemCount: controller.allOffers.length,
               shrinkWrap: true,
             ),
           ),
@@ -413,6 +438,39 @@ class PreviewShopDialog extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget socailMediaSection() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.0.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _socailMediaItem(shop.socialMediaLinks?.facebook, Assets.facebookSVG),
+          _socailMediaItem(shop.socialMediaLinks?.twitter, Assets.twitterSVG),
+          _socailMediaItem(
+              shop.socialMediaLinks?.instagram, Assets.instagramSVG),
+          _socailMediaItem(shop.socialMediaLinks?.snapchat, Assets.snapchatSVG),
+          _socailMediaItem(shop.socialMediaLinks?.youtube, Assets.youtubeSVG),
+          _socailMediaItem(shop.socialMediaLinks?.tiktok, Assets.tiktokSVG),
+          _socailMediaItem(shop.socialMediaLinks?.linkedin, Assets.linkedinSVG),
+        ],
+      ),
+    );
+  }
+
+  Widget _socailMediaItem(String? url, String svgAsset) {
+    if (url == null) return const SizedBox.shrink();
+    return InkWell(
+      onTap: () {
+        URLLauncherFuntions.launchURL(url);
+      },
+      child: SvgPicture.asset(
+        svgAsset,
+        height: 40.h,
+        width: 40.w,
       ),
     );
   }

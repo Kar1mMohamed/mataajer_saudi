@@ -16,6 +16,7 @@ class PopUpAdModule {
   String shopUID;
   int? hits;
   DateTime? date;
+  String? cancelReason;
   PopUpAdModule({
     this.uid,
     this.title,
@@ -27,6 +28,7 @@ class PopUpAdModule {
     required this.shopUID,
     this.hits,
     this.date,
+    this.cancelReason,
   });
 
   void addView() async {
@@ -42,6 +44,8 @@ class PopUpAdModule {
     }
   }
 
+  bool get isCanAcceptOrCancel => cancelReason == null && isVisible == false;
+
   PopUpAdModule copyWith({
     String? uid,
     String? title,
@@ -53,6 +57,7 @@ class PopUpAdModule {
     String? shopUID,
     int? hits,
     DateTime? date,
+    String? cancelReason,
   }) {
     return PopUpAdModule(
       uid: uid ?? this.uid,
@@ -65,6 +70,7 @@ class PopUpAdModule {
       shopUID: shopUID ?? this.shopUID,
       hits: hits ?? this.hits,
       date: date ?? this.date,
+      cancelReason: cancelReason ?? this.cancelReason,
     );
   }
 
@@ -75,11 +81,12 @@ class PopUpAdModule {
       'description': description,
       'image': image,
       'isVisible': isVisible,
-      if (validTill != null) 'validTill': Timestamp.fromDate(validTill!),
+      'validTill': validTill != null ? Timestamp.fromDate(validTill!) : null,
       'url': url,
       'shopUID': shopUID,
       'hits': hits,
       'date': date?.millisecondsSinceEpoch,
+      'cancelReason': cancelReason,
     };
   }
 
@@ -100,6 +107,8 @@ class PopUpAdModule {
       date: map['date'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['date'] as int)
           : null,
+      cancelReason:
+          map['cancelReason'] != null ? map['cancelReason'] as String : null,
     );
   }
 
@@ -111,7 +120,7 @@ class PopUpAdModule {
 
   @override
   String toString() {
-    return 'PopUpAdModule(uid: $uid, title: $title, description: $description, image: $image, isVisible: $isVisible, validTill: $validTill, url: $url, shopUID: $shopUID, hits: $hits, date: $date)';
+    return 'PopUpAdModule(uid: $uid, title: $title, description: $description, image: $image, isVisible: $isVisible, validTill: $validTill, url: $url, shopUID: $shopUID, hits: $hits, date: $date, cancelReason: $cancelReason)';
   }
 
   @override
@@ -127,7 +136,8 @@ class PopUpAdModule {
         other.url == url &&
         other.shopUID == shopUID &&
         other.hits == hits &&
-        other.date == date;
+        other.date == date &&
+        other.cancelReason == cancelReason;
   }
 
   @override
@@ -141,6 +151,7 @@ class PopUpAdModule {
         url.hashCode ^
         shopUID.hashCode ^
         hits.hashCode ^
-        date.hashCode;
+        date.hashCode ^
+        cancelReason.hashCode;
   }
 }

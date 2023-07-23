@@ -17,7 +17,7 @@ class ShopCustomersNotificationsView
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      drawer: MyDrawer(shops: const [], isShop: controller.isShop),
+      drawer: const MyDrawer(shops: []),
       body: GetBuilder<ShopCustomersNotificationsController>(builder: (_) {
         if (controller.loading) {
           return MataajerTheme.loadingWidget;
@@ -165,16 +165,24 @@ class ShopCustomersNotificationsView
                         controller.notifications[index].date!) ??
                     ''),
                 Text(
-                    (controller.notifications[index].isActive ?? false)
-                        ? 'مفعل'
-                        : 'غير مفعل',
+                  (controller.notifications[index].isActive ?? false)
+                      ? 'مفعل'
+                      : 'غير مفعل',
+                  style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                      color: (controller.notifications[index].isActive ?? false)
+                          ? Colors.green
+                          : Colors.red),
+                ),
+                if (controller.notifications[index].cancelReason != null)
+                  Text(
+                    "مرفوض: ${controller.notifications[index].cancelReason}",
                     style: TextStyle(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w500,
-                        color:
-                            (controller.notifications[index].isActive ?? false)
-                                ? Colors.green
-                                : Colors.red)),
+                        color: Colors.red),
+                  ),
               ],
             ),
             trailing: IconButton(

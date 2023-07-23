@@ -92,7 +92,7 @@ class ShopAccountController extends GetxController {
     phoneController.text = currentShop?.phone ?? '';
     shopLinkController.text = currentShop?.shopLink ?? '';
     shopDescriptionController.text = currentShop?.description ?? '';
-    shopKeyWordsController.text = currentShop?.keywords?.join(',') ?? '';
+    shopKeyWordsController.text = currentShop?.keywords?.join(' ') ?? '';
     avgShippingPriceController.text =
         currentShop?.avgShippingPrice?.toString() ?? '';
     cuponCodeController.text = currentShop?.cuponCode ?? '';
@@ -143,7 +143,7 @@ class ShopAccountController extends GetxController {
         email: emailController.text,
         shopLink: shopLinkController.text,
         description: shopDescriptionController.text,
-        keywords: shopKeyWordsController.text.split(','),
+        keywords: shopKeyWordsController.text.split(' '),
         avgShippingPrice: double.parse(avgShippingPriceController.text),
         cuponCode: cuponCodeController.text,
         cuponText: cuponCodeDetailsController.text,

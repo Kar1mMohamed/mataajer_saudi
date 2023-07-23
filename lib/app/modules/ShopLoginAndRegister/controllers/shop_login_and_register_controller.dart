@@ -186,7 +186,7 @@ class ShopLoginAndRegisterController extends GetxController {
         cuponCode: cuponCodeController.text,
         cuponText: cuponCodeDetailsController.text,
         categoriesUIDs: choosedCategories.map((e) => e.uid!).toList(),
-        keywords: shopKeyWordsController.text.split('\n'),
+        keywords: shopKeyWordsController.text.split(' '),
         shopLink: shopLinkController.text,
         token: await regResponse.user!.getIdToken(),
         isHasTamara: registerIsHasTamara,

@@ -40,7 +40,7 @@ abstract class PaymentsHelper {
 
     module.source = Source(id: 'src_all');
 
-    log('mobileRedirectUrl: $mobileRedirectUrl');
+    log('mobileSuccessRedirectUrl: $mobileRedirectUrl');
 
     // module.mode = 'INVOICE';
 

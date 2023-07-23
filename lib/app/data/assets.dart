@@ -49,4 +49,12 @@ abstract class Assets {
   static const String tamaraARLogo = 'assets/images/tamara-logo-ar.png';
   static const String tamaraENLogo = 'assets/images/tamara-logo-en.png';
   static const String tabbyLogo = 'assets/images/tabby-logo.png';
+
+  static const String facebookSVG = 'assets/images/icons8-facebook.svg';
+  static const String instagramSVG = 'assets/images/icons8-instagram.svg';
+  static const String linkedinSVG = 'assets/images/icons8-linkedin.svg';
+  static const String snapchatSVG = 'assets/images/icons8-snapchat.svg';
+  static const String tiktokSVG = 'assets/images/icons8-tiktok.svg';
+  static const String twitterSVG = 'assets/images/icons8-twitter.svg';
+  static const String youtubeSVG = 'assets/images/icons8-youtube.svg';
 }
