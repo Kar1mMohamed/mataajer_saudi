@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:mataajer_saudi/app/functions/url_launcher.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/database/notification.dart';
@@ -73,64 +74,71 @@ class NotificationsView extends GetView<NotificationsController> {
 
   Widget _notificationCard(NotificationModule notification) {
     // String? image = notification.data?['image'];
-    return Container(
-      height: 95.h,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25.r),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.0.sp),
-        child: Row(
-          children: [
-            // ClipRRect(
-            //   borderRadius: BorderRadius.circular(50.r),
-            //   child: LoadingImage(
-            //     src: image,
-            //     height: 65.h,
-            //     width: 65.w,
-            //     fit: BoxFit.cover,
-            //   ),
-            // ),
-            // SizedBox(width: 10.w),
-            Flexible(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          '${notification.title}',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w700,
+    return InkWell(
+      onTap: () {
+        if (notification.link != null) {
+          URLLauncherFuntions.launchURL(notification.link!);
+        }
+      },
+      child: Container(
+        height: 95.h,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25.r),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.0.sp),
+          child: Row(
+            children: [
+              // ClipRRect(
+              //   borderRadius: BorderRadius.circular(50.r),
+              //   child: LoadingImage(
+              //     src: image,
+              //     height: 65.h,
+              //     width: 65.w,
+              //     fit: BoxFit.cover,
+              //   ),
+              // ),
+              // SizedBox(width: 10.w),
+              Flexible(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            '${notification.title}',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
+                        SizedBox(width: 10.w),
+                      ],
+                    ),
+                    Flexible(
+                      child: Text(
+                        '${notification.body}',
+                        style: TextStyle(
+                            fontSize: 14.sp, fontWeight: FontWeight.w500),
                       ),
-                      SizedBox(width: 10.w),
-                    ],
-                  ),
-                  Flexible(
-                    child: Text(
-                      '${notification.body}',
+                    ),
+                    Text(
+                      notification.formateDate,
                       style: TextStyle(
-                          fontSize: 14.sp, fontWeight: FontWeight.w500),
+                        color: const Color(0xFFB4B4B4),
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                  Text(
-                    notification.formateDate,
-                    style: TextStyle(
-                      color: const Color(0xFFB4B4B4),
-                      fontSize: 11.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

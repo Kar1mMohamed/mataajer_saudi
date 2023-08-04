@@ -100,7 +100,7 @@ class MyDrawer extends StatelessWidget {
         // ),
         _drawerItem(
           Assets.addAdVector,
-          'العروض',
+          'عروض المنتجات',
           route: Routes.ADD_OFFER,
         ),
         _drawerItem(
@@ -160,7 +160,7 @@ class MyDrawer extends StatelessWidget {
         ),
         _drawerItem(
           '',
-          'العروض',
+          'عروض المنتجات',
           route: Routes.ADMIN_OFFERS,
           customIcon: const Icon(Icons.local_offer_rounded,
               color: MataajerTheme.mainColor),

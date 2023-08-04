@@ -12,7 +12,8 @@ class OfferModule {
   final String? uid;
   final String? shopUID;
   final String name;
-  final String? description;
+  final String? shopDescription;
+  final String? offerDescription;
   final String? offerPercentageDescription;
   final List<String> categoryUIDs;
   final DateTime? fromDate;
@@ -27,21 +28,36 @@ class OfferModule {
   bool? isVisible;
   String? offerLink;
 
-  bool get isMostVisitAd {
-    return true; // Temprory true untill do it as logic
-  }
+  // bool get isMostVisitedOffer {
+  //   try {
+  //     final offers = Get.find<HomeController>().offers;
 
-  bool get isMostOffers {
-    return true; // Temprory true untill do it as logic
-  }
+  //     int averageHits = offers.fold<int>(
+  //             0, (previousValue, element) => previousValue + element.hits!) ~/
+  //         offers.length;
 
-  bool get isOtherAd {
-    if ((isStaticAd ?? false) || isMostOffers || isMostOffers) {
-      return false;
-    } else {
-      return true;
-    }
-  }
+  //     if (hits! > averageHits) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   } catch (e) {
+  //     log('isMostVisitAd: $e');
+  //     return false;
+  //   }
+  // }
+
+  // bool get isMostOffers {
+  //   return true; // Temprory true untill do it as logic
+  // }
+
+  // bool get isOtherAd {
+  //   if ((isStaticAd ?? false) || isMostOffers || isMostOffers) {
+  //     return false;
+  //   } else {
+  //     return true;
+  //   }
+  // }
 
   List<CategoryModule> get categories => Get.find<MainSettingsController>()
       .mainCategories
@@ -60,7 +76,8 @@ class OfferModule {
     this.uid,
     this.shopUID,
     required this.name,
-    this.description,
+    this.shopDescription,
+    this.offerDescription,
     this.offerPercentageDescription,
     required this.categoryUIDs,
     this.fromDate,
@@ -80,7 +97,8 @@ class OfferModule {
     String? uid,
     String? shopUID,
     String? name,
-    String? description,
+    String? shopDescription,
+    String? offerDescription,
     String? offerPercentageDescription,
     List<String>? categoryUIDs,
     DateTime? fromDate,
@@ -99,7 +117,8 @@ class OfferModule {
       uid: uid ?? this.uid,
       shopUID: shopUID ?? this.shopUID,
       name: name ?? this.name,
-      description: description ?? this.description,
+      shopDescription: shopDescription ?? this.shopDescription,
+      offerDescription: offerDescription ?? this.offerDescription,
       offerPercentageDescription:
           offerPercentageDescription ?? this.offerPercentageDescription,
       categoryUIDs: categoryUIDs ?? this.categoryUIDs,
@@ -122,7 +141,8 @@ class OfferModule {
       'uid': uid,
       'shopUID': shopUID,
       'name': name,
-      'description': description,
+      'shopDescription': shopDescription,
+      'offerDescription': offerDescription,
       'offerPercentageDescription': offerPercentageDescription,
       'categoryUIDs': categoryUIDs,
       'fromDate': fromDate?.millisecondsSinceEpoch,
@@ -144,8 +164,12 @@ class OfferModule {
       uid: uid ?? (map['uid'] != null ? map['uid'] as String : null),
       shopUID: map['shopUID'] != null ? map['shopUID'] as String : null,
       name: map['name'] as String,
-      description:
-          map['description'] != null ? map['description'] as String : null,
+      shopDescription: map['shopDescription'] != null
+          ? map['shopDescription'] as String
+          : null,
+      offerDescription: map['offerDescription'] != null
+          ? map['offerDescription'] as String
+          : null,
       categoryUIDs: List<String>.from((map['categoryUIDs'] as List<dynamic>)),
       fromDate: map['fromDate'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['fromDate'] as int)
@@ -183,7 +207,7 @@ class OfferModule {
 
   @override
   String toString() {
-    return 'OfferModule(uid: $uid, shopUID: $shopUID, name: $name, description: $description, offerPercentageDescription: $offerPercentageDescription, categoryUIDs: $categoryUIDs, fromDate: $fromDate, toDate: $toDate, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, offerPercentage: $offerPercentage, imageURL: $imageURL, hits: $hits, validTill: $validTill, isStaticAd: $isStaticAd, isVisible: $isVisible, offerLink: $offerLink)';
+    return 'OfferModule(uid: $uid, shopUID: $shopUID, name: $name, shopDescription: $shopDescription, offerDescription: $offerDescription, offerPercentageDescription: $offerPercentageDescription, categoryUIDs: $categoryUIDs, fromDate: $fromDate, toDate: $toDate, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, offerPercentage: $offerPercentage, imageURL: $imageURL, hits: $hits, validTill: $validTill, isStaticAd: $isStaticAd, isVisible: $isVisible, offerLink: $offerLink)';
   }
 
   @override
@@ -193,7 +217,8 @@ class OfferModule {
     return other.uid == uid &&
         other.shopUID == shopUID &&
         other.name == name &&
-        other.description == description &&
+        other.shopDescription == shopDescription &&
+        other.offerDescription == offerDescription &&
         other.offerPercentageDescription == offerPercentageDescription &&
         listEquals(other.categoryUIDs, categoryUIDs) &&
         other.fromDate == fromDate &&
@@ -214,7 +239,8 @@ class OfferModule {
     return uid.hashCode ^
         shopUID.hashCode ^
         name.hashCode ^
-        description.hashCode ^
+        shopDescription.hashCode ^
+        offerDescription.hashCode ^
         offerPercentageDescription.hashCode ^
         categoryUIDs.hashCode ^
         fromDate.hashCode ^

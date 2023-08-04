@@ -276,12 +276,30 @@ class FirebaseFirestoreHelper {
       String userUID, String dateYYYYM) async {
     try {
       await FirebaseFirestore.instance
+          .collection('shops')
           .doc(userUID)
           .collection('notifications')
           .doc(dateYYYYM)
           .update({'sent': FieldValue.increment(-1)});
     } catch (e) {
       log('decreaseNotificationSent: $e');
+    }
+  }
+
+  Future<int> getNotificationsSentCount(
+      String userUID, String dateYYYYM) async {
+    try {
+      final count = await FirebaseFirestore.instance
+          .collection('shops')
+          .doc(userUID)
+          .collection('notifications')
+          .doc(dateYYYYM)
+          .get()
+          .then((value) => value.data()?['sent'] as int?);
+      return count ?? 0;
+    } catch (e) {
+      log(e);
+      return 0;
     }
   }
 

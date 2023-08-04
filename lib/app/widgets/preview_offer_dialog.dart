@@ -34,8 +34,13 @@ class PreviewOfferDialog extends StatelessWidget {
                 Container(
                   height: 90.h,
                   width: double.infinity,
-                  decoration: const BoxDecoration(
-                      color: MataajerTheme.mainColorLighten),
+                  decoration: BoxDecoration(
+                    color: MataajerTheme.mainColorLighten,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12.r),
+                      topRight: Radius.circular(12.r),
+                    ),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
@@ -109,7 +114,7 @@ class PreviewOfferDialog extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'وصف المتجر',
+                        'اسم المنتج',
                         style: TextStyle(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w500,
@@ -117,7 +122,33 @@ class PreviewOfferDialog extends StatelessWidget {
                       ),
                       SizedBox(height: 5.0.h),
                       Text(
-                        '${offerModule.description}',
+                        '${offerModule.name}',
+                        style: TextStyle(
+                          color: Colors.black.withOpacity(0.7),
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 10.0.h),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'وصف العرض',
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(height: 5.0.h),
+                      Text(
+                        '${offerModule.offerDescription}',
                         style: TextStyle(
                           color: Colors.black.withOpacity(0.7),
                           fontSize: 15.sp,

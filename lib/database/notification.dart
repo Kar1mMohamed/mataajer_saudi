@@ -78,6 +78,8 @@ class NotificationModule extends HiveObject {
   bool get isCanAcceptOrCancel =>
       cancelReason == null && (isActive ?? false) == false;
 
+  String? get link => data?['link'] as String?;
+
   NotificationModule({
     this.index,
     this.token,

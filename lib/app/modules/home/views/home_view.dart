@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -9,7 +10,7 @@ import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
-import 'package:mataajer_saudi/app/widgets/preview_offer_dialog.dart';
+import 'package:mataajer_saudi/app/widgets/loading_image.dart';
 import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import '../../../data/modules/offer_module.dart';
@@ -73,7 +74,9 @@ class HomeView extends GetView<HomeController> {
                   padding: const EdgeInsets.all(8.0),
                   child: _search(),
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 10.h),
+                offersCarousel(context),
+                SizedBox(height: 10.h),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
@@ -144,81 +147,142 @@ class HomeView extends GetView<HomeController> {
     return Stack(
       children: [
         Container(
-          height: context.isTablet ? context.height * 0.24 : 100.h,
+          height: context.isTablet ? context.height * 0.30 : 100.h,
           width: context.width,
           decoration: BoxDecoration(
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(20.0.r),
             image: const DecorationImage(
-              fit: BoxFit.cover,
-              image: AssetImage(Assets.homeBanner),
+              fit: BoxFit.fill,
+              image: AssetImage(Assets.homeBannerNew),
               filterQuality: FilterQuality.high,
             ),
           ),
-          child: Container(
-            width: context.width,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0.r),
-              backgroundBlendMode: BlendMode.darken,
-              gradient: LinearGradient(
-                begin: FractionalOffset.topLeft,
-                end: FractionalOffset.topRight,
-                stops: const [0.5, double.infinity],
-                colors: [
-                  MataajerTheme.mainColor.withOpacity(0.7),
-                  Colors.white.withOpacity(0.1),
-                ],
-              ),
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'عروض الجمعة الخضراء',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withOpacity(0.2),
-                          offset: const Offset(0, 1),
-                          blurRadius: 1.r,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    """احصل على خصومات على منتجات
-            مختارة تصل الى 60%""",
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withOpacity(0.2),
-                          offset: const Offset(0, 1),
-                          blurRadius: 1.r,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          // child: Container(
+          //   width: context.width,
+          //   decoration: BoxDecoration(
+          //     borderRadius: BorderRadius.circular(20.0.r),
+          //     backgroundBlendMode: BlendMode.darken,
+          //     gradient: LinearGradient(
+          //       begin: FractionalOffset.topLeft,
+          //       end: FractionalOffset.topRight,
+          //       stops: const [0.5, double.infinity],
+          //       colors: [
+          //         MataajerTheme.mainColor.withOpacity(0.7),
+          //         Colors.white.withOpacity(0.1),
+          //       ],
+          //     ),
+          //   ),
+          //   child: Center(
+          //     child: Column(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       crossAxisAlignment: CrossAxisAlignment.start,
+          //       children: [
+          //         Text(
+          //           'عروض الجمعة الخضراء',
+          //           style: TextStyle(
+          //             fontSize: 16.sp,
+          //             color: Colors.white,
+          //             fontWeight: FontWeight.w700,
+          //             shadows: [
+          //               Shadow(
+          //                 color: Colors.black.withOpacity(0.2),
+          //                 offset: const Offset(0, 1),
+          //                 blurRadius: 1.r,
+          //               ),
+          //             ],
+          //           ),
+          //         ),
+          //         Text(
+          //           """احصل على خصومات على منتجات
+          //   مختارة تصل الى 60%""",
+          //           style: TextStyle(
+          //             fontSize: 13.sp,
+          //             color: Colors.white,
+          //             fontWeight: FontWeight.w500,
+          //             shadows: [
+          //               Shadow(
+          //                 color: Colors.black.withOpacity(0.2),
+          //                 offset: const Offset(0, 1),
+          //                 blurRadius: 1.r,
+          //               ),
+          //             ],
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
         ),
       ],
     );
   }
 
+  Widget offersCarousel(BuildContext context) {
+    return GetBuilder<HomeController>(
+        id: 'offersCarousel',
+        builder: (_) {
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: MataajerTheme.mainColor,
+                        borderRadius: BorderRadius.circular(20.0.r),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Icon(
+                          Icons.percent,
+                          color: Colors.white,
+                          size: 20.sp,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 10.w),
+                    Text(
+                      'العروض',
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (controller.offers.isEmpty)
+                const SizedBox.shrink()
+              else
+                CarouselSlider(
+                  items: controller.offers.map((e) => _offerCardV2(e)).toList(),
+                  options: CarouselOptions(
+                    // aspectRatio: 16 / 8,
+                    viewportFraction: context.isTablet ? 0.5 : 1,
+                    aspectRatio: context.isTablet ? 4 : 0.2,
+                    initialPage: 0,
+                    enableInfiniteScroll: true,
+                    reverse: false,
+                    autoPlay: true,
+                    autoPlayInterval: const Duration(seconds: 4),
+                    autoPlayAnimationDuration:
+                        const Duration(milliseconds: 1000),
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    enlargeCenterPage: true,
+                    scrollDirection: Axis.horizontal,
+                  ),
+                ),
+            ],
+          );
+        });
+  }
+
   Widget _ads(BuildContext context) {
     return Column(
       children: [
-        _offerItem('العروض', Icons.percent, controller.offers, 1),
+        // _offerItem('العروض', Icons.percent, controller.offers, 1),
         _shopItem(
             'متاجر مثبتة', Icons.keyboard_arrow_up, controller.staticAds, 2),
         _shopItem('الاكثر زيارة', Icons.remove_red_eye_outlined,
@@ -292,65 +356,65 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _offerItem(
-      String text, IconData icon, List<OfferModule> list, int crossCount) {
-    double height = crossCount == 1 ? 170.h : (170.h * 2);
+  // Widget _offerItem(
+  //     String text, IconData icon, List<OfferModule> list, int crossCount) {
+  //   double height = crossCount == 1 ? 170.h : (170.h * 2);
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: MataajerTheme.mainColor,
-                  borderRadius: BorderRadius.circular(20.0.r),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 20.sp,
-                  ),
-                ),
-              ),
-              SizedBox(width: 10.w),
-              Text(
-                text,
-                style: TextStyle(
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 5.h),
-        if (list.isNotEmpty)
-          SizedBox(
-            height: height,
-            width: double.infinity,
-            child: GetBuilder<HomeController>(
-                id: 'ads',
-                builder: (_) {
-                  return GridView.count(
-                    crossAxisCount: crossCount,
-                    childAspectRatio: 1.4,
-                    scrollDirection: Axis.horizontal,
-                    children: List.generate(
-                        list.length, (index) => _offerCard(list[index])),
-                  );
-                }),
-          )
-        // else
-        //   Center(
-        //     child: Text('لا يوجد اعلانات'),
-        //   ),
-      ],
-    );
-  }
+  //   return Column(
+  //     children: [
+  //       Padding(
+  //         padding: const EdgeInsets.all(8.0),
+  //         child: Row(
+  //           children: [
+  //             Container(
+  //               decoration: BoxDecoration(
+  //                 color: MataajerTheme.mainColor,
+  //                 borderRadius: BorderRadius.circular(20.0.r),
+  //               ),
+  //               child: Padding(
+  //                 padding: const EdgeInsets.all(5.0),
+  //                 child: Icon(
+  //                   icon,
+  //                   color: Colors.white,
+  //                   size: 20.sp,
+  //                 ),
+  //               ),
+  //             ),
+  //             SizedBox(width: 10.w),
+  //             Text(
+  //               text,
+  //               style: TextStyle(
+  //                 fontSize: 15.sp,
+  //                 fontWeight: FontWeight.w500,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //       SizedBox(height: 5.h),
+  //       if (list.isNotEmpty)
+  //         SizedBox(
+  //           height: height,
+  //           width: double.infinity,
+  //           child: GetBuilder<HomeController>(
+  //               id: 'ads',
+  //               builder: (_) {
+  //                 return GridView.count(
+  //                   crossAxisCount: crossCount,
+  //                   childAspectRatio: 1.4,
+  //                   scrollDirection: Axis.horizontal,
+  //                   children: List.generate(
+  //                       list.length, (index) => _offerCard(list[index])),
+  //                 );
+  //               }),
+  //         )
+  //       // else
+  //       //   Center(
+  //       //     child: Text('لا يوجد اعلانات'),
+  //       //   ),
+  //     ],
+  //   );
+  // }
 
   Widget _search() {
     return TextField(
@@ -549,7 +613,7 @@ class HomeView extends GetView<HomeController> {
         });
   }
 
-  Widget _offerCard(OfferModule offer) {
+  Widget _offerCardV2(OfferModule offer) {
     return GetBuilder<HomeController>(
         id: 'offerCard-${offer.uid}',
         builder: (_) {
@@ -564,97 +628,48 @@ class HomeView extends GetView<HomeController> {
               ),
             );
           }
-          // bool isLoved = controller.favShops.contains(offer);
-          String categoryString = offer.categories.first.name;
           return InkWell(
-            focusColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            onTap: () => Get.dialog(PreviewOfferDialog(offerModule: offer)),
             child: Container(
-              padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
-              margin:
-                  EdgeInsets.only(left: 5.0.sp, right: 5.0.sp, bottom: 10.0.sp),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25.r),
-                // border: Border.all(
-                //   color: MataajerTheme.mainColor,
-                //   width: 1,
-                // ),
-              ),
+              margin: const EdgeInsets.all(15),
+              color: const Color(0xFFF5F5F5),
               child: Stack(
                 children: [
-                  // Positioned(
-                  //   top: 10,
-                  //   left: 5,
-                  //   child: InkWell(
-                  //     focusColor: Colors.transparent,
-                  //     highlightColor: Colors.transparent,
-                  //     hoverColor: Colors.transparent,
-                  //     splashColor: Colors.transparent,
-                  //     onTap: () {
-                  //       controller.updateLoveState(shop);
-                  //       log('loved ${shop.uid}');
-                  //     },
-                  //     child: Icon(
-                  //       Icons.favorite,
-                  //       color: isLoved
-                  //           ? Colors.red.shade600
-                  //           : const Color(0xFFC6C6C6),
-                  //       size: 25.sp,
-                  //     ),
-                  //   ),
-                  // ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(25.r),
+                    child: LoadingImage(src: offer.imageURL),
+                  ),
                   Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          radius: 40.r,
-                          backgroundImage: NetworkImage(offer.imageURL),
-                          backgroundColor: Colors.transparent,
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      height: 35.h,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF5F5F5),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(35.r),
+                          topRight: Radius.circular(35.r),
                         ),
-                        SizedBox(height: 10.h),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Flexible(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    offer.name,
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 13.sp,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                  SizedBox(height: 2.h),
-                                  Text(
-                                    categoryString,
-                                    style: TextStyle(
-                                      color: MataajerTheme.mainColor,
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            offer.name,
+                            style: TextStyle(
+                              color: MataajerTheme.mainColor,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400,
                             ),
-                            SizedBox(width: 5.w),
-                            Icon(
-                              Icons.info_outlined,
-                              color: Colors.grey.shade400,
+                          ),
+                          Text(
+                            offer.offerDescription?.toString() ?? '',
+                            style: TextStyle(
+                              color: MataajerTheme.mainColor,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400,
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -663,6 +678,129 @@ class HomeView extends GetView<HomeController> {
           );
         });
   }
+
+  // Widget _offerCard(OfferModule offer) {
+  //   return GetBuilder<HomeController>(
+  //       id: 'offerCard-${offer.uid}',
+  //       builder: (_) {
+  //         if (controller.adsLoading) {
+  //           return Container(
+  //             decoration: BoxDecoration(
+  //               borderRadius: BorderRadius.circular(25.r),
+  //               image: const DecorationImage(
+  //                 image: AssetImage(Assets.loadingGIF),
+  //                 fit: BoxFit.cover,
+  //               ),
+  //             ),
+  //           );
+  //         }
+  //         // bool isLoved = controller.favShops.contains(offer);
+  //         String categoryString = offer.categories.first.name;
+  //         return InkWell(
+  //           focusColor: Colors.transparent,
+  //           highlightColor: Colors.transparent,
+  //           hoverColor: Colors.transparent,
+  //           splashColor: Colors.transparent,
+  //           onTap: () => Get.dialog(PreviewOfferDialog(offerModule: offer)),
+  //           child: Container(
+  //             padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
+  //             margin:
+  //                 EdgeInsets.only(left: 5.0.sp, right: 5.0.sp, bottom: 10.0.sp),
+  //             decoration: BoxDecoration(
+  //               color: Colors.white,
+  //               borderRadius: BorderRadius.circular(25.r),
+  //               // border: Border.all(
+  //               //   color: MataajerTheme.mainColor,
+  //               //   width: 1,
+  //               // ),
+  //             ),
+  //             child: Stack(
+  //               children: [
+  //                 // Positioned(
+  //                 //   top: 10,
+  //                 //   left: 5,
+  //                 //   child: InkWell(
+  //                 //     focusColor: Colors.transparent,
+  //                 //     highlightColor: Colors.transparent,
+  //                 //     hoverColor: Colors.transparent,
+  //                 //     splashColor: Colors.transparent,
+  //                 //     onTap: () {
+  //                 //       controller.updateLoveState(shop);
+  //                 //       log('loved ${shop.uid}');
+  //                 //     },
+  //                 //     child: Icon(
+  //                 //       Icons.favorite,
+  //                 //       color: isLoved
+  //                 //           ? Colors.red.shade600
+  //                 //           : const Color(0xFFC6C6C6),
+  //                 //       size: 25.sp,
+  //                 //     ),
+  //                 //   ),
+  //                 // ),
+  //                 Align(
+  //                   alignment: Alignment.topLeft,
+  //                   child: Padding(
+  //                     padding: const EdgeInsets.all(12.0),
+  //                     child: Icon(
+  //                       Icons.info_outlined,
+  //                       color: Colors.grey.shade400,
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 Align(
+  //                   alignment: Alignment.center,
+  //                   child: Column(
+  //                     mainAxisSize: MainAxisSize.min,
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     children: [
+  //                       ClipRRect(
+  //                         borderRadius: BorderRadius.circular(25.r),
+  //                         child: CachedNetworkImage(
+  //                           imageUrl: offer.imageURL,
+  //                           height: 100.h,
+  //                           width: 100.w,
+  //                           fit: BoxFit.cover,
+  //                           placeholder: (context, url) => Image.asset(
+  //                             Assets.loadingGIF,
+  //                             fit: BoxFit.cover,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                       SizedBox(height: 10.h),
+  //                       Flexible(
+  //                         child: Column(
+  //                           mainAxisSize: MainAxisSize.min,
+  //                           crossAxisAlignment: CrossAxisAlignment.center,
+  //                           children: [
+  //                             Text(
+  //                               offer.name,
+  //                               style: TextStyle(
+  //                                 color: Colors.black,
+  //                                 fontSize: 13.sp,
+  //                                 fontWeight: FontWeight.w400,
+  //                               ),
+  //                             ),
+  //                             SizedBox(height: 2.h),
+  //                             Text(
+  //                               categoryString,
+  //                               style: TextStyle(
+  //                                 color: MataajerTheme.mainColor,
+  //                                 fontSize: 12.sp,
+  //                                 fontWeight: FontWeight.w400,
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       });
+  // }
 
   AppBar appBar() {
     return AppBar(

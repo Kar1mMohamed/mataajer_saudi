@@ -184,26 +184,23 @@ class AdminUsersView extends GetView<AdminUsersController> {
             obscuringCharacter: '*',
             controller: controller,
             maxLines: height != null ? 10 : 1,
-            decoration: !(imageAssetIcon != null)
-                ? null
-                : InputDecoration(
-                    fillColor: Colors.white,
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Image.asset(imageAssetIcon),
+            decoration: InputDecoration(
+              fillColor: Colors.white,
+              prefixIcon: imageAssetIcon != null
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    ),
-                    suffixIcon: !isPassword
-                        ? null
-                        : InkWell(
-                            onTap: showPasswordTap,
-                            child: Image.asset(Assets.hidePNG)),
-                  ),
+                      child: Image.asset(imageAssetIcon),
+                    )
+                  : null,
+              suffixIcon: !isPassword
+                  ? null
+                  : InkWell(
+                      onTap: showPasswordTap,
+                      child: Image.asset(Assets.hidePNG)),
+            ),
             validator: (string) {
               if (string!.isEmpty) {
                 return 'الرجاء ادخال البيانات';
@@ -447,6 +444,33 @@ class AdminUsersView extends GetView<AdminUsersController> {
                         controller.shopKeyWordsController,
                       ),
                       SizedBox(height: 20.h),
+                      _fieldItem(
+                        'رابط الفيسبوك',
+                        controller.facebookController,
+                      ),
+                      SizedBox(height: 20.h),
+                      _fieldItem(
+                        'رابط الانستقرام',
+                        controller.instagramController,
+                      ),
+                      SizedBox(height: 20.h),
+                      _fieldItem(
+                        'رابط السناب شات',
+                        controller.snapchatController,
+                      ),
+                      SizedBox(height: 20.h),
+                      _fieldItem(
+                        'رابط تويتر',
+                        controller.twitterController,
+                      ),
+                      SizedBox(height: 20.h),
+                      _fieldItem(
+                        'رابط اليوتيوب',
+                        controller.youtubeController,
+                      ),
+                      SizedBox(height: 20.h),
+                      registerIsHasTamaraAndTabby(),
+                      SizedBox(height: 20.h),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -547,6 +571,7 @@ class AdminUsersView extends GetView<AdminUsersController> {
                           ),
                           SizedBox(height: 10.h),
                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 'متوسط سعر الشحن',
@@ -561,19 +586,19 @@ class AdminUsersView extends GetView<AdminUsersController> {
                                 width: 150.w,
                                 padding:
                                     EdgeInsets.symmetric(horizontal: 10.sp),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF5F5F5),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
                                 child: Row(
                                   children: [
                                     Flexible(
                                       child: TextFormField(
+                                        decoration: const InputDecoration(
+                                            fillColor: Colors.white),
                                         inputFormatters: numbersOnlyInputFormat,
                                         controller: controller
                                             .avgShippingPriceController,
+                                        onChanged: (v) {},
                                       ),
                                     ),
+                                    SizedBox(width: 5.w),
                                     const Text('ريال سعودي'),
                                   ],
                                 ),
@@ -608,4 +633,67 @@ class AdminUsersView extends GetView<AdminUsersController> {
         ),
         transitionCurve: Curves.easeInOut,
       );
+
+  Widget registerIsHasTamaraAndTabby() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'هل انت مشترك في احدهم ؟',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13.sp,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        SizedBox(height: 10.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            InkWell(
+              onTap: () {
+                controller.registerIsHasTamara =
+                    !controller.registerIsHasTamara;
+                controller.update();
+              },
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: 100.w,
+                    child: Image.asset(Assets.tamaraARLogo),
+                  ),
+                  Checkbox(
+                      value: controller.registerIsHasTamara,
+                      onChanged: (v) {
+                        controller.registerIsHasTamara = v!;
+                        controller.update();
+                      })
+                ],
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                controller.registerIsHasTabby = !controller.registerIsHasTabby;
+                controller.update();
+              },
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: 100.w,
+                    child: Image.asset(Assets.tabbyLogo),
+                  ),
+                  Checkbox(
+                      value: controller.registerIsHasTabby,
+                      onChanged: (v) {
+                        controller.registerIsHasTabby = v!;
+                        controller.update();
+                      })
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }

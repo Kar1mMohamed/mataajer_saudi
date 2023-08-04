@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/extensions/for_admin.dart';
+import 'package:mataajer_saudi/app/functions/url_launcher.dart';
 
 import '../../../functions/firebase_firestore.dart';
 import '../../../theme/theme.dart';
@@ -143,9 +144,17 @@ class AdminPopupadsView extends GetView<AdminPopupadsController> {
           ),
           Column(
             children: [
-              Text(
-                ad.url ?? '',
-                textAlign: TextAlign.center,
+              InkWell(
+                onTap: () {
+                  if (ad.url != null) {
+                    URLLauncherFuntions.launchURL(ad.url!);
+                  }
+                },
+                child: Text(
+                  ad.url ?? '',
+                  style: const TextStyle(color: Colors.blue),
+                  textAlign: TextAlign.center,
+                ),
               ),
               if (ad.cancelReason != null)
                 Text(

@@ -50,13 +50,13 @@ class HomeController extends GetxController {
       shops.where((element) => element.isOtherAd).toList();
   //
 
-  // List<OfferModule> get _dumpAds => List.generate(
+  // List<ShopModule> get _dumpShops => List.generate(
   //       10,
-  //       (index) => OfferModule(
+  //       (index) => ShopModule(
   //         uid: 'uid$index',
   //         name: 'name$index',
   //         hits: index,
-  //         categoryUIDs: [
+  //         categoriesUIDs: [
   //           if (index > 5) '6jXOqpwqxoaNmisfCY9m',
   //           '6soK9jRZO6S4fdBtB9FM',
   //           if (index.isEven) '9gPMKnAALDoL5vyYdebd',
@@ -65,7 +65,7 @@ class HomeController extends GetxController {
   //           'TZ1qFoDmlzzs1APOmO5f'
   //         ],
   //         description: 'description$index',
-  //         imageURL:
+  //         image:
   //             'https://c8.alamy.com/comp/H3D3H0/small-indian-shop-sells-merchandise-per-single-unit-H3D3H0.jpg',
   //         validTill: DateTime.now().add(Duration(days: index)),
   //       ),
@@ -128,6 +128,8 @@ class HomeController extends GetxController {
     try {
       adsLoading = true;
       update(['all-ads']);
+      updateoffersCarousel();
+
       final offersList = await FirebaseFirestoreHelper.instance.getOffers();
       _offers = offersList;
       log('offers: ${_offers.length}');
@@ -137,6 +139,7 @@ class HomeController extends GetxController {
       offers = _offers;
       adsLoading = false;
       update(['all-ads']);
+      updateoffersCarousel();
     }
   }
 
@@ -177,6 +180,10 @@ class HomeController extends GetxController {
   void updateCategorySelectedIndex(int index) {
     categorySelectedIndex = index;
     update(['categories']);
+  }
+
+  void updateoffersCarousel() {
+    update(['offersCarousel']);
   }
 
   List<CategoryModule> get categoriesList =>

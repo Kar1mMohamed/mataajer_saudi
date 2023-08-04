@@ -47,8 +47,14 @@ class AddOfferView extends GetView<AddOfferController> {
                   _addImage(),
                   SizedBox(height: 30.h),
                   _fieldItem(
-                    'عنوان العرض',
+                    'اسم المنتج',
                     controller.offerName,
+                    height: 50.h,
+                  ),
+                  SizedBox(height: 30.h),
+                  _fieldItem(
+                    'وصف العرض',
+                    controller.offerDescription,
                     height: 50.h,
                   ),
                   SizedBox(height: 30.h),
@@ -309,7 +315,6 @@ class AddOfferView extends GetView<AddOfferController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              height: 50.h,
               padding: EdgeInsets.symmetric(horizontal: 10.w),
               decoration: BoxDecoration(
                 color: Colors.white,

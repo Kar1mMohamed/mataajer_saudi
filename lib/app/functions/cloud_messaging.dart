@@ -172,7 +172,7 @@ class CloudMessaging {
           .doc(userUID)
           .collection('notifications')
           .doc(dateUID)
-          .update({'sent': FieldValue.increment(1)}).onError(
+          .set({'sent': FieldValue.increment(1)}).onError(
         (error, stackTrace) async {
           if (error.toString().contains('not-found')) {
             FirebaseFirestore.instance

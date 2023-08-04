@@ -120,6 +120,11 @@ class ShopLoginAndRegisterController extends GetxController {
 
       log('shopModule: $shopModule');
 
+      if (shopModule.userCategory == 'admin-0') {
+        goHomeForShop(shopModule);
+        return;
+      }
+
       bool isLastSubscriptionExpired = (shopModule.subscriptions ?? []).isEmpty
           ? true
           : ShopModule.isExpired(shopModule.subscriptions!.last.from,
@@ -135,7 +140,7 @@ class ShopLoginAndRegisterController extends GetxController {
       shopModule.token = await user.user!.getIdToken();
       await shopModule.updateShopModule();
 
-      await goHomeForShop(shopModule);
+      goHomeForShop(shopModule);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         KSnackBar.error('لا يوجد حساب مسجل بهذا البريد الالكتروني');
@@ -359,7 +364,7 @@ class ShopLoginAndRegisterController extends GetxController {
     update(['showCategories']);
   }
 
-  Future<void> goHomeForShop(ShopModule shopModule) async {
+  void goHomeForShop(ShopModule shopModule) {
     final currentUser = FirebaseAuth.instance.currentUser;
 
     if (currentUser != null) {
@@ -367,7 +372,7 @@ class ShopLoginAndRegisterController extends GetxController {
       update();
 
       if (shopModule.userCategory != null &&
-          shopModule.userCategory!.contains('admin')) {
+          shopModule.userCategory == 'admin-0') {
         Get.offAndToNamed(Routes.ADMIN_ACTIVE_USERS);
       } else {
         Get.offAndToNamed(Routes.HOME);
@@ -427,7 +432,7 @@ class ShopLoginAndRegisterController extends GetxController {
         await shopModule.updatePrivileges();
         await shopModule.updateValidTill();
       }
-      await goHomeForShop(shopModule);
+      goHomeForShop(shopModule);
     } catch (e) {
       log('automaticLogin error: $e');
     } finally {

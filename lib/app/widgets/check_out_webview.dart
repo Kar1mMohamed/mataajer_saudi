@@ -54,22 +54,23 @@ class _CheckoutWebviewState extends State<CheckoutWebview> {
             child: MataajerTheme.loadingWidget,
           );
         }
-        return Container(
-          color: Colors.white,
-          child: KeyboardSizeProvider(
-            child: Column(
-              children: [
-                Consumer<ScreenHeight>(builder: (context, screenHeight, child) {
-                  return SizedBox(
-                    width: double.infinity,
-                    height: context.height - screenHeight.keyboardHeight,
-                    child: WebViewWidget(
-                      controller: webViewController,
-                      layoutDirection: TextDirection.rtl,
-                    ),
-                  );
-                }),
-              ],
+        return Scaffold(
+          resizeToAvoidBottomInset: true,
+          body: Container(
+            color: Colors.white,
+            child: KeyboardSizeProvider(
+              child: Consumer<ScreenHeight>(
+                  builder: (context, screenHeight, child) {
+                log('keyboardHeight: ${screenHeight.keyboardHeight}');
+                return SizedBox(
+                  width: double.infinity,
+                  height: context.height - screenHeight.keyboardHeight,
+                  child: WebViewWidget(
+                    controller: webViewController,
+                    layoutDirection: TextDirection.rtl,
+                  ),
+                );
+              }),
             ),
           ),
         );

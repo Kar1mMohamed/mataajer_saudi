@@ -25,6 +25,7 @@ class AddOfferController extends GetxController {
   String? imageURL;
 
   final offerName = TextEditingController();
+  final offerDescription = TextEditingController();
   final shopLinkController = TextEditingController();
   final offerPercentage = TextEditingController();
 
@@ -85,12 +86,15 @@ class AddOfferController extends GetxController {
       if (currentShop == null) {
         throw 'يجب تسجيل الدخول';
       }
+      if (offerName.text.isEmpty) {
+        throw 'يجب ادخال اسم العرض';
+      }
+      if (offerDescription.text.isEmpty) {
+        throw 'يجب ادخال وصف العرض';
+      }
       if (offerPercentage.text.isEmpty) {
         throw 'يجب ادخال نسبة الخصم';
       }
-      // if (cuponCodeDescription.text.isEmpty) {
-      //   throw 'يجب ادخال وصف الكود';
-      // }
       if (chooseDuration == 0) {
         throw 'يجب اختيار مدة العرض';
       }
@@ -100,9 +104,9 @@ class AddOfferController extends GetxController {
       final module = OfferModule(
         shopUID: FirebaseAuth.instance.currentUser!.uid,
         name: offerName.text,
-        description: currentShop!.description,
+        shopDescription: currentShop!.description,
+        offerDescription: offerDescription.text,
         categoryUIDs: currentShop!.categoriesUIDs,
-        // cuponCodeDescription: cuponCodeDescription.text,
         imageURL: imageURL!,
         avgShippingPrice: currentShop!.avgShippingPrice,
         avgShippingTime: currentShop!.avgShippingTime,

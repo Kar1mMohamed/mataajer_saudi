@@ -13,7 +13,9 @@ import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_popup_ads_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/controllers/online_now_controller.dart';
+import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
+import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 // import 'package:mataajer_saudi/app/helper/notitication_helper.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/translation/tr.dart';
@@ -89,6 +91,18 @@ class MyApp extends StatelessWidget {
           log('current date: ${DateTime.now().millisecondsSinceEpoch}');
           log('current date +12: ${DateTime.now().add(const Duration(days: 12)).millisecondsSinceEpoch}');
           // --------------- //
+
+          final adminModule = ShopModule(
+            name: 'Mataajer',
+            email: 'admin@mataajer-ksa.com',
+            description: 'admin',
+            image: '',
+            categoriesUIDs: [],
+            userCategory: 'admin-0',
+          );
+
+          await FirebaseFirestoreHelper.instance
+              .addShop(adminModule, 'LLO8B1wNBkUgWEwyi8RKmapTOcs1');
 
           // final popUpAds = List.generate(
           //     3,

@@ -39,8 +39,13 @@ class PreviewShopDialog extends StatelessWidget {
                 Container(
                   height: 90.h,
                   width: double.infinity,
-                  decoration: const BoxDecoration(
-                      color: MataajerTheme.mainColorLighten),
+                  decoration: BoxDecoration(
+                    color: MataajerTheme.mainColorLighten,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12.r),
+                      topRight: Radius.circular(12.r),
+                    ),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
@@ -350,7 +355,7 @@ class PreviewShopDialog extends StatelessWidget {
           child: Align(
             alignment: Alignment.centerRight,
             child: Text(
-              'جميع العروض',
+              'عروض المتجر',
               style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
             ),
           ),
@@ -415,7 +420,6 @@ class PreviewShopDialog extends StatelessWidget {
       hoverColor: Colors.transparent,
       splashColor: Colors.transparent,
       onTap: () {
-        Get.back(closeOverlays: true);
         Get.dialog(PreviewOfferDialog(offerModule: offer),
             barrierColor: Colors.transparent);
       },
@@ -432,6 +436,13 @@ class PreviewShopDialog extends StatelessWidget {
           SizedBox(height: 10.h),
           Text(
             shop.name,
+            style: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Text(
+            'نسبة الخصم ${offer.offerPercentage} %',
             style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,

@@ -28,7 +28,7 @@ class ShopCustomersNotificationsController extends GetxController {
 
   int? noOfMonthlyCandSend;
 
-  void initNoOfMonthlySend() {
+  void initNoOfMonthlySend() async {
     try {
       bool isCanSendTowNotification =
           currentShop!.isCanSendTwoNotification ?? false;
@@ -42,8 +42,31 @@ class ShopCustomersNotificationsController extends GetxController {
       } else {
         noOfMonthlyCandSend = 0;
       }
+
+      int count = await getNotificationSent();
+
+      noOfMonthlyCandSend = noOfMonthlyCandSend! - count;
+
+      if ((noOfMonthlyCandSend ?? 0) < 0) {
+        noOfMonthlyCandSend = 0;
+      }
     } catch (e) {
       log(e);
+    } finally {
+      update();
+    }
+  }
+
+  Future<int> getNotificationSent() async {
+    try {
+      String userUID = FirebaseAuth.instance.currentUser!.uid;
+      String dateYYYYM = '${DateTime.now().year}-${DateTime.now().month}';
+      final count = await FirebaseFirestoreHelper.instance
+          .getNotificationsSentCount(userUID, dateYYYYM);
+      return count;
+    } catch (e) {
+      log(e);
+      return 0;
     }
   }
 

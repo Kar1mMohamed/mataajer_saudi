@@ -6,6 +6,7 @@ import 'package:mataajer_saudi/app/data/constants.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
+import 'package:mataajer_saudi/app/data/modules/social_media_links.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_auth.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
@@ -43,6 +44,16 @@ class AdminUsersController extends GetxController {
   int? shippingTo;
 
   bool showCategories = false;
+
+  final facebookController = TextEditingController();
+  final twitterController = TextEditingController();
+  final instagramController = TextEditingController();
+  final snapchatController = TextEditingController();
+  final youtubeController = TextEditingController();
+  final tiktokController = TextEditingController();
+
+  bool registerIsHasTamara = false;
+  bool registerIsHasTabby = false;
 
   void updateShopCard(int index) {
     update(['shop-card-$index']);
@@ -112,6 +123,8 @@ class AdminUsersController extends GetxController {
 
       await userCredential.user!.sendEmailVerification();
 
+      final shopsCount = await FirebaseFirestoreHelper.instance.getShopsCount();
+
       final shopModule = ShopModule(
         name: shopNameController.text,
         email: emailController.text,
@@ -126,6 +139,19 @@ class AdminUsersController extends GetxController {
         keywords: shopKeyWordsController.text.split(','),
         shopLink: shopLinkController.text,
         token: await userCredential.user!.getIdToken(),
+        isHasTamara: registerIsHasTamara,
+        isHasTabby: registerIsHasTabby,
+        shopNumber: shopsCount + 1,
+        isVisible: true,
+        validTill: DateTime.now().add(Duration(days: 365)),
+        socialMediaLinks: SocialMediaLinks(
+          facebook: facebookController.text,
+          twitter: twitterController.text,
+          instagram: instagramController.text,
+          snapchat: snapchatController.text,
+          youtube: youtubeController.text,
+          tiktok: tiktokController.text,
+        ),
       );
 
       registerFirebaseApp.delete(); // Delete temporary firebase app

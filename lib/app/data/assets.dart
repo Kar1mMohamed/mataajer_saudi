@@ -16,6 +16,7 @@ abstract class Assets {
   static const String bigLoveIcon = 'assets/png/bigLoveIcon.png';
   static const String allIcon = 'assets/png/allIcon.png';
   static const String homeBanner = 'assets/images/homeBanner.png';
+  static const String homeBannerNew = 'assets/images/homeBanner_new.jpg';
   static const String loginRegisterImage =
       'assets/images/loginRegisterImage.png';
   static const String emailPNG = 'assets/images/email.png';
