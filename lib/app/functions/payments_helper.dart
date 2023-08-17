@@ -19,7 +19,7 @@ abstract class PaymentsHelper {
   // static String get authToken => Sys.isDebug ? _debugAuthToken : _liveAuthToken;
   // static int get profileId => Sys.isDebug ? _debugProfileId : _liveProfileId;
 
-  static String get authToken => _debugAuthToken;
+  static String get authToken => _liveAuthToken;
   // _debugAuthToken;
 
   // static CustomerDetails get staticAddress => CustomerDetails(

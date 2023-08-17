@@ -143,7 +143,7 @@ class AdminUsersController extends GetxController {
         isHasTabby: registerIsHasTabby,
         shopNumber: shopsCount + 1,
         isVisible: true,
-        validTill: DateTime.now().add(Duration(days: 365)),
+        validTill: DateTime.now().add(const Duration(days: 365)),
         socialMediaLinks: SocialMediaLinks(
           facebook: facebookController.text,
           twitter: twitterController.text,

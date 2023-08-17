@@ -122,7 +122,7 @@ class PreviewOfferDialog extends StatelessWidget {
                       ),
                       SizedBox(height: 5.0.h),
                       Text(
-                        '${offerModule.name}',
+                        offerModule.name,
                         style: TextStyle(
                           color: Colors.black.withOpacity(0.7),
                           fontSize: 15.sp,

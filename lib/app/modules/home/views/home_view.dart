@@ -261,7 +261,7 @@ class HomeView extends GetView<HomeController> {
                   options: CarouselOptions(
                     // aspectRatio: 16 / 8,
                     viewportFraction: context.isTablet ? 0.5 : 1,
-                    aspectRatio: context.isTablet ? 4 : 0.2,
+                    aspectRatio: context.isTablet ? 4 : 1,
                     initialPage: 0,
                     enableInfiniteScroll: true,
                     reverse: false,

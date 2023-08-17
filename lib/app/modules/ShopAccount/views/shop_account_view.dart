@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
+import 'package:mataajer_saudi/app/utils/custom_snackbar.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
@@ -251,6 +252,14 @@ class ShopAccountView extends GetView<ShopAccountController> {
                 ),
                 SizedBox(height: 20.h),
                 isHasTamaraAndTabby(),
+                SizedBox(height: 20.h),
+                TextButton(
+                    onPressed: () async {
+                      await Future.delayed(const Duration(seconds: 2));
+                      CustomSnackBar.success(
+                          'تم ارسال طلبك بنجاح ستتم مراجعته و حذف حسابك خلال 24 ساعة');
+                    },
+                    child: const Text('طلب حذف الحساب')),
                 SizedBox(height: 20.h),
                 RoundedButton(
                   text: 'حفظ',

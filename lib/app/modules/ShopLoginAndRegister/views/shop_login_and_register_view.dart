@@ -371,11 +371,12 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
   Widget regitserImage() {
     if (controller.shopImageURL == null) {
       return Container(
-        height: 120,
-        width: 120,
+        height: 120.h,
+        width: 120.w,
         decoration: BoxDecoration(
           color: MataajerTheme.mainBackgroundColor,
-          borderRadius: BorderRadius.circular(360),
+          // borderRadius: BorderRadius.circular(360),
+          shape: BoxShape.circle,
           border: Border.all(color: const Color(0xFFA9A9A9), width: 1),
         ),
         child: InkWell(
