@@ -14,7 +14,7 @@ class SplashController extends GetxController {
     try {
       updateLoading();
 
-      await FirebaseAuth.instance.setLanguageCode('ar');
+      FirebaseAuth.instance.setLanguageCode('ar');
       await mainSettingsController.getCategories();
       await mainSettingsController.getSubscriptions();
       Get.offAllNamed(Routes.ON_BARDING); // REAL INITAL ROUTE

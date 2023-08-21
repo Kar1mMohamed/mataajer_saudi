@@ -30,10 +30,13 @@ class ShopLoginAndRegisterController extends GetxController {
   bool get isNavigateToRegister =>
       Get.arguments?['isNavigateToRegister'] ?? false;
 
-  final mainSettingsController = Get.find<MainSettingsController>();
+  MainSettingsController get mainSettingsController =>
+      Get.find<MainSettingsController>();
 
   List<double> get pricesFromSubscriptions =>
-      mainSettingsController.subscriptions.map((e) => e.yearlyPrice!).toList();
+      mainSettingsController.subscriptions
+          .map((e) => e.yearlyPrice ?? 0)
+          .toList();
 
   final pageController = PageController();
   int pageIndex = 0;

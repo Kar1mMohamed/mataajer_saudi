@@ -36,7 +36,7 @@ class MainSettingsController extends GetxController {
 
   Future<void> getSubscriptions() async {
     try {
-      subscriptions = await FirebaseFirestore.instance
+      var subscriptions = await FirebaseFirestore.instance
           .collection('subscriptions')
           .get()
           .then((value) {
@@ -45,9 +45,13 @@ class MainSettingsController extends GetxController {
             .toList();
       });
 
+      this.subscriptions = subscriptions;
+
       log('subscriptions: $subscriptions');
     } catch (e) {
       log(e);
+    } finally {
+      update();
     }
   }
 

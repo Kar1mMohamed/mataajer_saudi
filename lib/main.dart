@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -21,6 +22,7 @@ import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/translation/tr.dart';
 import 'app/controllers/app_life_cycle_controller.dart';
 import 'app/data/constants.dart';
+import 'app/data/modules/category_module.dart';
 import 'app/routes/app_pages.dart';
 import 'database/helper/hive_helper.dart';
 import 'firebase_options.dart';
@@ -92,17 +94,122 @@ class MyApp extends StatelessWidget {
           log('current date +12: ${DateTime.now().add(const Duration(days: 12)).millisecondsSinceEpoch}');
           // --------------- //
 
-          final adminModule = ShopModule(
-            name: 'Mataajer',
-            email: 'admin@mataajer-ksa.com',
-            description: 'admin',
-            image: '',
-            categoriesUIDs: [],
-            userCategory: 'admin-0',
-          );
+          // var list = [
+          //   // "الكترونيات (6)",
+          //   "الهواتف الذكية ومستلزماتها",
+          //   "الكمبيوترات والأجهزة المحمولة وملحقاتها",
+          //   "الكاميرات الرقمية وملحقاتها",
+          //   "التلفزيونات",
+          //   "السماعات",
+          //   "الاجهزة المنزلية",
+          //   // "مستلزمات المنزل (3)",
+          //   "حدائق ونباتات",
+          //   "اثاث",
+          //   "مواد بناء",
+          //   // "ازياء (7)",
+          //   "ازياء نسائية",
+          //   "ازياء اطفال",
+          //   "عبايات",
+          //   "جوارب",
+          //   "ازياء رجالية",
+          //   "الأحذية",
+          //   "الثياب والأشمغة",
+          //   // "مجوهرات (1)",
+          //   "مجوهرات",
+          //   // "مستحضرات التجميل والعناية (6)",
+          //   "مكياج",
+          //   "عدسات",
+          //   "العناية الشخصية",
+          //   "رموش",
+          //   "عطور",
+          //   "العود والبخور",
+          //   // "الاكسسوارات و الهدايا (6)",
+          //   "نظارات",
+          //   "ساعات",
+          //   "محافظ",
+          //   "ورد",
+          //   "التوزيعات",
+          //   "البروشات والملصقات",
+          //   // "الفنون والموسيقى (3)",
+          //   "لوح فنية",
+          //   "الحرف والاعمال اليدوية",
+          //   "الادوات الموسيقية",
+          //   // "الكتب والتعليم (5)",
+          //   "الكتب والروايات",
+          //   "قرطاسية",
+          //   "الدورات التعليمية",
+          //   "قصص مصورة / مانجا",
+          //   "موارد مكتبية",
+          //   // "خدمات (5)",
+          //   "التصميم والطباعة",
+          //   "السفر والسياحة والحجوزات",
+          //   "الاستشارات",
+          //   "التصوير",
+          //   "صيانة الاجهزة",
+          //   // "صحة ولياقة (4)",
+          //   "مكملات غذائية",
+          //   "أطعمة ومنتجات صحية",
+          //   "اجهزة ومستلزمات رياضية",
+          //   "صيدلية",
+          //   // "المطاعم والمقاهي (4)",
+          //   "فودترك",
+          //   "مطعم",
+          //   "مقهى",
+          //   "مكائن القهوة ومستلزماتها",
+          //   // "أغذية وتموينات (6)",
+          //   "أغذية مبردة",
+          //   "مشروبات",
+          //   "مستلزمات غذائية",
+          //   "عسل",
+          //   "تمور",
+          //   "حلويات",
+          //   // "حيوانات (3)",
+          //   "حيوانات اليفة",
+          //   "أطعمة حيوانات",
+          //   "مسلتزمات حيوانات",
+          //   // "سيارات (1)",
+          //   "سيارات",
+          //   // "منتجات رقمية (5)",
+          //   "بطائق رقمية",
+          //   "رخص برامج/العاب",
+          //   "أفلام ومسلسلات",
+          //   "العاب الفيديو",
+          //   "اشتراكات",
+          //   // "جمعية خيرية (4)",
+          //   "تبرعات",
+          //   "الصدقة والزكاة",
+          //   "الدعوة والإرشاد",
+          //   "كفالة الايتام",
+          //   // "العاب (4)",
+          //   "العاب الاطفال",
+          //   "العاب الطاولة",
+          //   "العاب الحدائق",
+          //   "مجسمات"
+          // ];
 
-          await FirebaseFirestoreHelper.instance
-              .addShop(adminModule, 'LLO8B1wNBkUgWEwyi8RKmapTOcs1');
+          // var categoryModules = list
+          //     .map((e) => CategoryModule(
+          //           name: e,
+          //         ))
+          //     .toList();
+
+          // for (var category in categoryModules) {
+          //   await FirebaseFirestore.instance
+          //       .collection('categories')
+          //       .add(category.toMap());
+          // }
+
+          // final adminModule = ShopModule(
+          //   name: 'Mataajer',
+          //   email: 'admin@mataajer-ksa.com',
+          //   description: 'admin',
+          //   image: '',
+          //   categoriesUIDs: [],
+          //   userCategory: 'admin-0',
+          // );
+
+          // await FirebaseFirestoreHelper.instance
+          //     .addShop(adminModule, 'LLO8B1wNBkUgWEwyi8RKmapTOcs1');
 
           // final popUpAds = List.generate(
           //     3,
@@ -211,14 +318,17 @@ class MyApp extends StatelessWidget {
 class _InitialBindings extends Bindings {
   @override
   void dependencies() {
-    Get.put<OnlineNowController>(OnlineNowController(), permanent: true);
-    Get.put<AppLifeCylceController>(AppLifeCylceController(), permanent: true);
+    Get.lazyPut<OnlineNowController>(() => OnlineNowController(), fenix: true);
+    Get.lazyPut<AppLifeCylceController>(() => AppLifeCylceController(),
+        fenix: true);
     Get.put<MainSettingsController>(MainSettingsController(), permanent: true);
-    Get.put<MainPermisionsController>(MainPermisionsController(),
-        permanent: true);
-    Get.put<MainAccountController>(MainAccountController(), permanent: true);
-    Get.put<MainPopupAdsController>(MainPopupAdsController(), permanent: true);
-    Get.put<MainNotificationController>(MainNotificationController(),
-        permanent: true);
+    Get.lazyPut<MainPermisionsController>(() => MainPermisionsController(),
+        fenix: true);
+    Get.lazyPut<MainAccountController>(() => MainAccountController(),
+        fenix: true);
+    Get.lazyPut<MainPopupAdsController>(() => MainPopupAdsController(),
+        fenix: true);
+    Get.lazyPut<MainNotificationController>(() => MainNotificationController(),
+        fenix: true);
   }
 }
