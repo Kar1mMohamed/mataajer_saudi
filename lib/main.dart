@@ -14,6 +14,7 @@ import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_popup_ads_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/controllers/online_now_controller.dart';
+import 'package:mataajer_saudi/app/data/modules/banner.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
@@ -93,6 +94,20 @@ class MyApp extends StatelessWidget {
           log('current date: ${DateTime.now().millisecondsSinceEpoch}');
           log('current date +12: ${DateTime.now().add(const Duration(days: 12)).millisecondsSinceEpoch}');
           // --------------- //
+
+          // var banner = BannerModule(
+          //   title: 'Vision',
+          //   image:
+          //       'https://firebasestorage.googleapis.com/v0/b/mataajer-saudi.appspot.com/o/homeBanner_new.jpg?alt=media&token=c3f42bee-1f60-4d98-9bdd-576986667482',
+          //   url: 'https://www.vision-log.com/',
+          // );
+
+          // await FirebaseFirestore.instance
+          //     .collection('app')
+          //     .doc('home_view')
+          //     .update({
+          //   'banners': [banner.toMap()]
+          // });
 
           // var list = [
           //   // "الكترونيات (6)",

@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 class URLLauncherFuntions {
   URLLauncherFuntions._();
 
-  static Future<void> launchURL(String url) async {
+  static Future<void> launchURL(String? url) async {
     // log('URL: $url ,isURL: ${url.isURL}');
     // if (!url.isURL) {
     //   return;
@@ -19,6 +19,8 @@ class URLLauncherFuntions {
     // } else {
     //   throw 'Could not launch $url';
     // }
+
+    if (url == null) return;
 
     if (url.isEmpty) {
       return;

@@ -14,6 +14,7 @@ class SplashController extends GetxController {
     try {
       updateLoading();
 
+      await mainSettingsController.getAdmins();
       FirebaseAuth.instance.setLanguageCode('ar');
       await mainSettingsController.getCategories();
       await mainSettingsController.getSubscriptions();

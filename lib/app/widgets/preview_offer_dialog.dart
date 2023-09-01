@@ -67,12 +67,15 @@ class PreviewOfferDialog extends StatelessWidget {
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              offerModule.name,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w400,
+                            Flexible(
+                              child: Text(
+                                offerModule.name.trim(),
+                                style: TextStyle(
+                                  overflow: TextOverflow.ellipsis,
+                                  color: Colors.white,
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
                             ),
                             Text(
@@ -122,8 +125,10 @@ class PreviewOfferDialog extends StatelessWidget {
                       ),
                       SizedBox(height: 5.0.h),
                       Text(
-                        offerModule.name,
+                        offerModule.name.trim(),
+                        maxLines: 1,
                         style: TextStyle(
+                          overflow: TextOverflow.ellipsis,
                           color: Colors.black.withOpacity(0.7),
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w500,

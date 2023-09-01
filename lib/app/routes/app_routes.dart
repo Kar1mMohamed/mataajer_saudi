@@ -28,6 +28,7 @@ abstract class Routes {
   static const ADMIN_INVOICES = _Paths.ADMIN_INVOICES;
   static const ADMIN_INVOICES_DETAILS = _Paths.ADMIN_INVOICES_DETAILS;
   static const ADMIN_POPUPADS = _Paths.ADMIN_POPUPADS;
+  static const ALL_OFFERS = _Paths.ALL_OFFERS;
 }
 
 abstract class _Paths {
@@ -54,4 +55,5 @@ abstract class _Paths {
   static const ADMIN_INVOICES = '/admin-invoices';
   static const ADMIN_INVOICES_DETAILS = '/admin-invoices-details';
   static const ADMIN_POPUPADS = '/admin-popupads';
+  static const ALL_OFFERS = '/all-offers';
 }

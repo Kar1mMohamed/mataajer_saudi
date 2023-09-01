@@ -53,7 +53,7 @@ class AddOfferView extends GetView<AddOfferController> {
                   ),
                   SizedBox(height: 30.h),
                   _fieldItem(
-                    'وصف العرض',
+                    'وصف المنتج',
                     controller.offerDescription,
                     height: 50.h,
                   ),

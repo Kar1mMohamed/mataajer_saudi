@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 
 extension ForAdmin on Widget {
   Widget get forAdmin {
@@ -8,8 +10,8 @@ extension ForAdmin on Widget {
       return const Scaffold(
           body: Center(child: Text('ليس لديك صلاحية للوصول هنا')));
     }
-    if (currentUser.uid == '0zapKo4rAjhMxC9GFwChmYxKOP23' ||
-        currentUser.uid == 't8scmFWTBjhk4srk3bcTTRfw4fM2') {
+    var admins = Get.find<MainSettingsController>().admins;
+    if (admins.contains(currentUser.uid)) {
       return this;
     }
 

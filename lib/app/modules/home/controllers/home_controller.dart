@@ -5,6 +5,7 @@ import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_notification_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/controllers/online_now_controller.dart';
+import 'package:mataajer_saudi/app/data/modules/banner.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
@@ -48,6 +49,9 @@ class HomeController extends GetxController {
 
   List<ShopModule> get others =>
       shops.where((element) => element.isOtherAd).toList();
+
+  List<BannerModule> homeBanners = [];
+
   //
 
   // List<ShopModule> get _dumpShops => List.generate(
@@ -276,6 +280,7 @@ class HomeController extends GetxController {
     }
     await getShops();
     await getOffers();
+    await getHomeBanners();
 
     Get.find<MainNotificationController>().getNotificationsCount();
 
@@ -285,6 +290,26 @@ class HomeController extends GetxController {
 
     isHomeFullyInitilized = true;
     update();
+  }
+
+  Future<void> getHomeBanners() async {
+    loading = true;
+    updateHomeBanners();
+    try {
+      var banners = await FirebaseFirestoreHelper.instance.getHomeBanners();
+      homeBanners = banners;
+
+      log('got home banners: ${homeBanners.length}');
+    } catch (e) {
+      log(e);
+    } finally {
+      loading = false;
+      updateHomeBanners();
+    }
+  }
+
+  void updateHomeBanners() {
+    update(['homeBanners']);
   }
 
   @override

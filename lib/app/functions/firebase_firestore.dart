@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
+import 'package:mataajer_saudi/app/data/modules/banner.dart';
 import 'package:mataajer_saudi/app/data/modules/invoice_module.dart';
 import 'package:mataajer_saudi/app/data/modules/offer_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
@@ -15,6 +16,25 @@ class FirebaseFirestoreHelper {
   FirebaseFirestoreHelper._();
 
   static FirebaseFirestoreHelper instance = FirebaseFirestoreHelper._();
+
+  // getHomeBanners
+  Future<List<BannerModule>> getHomeBanners() async {
+    try {
+      final banners = await FirebaseFirestore.instance
+          .collection('app')
+          .doc('home_view')
+          .get()
+          .then((value) {
+        var list = value.data()?['banners'] as List;
+        return list.map((e) => BannerModule.fromMap(e)).toList();
+      });
+
+      return banners;
+    } catch (e) {
+      log(e);
+      rethrow;
+    }
+  }
 
   Future<void> addShop(ShopModule shopModule, String userUID) async {
     try {

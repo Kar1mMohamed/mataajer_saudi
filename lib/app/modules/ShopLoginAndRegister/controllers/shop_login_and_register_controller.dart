@@ -457,8 +457,10 @@ class ShopLoginAndRegisterController extends GetxController {
     }
 
     if (isNavigateToRegister) {
-      await Future.delayed(const Duration(milliseconds: 50));
-      changePageIndex(1);
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await Future.delayed(const Duration(milliseconds: 100));
+        changePageIndex(1);
+      });
     }
 
     if (kDebugMode) {

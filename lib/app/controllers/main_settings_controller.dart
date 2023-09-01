@@ -15,6 +15,8 @@ class MainSettingsController extends GetxController {
 
   bool get isSignedIn => FirebaseAuth.instance.currentUser != null;
 
+  List<String> admins = [];
+
   // bool? loginRememberMe;
 
   Future<void> getCategories() async {
@@ -52,6 +54,22 @@ class MainSettingsController extends GetxController {
       log(e);
     } finally {
       update();
+    }
+  }
+
+  Future<void> getAdmins() async {
+    try {
+      var admins = await FirebaseFirestore.instance
+          .collection('settings')
+          .doc('app')
+          .get()
+          .then((value) => value.data()?['admins'] as List<dynamic>);
+
+      this.admins = admins.map((e) => e.toString()).toList();
+
+      log('admins: $admins');
+    } catch (e) {
+      log('getAdmins: $e');
     }
   }
 

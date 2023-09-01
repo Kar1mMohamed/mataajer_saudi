@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 
 import '../modules/AddAd/bindings/add_ad_binding.dart';
 import '../modules/AddAd/views/add_ad_view.dart';
+import '../modules/AllOffers/bindings/all_offers_binding.dart';
+import '../modules/AllOffers/views/all_offers_view.dart';
 import '../modules/ChooseSubscription/bindings/choose_subscription_binding.dart';
 import '../modules/ChooseSubscription/views/choose_subscription_view.dart';
 import '../modules/OnBoarding/bindings/on_boarding_binding.dart';
@@ -159,6 +161,11 @@ class AppPages {
       name: _Paths.ADMIN_POPUPADS,
       page: () => const AdminPopupadsView(),
       binding: AdminPopupadsBinding(),
+    ),
+    GetPage(
+      name: _Paths.ALL_OFFERS,
+      page: () => const AllOffersView(),
+      binding: AllOffersBinding(),
     ),
   ];
 }
