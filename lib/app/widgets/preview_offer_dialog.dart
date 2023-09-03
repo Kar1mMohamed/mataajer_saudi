@@ -417,17 +417,19 @@ class PreviewOfferDialog extends StatelessWidget {
           CircleAvatar(
             radius: 40.r,
             backgroundImage: NetworkImage(
-              offerModule.imageURL,
+              ad.imageURL,
               // height: 75,
               // width: 75,
             ),
           ),
           SizedBox(height: 10.h),
-          Text(
-            offerModule.name,
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w500,
+          Flexible(
+            child: Text(
+              ad.name.trim(),
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],

@@ -28,6 +28,8 @@ class AddOfferController extends GetxController {
   final offerDescription = TextEditingController();
   final shopLinkController = TextEditingController();
   final offerPercentage = TextEditingController();
+  final beforePrice = TextEditingController();
+  final afterPrice = TextEditingController();
 
   List<OfferModule> offers = [];
 
@@ -95,11 +97,19 @@ class AddOfferController extends GetxController {
       if (offerPercentage.text.isEmpty) {
         throw 'يجب ادخال نسبة الخصم';
       }
+      if (beforePrice.text.isEmpty) {
+        throw 'يجب ادخال السعر قبل الخصم';
+      }
+      if (afterPrice.text.isEmpty) {
+        throw 'يجب ادخال السعر بعد الخصم';
+      }
       if (chooseDuration == 0) {
         throw 'يجب اختيار مدة العرض';
       }
       loading = true;
       update();
+
+      await currentShop?.updateValidTill();
 
       final module = OfferModule(
         shopUID: FirebaseAuth.instance.currentUser!.uid,
@@ -116,6 +126,8 @@ class AddOfferController extends GetxController {
         toDate: DateTime.now().add(Duration(days: chooseDuration)),
         isVisible: true,
         offerLink: shopLinkController.text,
+        priceBefore: double.tryParse(beforePrice.text),
+        priceAfter: double.tryParse(afterPrice.text),
       );
 
       await FirebaseFirestoreHelper.instance.addOffer(module);

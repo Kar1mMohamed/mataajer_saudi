@@ -71,6 +71,23 @@ class AddOfferView extends GetView<AddOfferController> {
                     isNumbersOnly: true,
                   ),
                   SizedBox(height: 30.h),
+
+                  _fieldItem(
+                    'السعر الاصلي',
+                    controller.beforePrice,
+                    height: 50.h,
+                    isNumbersOnly: true,
+                  ),
+                  SizedBox(height: 30.h),
+
+                  _fieldItem(
+                    'السعر بعد الخصم',
+                    controller.afterPrice,
+                    height: 50.h,
+                    isNumbersOnly: true,
+                  ),
+                  SizedBox(height: 30.h),
+
                   // _fieldItem(
                   //   'تفاصيل الخصم',
                   //   controller.cuponCodeDescription,

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/modules/offer_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/modules/home/controllers/home_controller.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
 
 class PreviewOfferDialogController extends GetxController {
   final OfferModule offerModule;
@@ -30,6 +31,7 @@ class PreviewOfferDialogController extends GetxController {
   @override
   void onInit() {
     addView();
+    log('PreviewOfferDialogController initialized for uid: ${offerModule.name}');
     super.onInit();
   }
 }

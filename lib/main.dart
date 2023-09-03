@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -14,16 +13,12 @@ import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_popup_ads_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/controllers/online_now_controller.dart';
-import 'package:mataajer_saudi/app/data/modules/banner.dart';
-import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
-import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 // import 'package:mataajer_saudi/app/helper/notitication_helper.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/translation/tr.dart';
 import 'app/controllers/app_life_cycle_controller.dart';
 import 'app/data/constants.dart';
-import 'app/data/modules/category_module.dart';
 import 'app/routes/app_pages.dart';
 import 'database/helper/hive_helper.dart';
 import 'firebase_options.dart';
@@ -52,7 +47,7 @@ void main() async {
     androidProvider: Constants.isDebug
         ? AndroidProvider.debug
         : AndroidProvider.playIntegrity,
-    appleProvider: AppleProvider.appAttest,
+    appleProvider: AppleProvider.deviceCheck,
   );
   // FirebaseFirestore.setLoggingEnabled(false);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -94,6 +89,58 @@ class MyApp extends StatelessWidget {
           log('current date: ${DateTime.now().millisecondsSinceEpoch}');
           log('current date +12: ${DateTime.now().add(const Duration(days: 12)).millisecondsSinceEpoch}');
           // --------------- //
+
+          // var allOffers =
+          //     await FirebaseFirestoreHelper.instance.getOffers(forAdmin: true);
+          // var allCategories = Get.find<MainSettingsController>().mainCategories;
+
+          // var batch = FirebaseFirestore.instance.batch();
+
+          // for (var offer in allOffers) {
+          //   var randomCategory =
+          //       allCategories[math.Random().nextInt(allCategories.length)];
+
+          //   offer.categoryUIDs = [randomCategory.uid!];
+
+          //   log('updating offer: ${offer.uid} with category: ${randomCategory.name}');
+
+          //   batch.update(
+          //       FirebaseFirestore.instance.collection('offers').doc(offer.uid),
+          //       offer.toMap());
+          // }
+
+          // await batch.commit();
+
+          // MainSettingsController mainSettings =
+          //     Get.find<MainSettingsController>();
+          // var allCategories = await mainSettings.getCategories();
+          // var allSubscriptions = await mainSettings.getSubscriptions();
+          // var allAdmins = await mainSettings.getAdmins();
+          // var appSettings = AppSettings(
+          //     categories: allCategories,
+          //     subscriptions: allSubscriptions,
+          //     admins: allAdmins);
+
+          // log('appSettings: ${appSettings.toJson()}');
+
+          // await FirebaseFirestoreHelper.instance.setAppSettings(appSettings);
+          // final offer = await FirebaseFirestoreHelper.instance
+          //     .getOffers()
+          //     .then((value) => value.first);
+
+          // List<OfferModule> newoffers = [];
+          // var allCategories =
+          //     await Get.find<MainSettingsController>().getCategories();
+          // for (var category in allCategories) {
+          //   var newOffer = offer.copyWith(
+          //     categoryUIDs: [category.uid!],
+          //   );
+          //   newoffers.add(newOffer);
+          // }
+
+          // for (var offer in newoffers) {
+          //   await FirebaseFirestoreHelper.instance.addOffer(offer);
+          // }
 
           // var banner = BannerModule(
           //   title: 'Vision',

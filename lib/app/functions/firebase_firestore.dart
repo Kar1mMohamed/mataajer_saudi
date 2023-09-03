@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:mataajer_saudi/app/data/app/app_settings.dart';
 import 'package:mataajer_saudi/app/data/modules/ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/banner.dart';
 import 'package:mataajer_saudi/app/data/modules/invoice_module.dart';
@@ -16,6 +17,17 @@ class FirebaseFirestoreHelper {
   FirebaseFirestoreHelper._();
 
   static FirebaseFirestoreHelper instance = FirebaseFirestoreHelper._();
+
+  Future<void> setAppSettings(AppSettings appSettings) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('settings')
+          .doc('app')
+          .set(appSettings.toMap());
+    } catch (e) {
+      print(e);
+    }
+  }
 
   // getHomeBanners
   Future<List<BannerModule>> getHomeBanners() async {
@@ -47,7 +59,8 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<ShopModule> getShopModule(String uid, {bool? getSubscriptions}) async {
+  Future<ShopModule> getShopModule(String uid,
+      {bool? getSubscriptions = true}) async {
     try {
       final profile = await FirebaseFirestore.instance
           .collection('shops')

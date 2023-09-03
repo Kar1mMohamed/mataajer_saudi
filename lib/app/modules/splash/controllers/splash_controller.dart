@@ -14,14 +14,16 @@ class SplashController extends GetxController {
     try {
       updateLoading();
 
-      await mainSettingsController.getAdmins();
+      // await mainSettingsController.getAdmins();
+      // await mainSettingsController.getCategories();
+      // await mainSettingsController.getSubscriptions();
       FirebaseAuth.instance.setLanguageCode('ar');
-      await mainSettingsController.getCategories();
-      await mainSettingsController.getSubscriptions();
+      await mainSettingsController.getAppSettings();
+
       Get.offAllNamed(Routes.ON_BARDING); // REAL INITAL ROUTE
     } catch (e) {
       log(e);
-      KSnackBar.error('حدث خطأ ما SPLASH');
+      KSnackBar.error('حدث خطأ ما اثناء تحميل البيانات');
     }
   }
 

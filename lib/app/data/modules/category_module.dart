@@ -7,7 +7,9 @@ class CategoryModule {
   CategoryModule({
     this.uid,
     required this.name,
-  });
+  }) {
+    uid ??= name;
+  }
 
   CategoryModule copyWith({
     String? uid,
@@ -26,7 +28,7 @@ class CategoryModule {
     };
   }
 
-  factory CategoryModule.fromMap(Map<String, dynamic> map, String uid) {
+  factory CategoryModule.fromMap(Map<String, dynamic> map, {String? uid}) {
     return CategoryModule(
       uid: uid,
       name: map['name'] as String,
@@ -36,7 +38,8 @@ class CategoryModule {
   String toJson() => json.encode(toMap());
 
   factory CategoryModule.fromJson(String source, String uid) =>
-      CategoryModule.fromMap(json.decode(source) as Map<String, dynamic>, uid);
+      CategoryModule.fromMap(json.decode(source) as Map<String, dynamic>,
+          uid: uid);
 
   @override
   String toString() => 'CategoryModule(uid: $uid, name: $name)';

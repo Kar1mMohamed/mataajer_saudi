@@ -15,7 +15,7 @@ class OfferModule {
   final String? shopDescription;
   final String? offerDescription;
   final String? offerPercentageDescription;
-  final List<String> categoryUIDs;
+  List<String> categoryUIDs;
   final DateTime? fromDate;
   final DateTime? toDate;
   final double? avgShippingPrice;
@@ -27,6 +27,8 @@ class OfferModule {
   bool? isStaticAd;
   bool? isVisible;
   String? offerLink;
+  double? priceBefore;
+  double? priceAfter;
 
   // bool get isMostVisitedOffer {
   //   try {
@@ -91,6 +93,8 @@ class OfferModule {
     this.isStaticAd,
     this.isVisible,
     this.offerLink,
+    this.priceBefore,
+    this.priceAfter,
   });
 
   OfferModule copyWith({
@@ -112,6 +116,8 @@ class OfferModule {
     bool? isStaticAd,
     bool? isVisible,
     String? offerLink,
+    double? priceBefore,
+    double? priceAfter,
   }) {
     return OfferModule(
       uid: uid ?? this.uid,
@@ -133,6 +139,8 @@ class OfferModule {
       isStaticAd: isStaticAd ?? this.isStaticAd,
       isVisible: isVisible ?? this.isVisible,
       offerLink: offerLink ?? this.offerLink,
+      priceBefore: priceBefore ?? this.priceBefore,
+      priceAfter: priceAfter ?? this.priceAfter,
     );
   }
 
@@ -156,6 +164,8 @@ class OfferModule {
       'isStaticAd': isStaticAd,
       'isVisible': isVisible,
       'offerLink': offerLink,
+      'priceBefore': priceBefore,
+      'priceAfter': priceAfter,
     };
   }
 
@@ -197,6 +207,10 @@ class OfferModule {
       offerPercentageDescription: map['offerPercentageDescription'] != null
           ? map['offerPercentageDescription'] as String
           : null,
+      priceBefore:
+          map['priceBefore'] != null ? map['priceBefore'] as double : null,
+      priceAfter:
+          map['priceAfter'] != null ? map['priceAfter'] as double : null,
     );
   }
 
@@ -207,7 +221,7 @@ class OfferModule {
 
   @override
   String toString() {
-    return 'OfferModule(uid: $uid, shopUID: $shopUID, name: $name, shopDescription: $shopDescription, offerDescription: $offerDescription, offerPercentageDescription: $offerPercentageDescription, categoryUIDs: $categoryUIDs, fromDate: $fromDate, toDate: $toDate, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, offerPercentage: $offerPercentage, imageURL: $imageURL, hits: $hits, validTill: $validTill, isStaticAd: $isStaticAd, isVisible: $isVisible, offerLink: $offerLink)';
+    return 'OfferModule(uid: $uid, shopUID: $shopUID, name: $name, shopDescription: $shopDescription, offerDescription: $offerDescription, offerPercentageDescription: $offerPercentageDescription, categoryUIDs: $categoryUIDs, fromDate: $fromDate, toDate: $toDate, avgShippingPrice: $avgShippingPrice, avgShippingTime: $avgShippingTime, offerPercentage: $offerPercentage, imageURL: $imageURL, hits: $hits, validTill: $validTill, isStaticAd: $isStaticAd, isVisible: $isVisible, offerLink: $offerLink, priceBefore: $priceBefore, priceAfter: $priceAfter)';
   }
 
   @override
@@ -231,7 +245,9 @@ class OfferModule {
         other.validTill == validTill &&
         other.isStaticAd == isStaticAd &&
         other.isVisible == isVisible &&
-        other.offerLink == offerLink;
+        other.offerLink == offerLink &&
+        other.priceBefore == priceBefore &&
+        other.priceAfter == priceAfter;
   }
 
   @override
@@ -253,6 +269,8 @@ class OfferModule {
         validTill.hashCode ^
         isStaticAd.hashCode ^
         isVisible.hashCode ^
-        offerLink.hashCode;
+        offerLink.hashCode ^
+        priceBefore.hashCode ^
+        priceAfter.hashCode;
   }
 }

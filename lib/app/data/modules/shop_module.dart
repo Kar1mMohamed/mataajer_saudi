@@ -252,13 +252,13 @@ class ShopModule {
   int get remainingDaysForSubscription {
     if (subscriptions == null || subscriptions!.isEmpty) {
       log('subscriptions is null or empty');
-      return 0;
+      throw Exception('subscriptions is null or empty');
     }
 
     final lastSub = subscriptions!.last;
     if (isExpired(lastSub.from, lastSub.to)) {
       log('subscription is expired');
-      return 0;
+      throw Exception('subscription is expired');
     }
 
     final lastSubscriptionUID = lastSub.subscriptionSettingUID;
@@ -267,11 +267,10 @@ class ShopModule {
 
     if (subscription == null || subscription.allowedDays == null) {
       log('subscription is null');
-      return 0;
+      throw Exception('subscription is null');
     }
 
-    return subscription.allowedDays! -
-        DateTime.now().difference(lastSub.from).inDays;
+    return lastSub.to.difference(DateTime.now()).inDays;
   }
 
   // DateTime get validTill =>
@@ -472,11 +471,6 @@ class ShopModule {
     try {
       final newAllowedDays = remainingDaysForSubscription;
 
-      // final ads = await FirebaseFirestore.instance
-      //     .collection('ads')
-      //     .where('shopUID', isEqualTo: uid)
-      //     .get();
-
       final popUpAds = await FirebaseFirestore.instance
           .collection('popUpAds')
           .where('shopUID', isEqualTo: uid)
@@ -488,14 +482,6 @@ class ShopModule {
           .get();
 
       final batch = FirebaseFirestore.instance.batch();
-
-      // for (var e in ads.docs) {
-      //   log('update visible for ad ${e.id}');
-      //   batch.update(e.reference, {
-      //     'isVisible': true,
-      //     'validTill': DateTime.now().add(Duration(days: newAllowedDays)),
-      //   });
-      // }
 
       for (var e in popUpAds.docs) {
         log('update visible for popUpAd ${e.id}');
@@ -520,7 +506,7 @@ class ShopModule {
   }
 
   /// GET SUBSCRIPTIONS FROM FIREBASE
-  Future<void> getSubscriptions() async {
+  Future<List<SubscriptionModule>> getSubscriptions() async {
     try {
       final subscriptions = await FirebaseFirestore.instance
           .collection('shops')
@@ -534,23 +520,29 @@ class ShopModule {
       log('shop subscriptions: ${subscriptions.map((e) => e.toMap()).toList()}');
 
       this.subscriptions = subscriptions;
+      return subscriptions;
     } catch (e) {
       log(e);
+      rethrow;
     }
   }
 
   Future<void> updateValidTill() async {
     try {
-      await getSubscriptions();
+      final gotSubscriptions = await getSubscriptions();
 
-      final newAllowedDays = remainingDaysForSubscription;
+      final newAllowedDays =
+          gotSubscriptions.last.to.difference(DateTime.now()).inDays;
+
       final validTill = DateTime.now().add(Duration(days: newAllowedDays));
       this.validTill = validTill;
 
       await FirebaseFirestoreHelper.instance.updateShop(this);
       await updateShopServicesValidTill();
+
+      log('updated validTill: $validTill');
     } catch (e) {
-      log('updateValidTill ${toJson()}');
+      log('updateValidTill error: ${toJson()}');
     }
   }
 
