@@ -117,7 +117,7 @@ class PreviewOfferDialog extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'اسم المنتج',
+                        'اسم المنتج او الخدمة',
                         style: TextStyle(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w500,
@@ -127,6 +127,7 @@ class PreviewOfferDialog extends StatelessWidget {
                       Text(
                         offerModule.name.trim(),
                         maxLines: 1,
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           overflow: TextOverflow.ellipsis,
                           color: Colors.black.withOpacity(0.7),
@@ -146,6 +147,7 @@ class PreviewOfferDialog extends StatelessWidget {
                     children: [
                       Text(
                         'وصف العرض',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w500,
@@ -319,7 +321,7 @@ class PreviewOfferDialog extends StatelessWidget {
                       children: [
                         Container(
                           height: 35.h,
-                          width: Get.context!.width * 0.3,
+                          width: Get.context!.width * 0.4,
                           decoration: const BoxDecoration(
                             color: MataajerTheme.mainColorLighten,
                           ),
@@ -327,7 +329,7 @@ class PreviewOfferDialog extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'الذهاب للمتجر',
+                                "شراء",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 12.sp,

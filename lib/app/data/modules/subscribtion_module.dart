@@ -7,12 +7,12 @@ class SubscriptionModule {
   final String? uid;
   final DateTime from;
   final DateTime to;
-  final String subscriptionSettingUID;
+  final String? subscriptionSettingUID;
   SubscriptionModule({
     this.uid,
     required this.from,
     required this.to,
-    required this.subscriptionSettingUID,
+    this.subscriptionSettingUID,
   });
 
   SubscriptionModule copyWith({
@@ -22,11 +22,12 @@ class SubscriptionModule {
     String? subscriptionSettingUID,
   }) {
     return SubscriptionModule(
-        uid: uid ?? this.uid,
-        from: from ?? this.from,
-        to: to ?? this.to,
-        subscriptionSettingUID:
-            subscriptionSettingUID ?? this.subscriptionSettingUID);
+      uid: uid ?? this.uid,
+      from: from ?? this.from,
+      to: to ?? this.to,
+      subscriptionSettingUID:
+          subscriptionSettingUID ?? this.subscriptionSettingUID,
+    );
   }
 
   Map<String, dynamic> toMap(
@@ -46,27 +47,49 @@ class SubscriptionModule {
   factory SubscriptionModule.fromMap(Map<String, dynamic> map) {
     return SubscriptionModule(
       uid: map['uid'] != null ? map['uid'] as String : null,
-      from: (map['from'] as Timestamp).toDate(),
-      to: (map['to'] as Timestamp).toDate(),
-      subscriptionSettingUID: map['subscriptionSettingUID'] as String,
+      from: _handleDateTime(map['from'])!,
+      to: _handleDateTime(map['to'])!,
+      subscriptionSettingUID: map['subscriptionSettingUID'] != null
+          ? map['subscriptionSettingUID'] as String
+          : null,
     );
   }
 
-  String toJson() => json.encode(toMap(transferTimeStampIntoDate: true));
+  static DateTime? _handleDateTime(dynamic dateTime) {
+    if (dateTime is Timestamp) {
+      return dateTime.toDate();
+    } else if (dateTime is int) {
+      return DateTime.fromMillisecondsSinceEpoch(dateTime);
+    } else {
+      return null;
+    }
+  }
+
+  String toJson() => json.encode(toMap());
 
   factory SubscriptionModule.fromJson(String source) =>
       SubscriptionModule.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() => 'SubscriptionModule(uid: $uid, from: $from, to: $to)';
+  String toString() {
+    return 'SubscriptionModule(uid: $uid, from: $from, to: $to, subscriptionSettingUID: $subscriptionSettingUID)';
+  }
 
   @override
   bool operator ==(covariant SubscriptionModule other) {
     if (identical(this, other)) return true;
 
-    return other.uid == uid && other.from == from && other.to == to;
+    return other.uid == uid &&
+        other.from == from &&
+        other.to == to &&
+        other.subscriptionSettingUID == subscriptionSettingUID;
   }
 
   @override
-  int get hashCode => uid.hashCode ^ from.hashCode ^ to.hashCode;
+  int get hashCode {
+    return uid.hashCode ^
+        from.hashCode ^
+        to.hashCode ^
+        subscriptionSettingUID.hashCode;
+  }
 }

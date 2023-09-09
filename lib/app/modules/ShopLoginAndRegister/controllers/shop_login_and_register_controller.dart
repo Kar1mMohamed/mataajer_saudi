@@ -218,7 +218,7 @@ class ShopLoginAndRegisterController extends GetxController {
       final subscriptionModule = SubscriptionModule(
         from: DateTime.now(),
         to: DateTime.now().add(Duration(days: sub.allowedDays!)),
-        subscriptionSettingUID: sub.uid!,
+        subscriptionSettingUID: sub.uid,
       );
 
       final tapModule = TapChargeReq(

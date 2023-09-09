@@ -47,29 +47,23 @@ class AddOfferView extends GetView<AddOfferController> {
                   _addImage(),
                   SizedBox(height: 30.h),
                   _fieldItem(
-                    'اسم المنتج',
+                    'اسم المنتج او الخدمة',
                     controller.offerName,
                     height: 50.h,
                   ),
                   SizedBox(height: 30.h),
                   _fieldItem(
-                    'وصف المنتج',
+                    'وصف المنتج او الخدمة',
                     controller.offerDescription,
                     height: 50.h,
                   ),
                   SizedBox(height: 30.h),
                   _fieldItem(
-                    'ضع رابط صفحة المتجر او المنتج  ',
+                    'ضع رابط الخدمة او المنتج  ',
                     controller.shopLinkController,
                     height: 50.h,
                   ),
-                  SizedBox(height: 30.h),
-                  _fieldItem(
-                    'نسبة الخصم',
-                    controller.offerPercentage,
-                    height: 50.h,
-                    isNumbersOnly: true,
-                  ),
+
                   SizedBox(height: 30.h),
 
                   _fieldItem(
@@ -79,12 +73,28 @@ class AddOfferView extends GetView<AddOfferController> {
                     isNumbersOnly: true,
                   ),
                   SizedBox(height: 30.h),
+                  _fieldItem('نسبة الخصم', controller.offerPercentage,
+                      height: 50.h, isNumbersOnly: true, onChanged: (v) {
+                    if (v.isNotEmpty && v.isNumericOnly) {
+                      controller.afterPrice.text =
+                          (double.parse(controller.beforePrice.text) -
+                                  (double.parse(controller.beforePrice.text) *
+                                      (double.parse(
+                                              controller.offerPercentage.text) /
+                                          100)))
+                              .toString();
+
+                      controller.update();
+                    }
+                  }),
+                  SizedBox(height: 30.h),
 
                   _fieldItem(
                     'السعر بعد الخصم',
                     controller.afterPrice,
                     height: 50.h,
                     isNumbersOnly: true,
+                    readOnly: true,
                   ),
                   SizedBox(height: 30.h),
 
@@ -117,7 +127,7 @@ class AddOfferView extends GetView<AddOfferController> {
                       border: Border.all(color: Colors.grey),
                     ),
                     child: ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
+                        physics: const BouncingScrollPhysics(),
                         itemCount: controller.offers.length,
                         itemBuilder: (context, index) {
                           final offer = controller.offers[index];
@@ -253,8 +263,10 @@ class AddOfferView extends GetView<AddOfferController> {
     TextEditingController controller, {
     String? imageAssetIcon,
     void Function(String)? onFieldSubmitted,
+    void Function(String)? onChanged,
     double? height,
     bool? isNumbersOnly,
+    bool readOnly = false,
   }) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -272,6 +284,9 @@ class AddOfferView extends GetView<AddOfferController> {
         SizedBox(
           height: height,
           child: TextFormField(
+            readOnly: readOnly,
+            onChanged: onChanged,
+
             style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,

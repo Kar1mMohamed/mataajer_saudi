@@ -1,4 +1,3 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -11,7 +10,6 @@ import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
-import 'package:mataajer_saudi/app/widgets/loading_image.dart';
 import 'package:mataajer_saudi/app/widgets/preview_offer_dialog.dart';
 import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
@@ -25,7 +23,7 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      backgroundColor: Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFFF5F5F5),
       drawer: MyDrawer(shops: controller.shops),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -328,27 +326,37 @@ class HomeView extends GetView<HomeController> {
                 if (controller.offers.isEmpty)
                   const SizedBox.shrink()
                 else
-                  CarouselSlider(
-                    items: controller.offers
-                        .map((e) => _offerCardV2(context, e))
-                        .toList(),
-                    options: CarouselOptions(
-                      // aspectRatio: 1,
-                      // viewportFraction: context.isTablet ? 0.5 : 1,
-                      // aspectRatio: context.isTablet ? 4 : 1,
-                      enlargeFactor: 0.4,
-                      initialPage: 0,
-                      enableInfiniteScroll: true,
-                      reverse: false,
-                      autoPlay: true,
-                      autoPlayInterval: const Duration(seconds: 4),
-                      autoPlayAnimationDuration:
-                          const Duration(milliseconds: 1000),
-                      autoPlayCurve: Curves.fastOutSlowIn,
-                      enlargeCenterPage: true,
+                  SizedBox(
+                    height: 200.h,
+                    child: ListView.builder(
                       scrollDirection: Axis.horizontal,
+                      itemCount: controller.offers.length,
+                      itemBuilder: (context, index) {
+                        return _offerCardV3(context, controller.offers[index]);
+                      },
                     ),
                   ),
+                // CarouselSlider(
+                //   items: controller.offers
+                //       .map((e) => _offerCardV2(context, e))
+                //       .toList(),
+                //   options: CarouselOptions(
+                //     // aspectRatio: 1,
+                //     viewportFraction: 0.8,
+                //     // aspectRatio: context.isTablet ? 4 : 1,
+                //     // enlargeFactor: 0.4,
+                //     initialPage: 0,
+                //     enableInfiniteScroll: true,
+                //     reverse: false,
+                //     autoPlay: true,
+                //     autoPlayInterval: const Duration(seconds: 4),
+                //     autoPlayAnimationDuration:
+                //         const Duration(milliseconds: 1000),
+                //     autoPlayCurve: Curves.fastOutSlowIn,
+                //     // enlargeCenterPage: true,
+                //     scrollDirection: Axis.horizontal,
+                //   ),
+                // ),
               ],
             ),
           );
@@ -576,188 +584,300 @@ class HomeView extends GetView<HomeController> {
 
   Widget _shopCard(ShopModule shop) {
     return GetBuilder<HomeController>(
-        id: 'shopCard-${shop.uid}',
-        builder: (_) {
-          if (controller.adsLoading) {
-            return Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25.r),
-                image: const DecorationImage(
-                  image: AssetImage(Assets.loadingGIF),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            );
-          }
-          bool isLoved = controller.favShops.contains(shop);
-          String categoryString = shop.categories.first.name;
+      id: 'shopCard-${shop.uid}',
+      builder: (_) {
+        if (controller.adsLoading) {
           return Container(
-            padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
-            margin:
-                EdgeInsets.only(left: 5.0.sp, right: 5.0.sp, bottom: 10.0.sp),
             decoration: BoxDecoration(
-              color: Colors.white,
               borderRadius: BorderRadius.circular(25.r),
-              // border: Border.all(
-              //   color: MataajerTheme.mainColor,
-              //   width: 1,
-              // ),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 10,
-                  left: 5,
-                  child: InkWell(
-                    focusColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    onTap: () {
-                      controller.updateLoveState(shop);
-                      log('loved ${shop.uid}');
-                    },
-                    child: Icon(
-                      Icons.favorite,
-                      color: isLoved
-                          ? Colors.red.shade600
-                          : const Color(0xFFC6C6C6),
-                      size: 25.sp,
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.center,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          URLLauncherFuntions.launchURL(shop.shopLink);
-                        },
-                        child: CircleAvatar(
-                          radius: 40.r,
-                          backgroundImage: NetworkImage(shop.image),
-                          backgroundColor: Colors.transparent,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      InkWell(
-                        onTap: () => Get.dialog(PreviewShopDialog(shop: shop)),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Flexible(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    shop.name,
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 13.sp,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                  SizedBox(height: 2.h),
-                                  Text(
-                                    categoryString,
-                                    style: TextStyle(
-                                      color: MataajerTheme.mainColor,
-                                      fontSize: 12.sp,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 5.w),
-                            Icon(
-                              Icons.info_outlined,
-                              color: Colors.grey.shade400,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              image: const DecorationImage(
+                image: AssetImage(Assets.loadingGIF),
+                fit: BoxFit.cover,
+              ),
             ),
           );
-        });
-  }
-
-  Widget _offerCardV2(BuildContext context, OfferModule offer) {
-    return GetBuilder<HomeController>(
-        id: 'offerCard-${offer.uid}',
-        builder: (_) {
-          if (controller.adsLoading) {
-            // return Container(
-            //   decoration: BoxDecoration(
-            //     borderRadius: BorderRadius.circular(25.r),
-            //     image: const DecorationImage(
-            //       image: AssetImage(Assets.loadingGIF),
-            //       fit: BoxFit.cover,
-            //     ),
-            //   ),
-            // );
-            return Container();
-          }
-          return InkWell(
-            onTap: () {
-              Get.dialog(PreviewOfferDialog(offerModule: offer));
-            },
-            child: Container(
-              width: context.width,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25.r),
-                color: const Color(0xFFF5F5F5),
-              ),
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(25.r),
-                    child: LoadingImage(
-                      src: offer.imageURL,
-                      fit: BoxFit.fill,
-                    ),
+        }
+        bool isLoved = controller.favShops.contains(shop);
+        String categoryString = shop.categories.first.name;
+        return Container(
+          padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
+          margin: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp, bottom: 10.0.sp),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(25.r),
+            // border: Border.all(
+            //   color: MataajerTheme.mainColor,
+            //   width: 1,
+            // ),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                top: 10,
+                left: 5,
+                child: InkWell(
+                  focusColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: () {
+                    controller.updateLoveState(shop);
+                    log('loved ${shop.uid}');
+                  },
+                  child: Icon(
+                    Icons.favorite,
+                    color:
+                        isLoved ? Colors.red.shade600 : const Color(0xFFC6C6C6),
+                    size: 25.sp,
                   ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      width: context.width,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF5F5F5),
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(35.r),
-                          topRight: Radius.circular(35.r),
-                        ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        URLLauncherFuntions.launchURL(shop.shopLink);
+                      },
+                      child: CircleAvatar(
+                        radius: 40.r,
+                        backgroundImage: NetworkImage(shop.image),
+                        backgroundColor: Colors.transparent,
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12.0, vertical: 12.0),
-                        child: Text(
-                          offer.name.trim().replaceAll('\n', ' '),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: MataajerTheme.mainColor,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
+                    ),
+                    SizedBox(height: 10.h),
+                    InkWell(
+                      onTap: () => Get.dialog(PreviewShopDialog(shop: shop)),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  shop.name,
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                SizedBox(height: 2.h),
+                                Text(
+                                  categoryString,
+                                  style: TextStyle(
+                                    color: MataajerTheme.mainColor,
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+                          SizedBox(width: 5.w),
+                          Icon(
+                            Icons.info_outlined,
+                            color: Colors.grey.shade400,
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Widget _offerCardV2(BuildContext context, OfferModule offer) {
+  //   return GetBuilder<HomeController>(
+  //       id: 'offerCard-${offer.uid}',
+  //       builder: (_) {
+  //         if (controller.adsLoading) {
+  //           // return Container(
+  //           //   decoration: BoxDecoration(
+  //           //     borderRadius: BorderRadius.circular(25.r),
+  //           //     image: const DecorationImage(
+  //           //       image: AssetImage(Assets.loadingGIF),
+  //           //       fit: BoxFit.cover,
+  //           //     ),
+  //           //   ),
+  //           // );
+  //           return Container();
+  //         }
+  //         return InkWell(
+  //           onTap: () {
+  //             Get.dialog(PreviewOfferDialog(offerModule: offer));
+  //           },
+  //           child: Container(
+  //             margin: EdgeInsets.symmetric(horizontal: 5.w),
+  //             width: context.width,
+  //             decoration: BoxDecoration(
+  //               borderRadius: BorderRadius.circular(25.r),
+  //               color: const Color(0xFFF5F5F5),
+  //             ),
+  //             child: Stack(
+  //               children: [
+  //                 ClipRRect(
+  //                   borderRadius: BorderRadius.circular(25.r),
+  //                   child: LoadingImage(
+  //                     src: offer.imageURL,
+  //                     fit: BoxFit.fill,
+  //                   ),
+  //                 ),
+  //                 Align(
+  //                   alignment: Alignment.bottomCenter,
+  //                   child: Container(
+  //                     width: context.width,
+  //                     decoration: BoxDecoration(
+  //                       color: const Color(0xFFF5F5F5),
+  //                       borderRadius: BorderRadius.only(
+  //                         topLeft: Radius.circular(35.r),
+  //                         topRight: Radius.circular(35.r),
+  //                       ),
+  //                     ),
+  //                     child: Padding(
+  //                       padding: const EdgeInsets.symmetric(
+  //                           horizontal: 12.0, vertical: 12.0),
+  //                       child: Text(
+  //                         offer.name.trim().replaceAll('\n', ' '),
+  //                         textAlign: TextAlign.center,
+  //                         style: TextStyle(
+  //                           color: MataajerTheme.mainColor,
+  //                           fontSize: 14.sp,
+  //                           fontWeight: FontWeight.w400,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       });
+  // }
+
+  Widget _offerCardV3(BuildContext context, OfferModule offer) {
+    return GetBuilder<HomeController>(
+      id: 'offerCard-${offer.uid}',
+      builder: (_) {
+        if (controller.adsLoading) {
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25.r),
+              image: const DecorationImage(
+                image: AssetImage(Assets.loadingGIF),
+                fit: BoxFit.cover,
               ),
             ),
           );
-        });
+        }
+        String categoryString = offer.categories.first.name;
+        return Container(
+          width: 150.w,
+          padding: EdgeInsets.only(left: 5.0.sp, right: 5.0.sp),
+          margin: EdgeInsets.symmetric(horizontal: 5.0.sp, vertical: 10.0.sp),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(35.r),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              InkWell(
+                onTap: () {
+                  URLLauncherFuntions.launchURL(offer.offerLink);
+                },
+                child: CircleAvatar(
+                  radius: 40.r,
+                  backgroundImage: NetworkImage(offer.imageURL),
+                  backgroundColor: Colors.transparent,
+                ),
+              ),
+              SizedBox(height: 10.h),
+              InkWell(
+                onTap: () => Get.dialog(PreviewOfferDialog(offerModule: offer)),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            offer.name.trim(),
+                            maxLines: 1,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          SizedBox(height: 2.h),
+                          Text(
+                            categoryString,
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              color: MataajerTheme.mainColor,
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 5.w),
+                    Icon(
+                      Icons.info_outlined,
+                      color: Colors.grey.shade400,
+                    ),
+                  ],
+                ),
+              ),
+              Text.rich(
+                TextSpan(
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '${offer.priceBefore?.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        color: Colors.grey.shade500,
+                        decoration: TextDecoration.lineThrough,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                    TextSpan(
+                      text: ' ${offer.priceAfter?.toStringAsFixed(2)} ر.س',
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        color: MataajerTheme.mainColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
   }
-
   // Widget _offerCard(OfferModule offer) {
   //   return GetBuilder<HomeController>(
   //       id: 'offerCard-${offer.uid}',

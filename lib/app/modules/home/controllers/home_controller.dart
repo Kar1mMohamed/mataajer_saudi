@@ -131,7 +131,6 @@ class HomeController extends GetxController {
   Future<void> getOffers() async {
     try {
       adsLoading = true;
-      update(['all-ads']);
       updateoffersCarousel();
 
       final offersList = await FirebaseFirestoreHelper.instance.getOffers();
@@ -142,7 +141,6 @@ class HomeController extends GetxController {
     } finally {
       offers = _offers;
       adsLoading = false;
-      update(['all-ads']);
       updateoffersCarousel();
     }
   }

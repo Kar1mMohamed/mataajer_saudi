@@ -194,7 +194,7 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<List<OfferModule>> getOffers({bool? forAdmin}) async {
+  Future<List<OfferModule>> getOffers({bool? forAdmin, int? limit}) async {
     forAdmin ??= false;
 
     try {
