@@ -1,12 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
-import 'package:mataajer_saudi/app/data/modules/offer_module.dart';
-import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/utils/ksnackbar.dart';
 import '../../../utils/log.dart';
-import 'dart:math' as math;
 
 class SplashController extends GetxController {
   final mainSettingsController = Get.find<MainSettingsController>();

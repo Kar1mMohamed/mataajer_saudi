@@ -13,7 +13,7 @@ import 'package:mataajer_saudi/app/data/modules/invoice_module.dart';
 import 'package:mataajer_saudi/app/data/modules/social_media_links.dart';
 import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
-import 'package:mataajer_saudi/app/functions/payments_helper.dart';
+import 'package:mataajer_saudi/app/helpers/payments_helper.dart';
 import 'package:mataajer_saudi/app/modules/home/controllers/home_controller.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/utils/custom_snackbar.dart';

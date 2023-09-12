@@ -16,7 +16,7 @@ import 'package:mataajer_saudi/app/data/modules/subscribtion_module.dart';
 import 'package:mataajer_saudi/app/data/modules/tap/tap_charge_req.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
-import 'package:mataajer_saudi/app/functions/payments_helper.dart';
+import 'package:mataajer_saudi/app/helpers/payments_helper.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/check_out_webview.dart';

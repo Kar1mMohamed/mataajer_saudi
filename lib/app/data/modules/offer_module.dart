@@ -30,6 +30,11 @@ class OfferModule {
   double? priceBefore;
   double? priceAfter;
 
+  int get remainingDays {
+    if (toDate == null) return 0;
+    return toDate!.difference(DateTime.now()).inDays;
+  }
+
   // bool get isMostVisitedOffer {
   //   try {
   //     final offers = Get.find<HomeController>().offers;

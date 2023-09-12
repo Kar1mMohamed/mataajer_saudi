@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:math' as math;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -15,8 +14,6 @@ import 'package:mataajer_saudi/app/controllers/main_popup_ads_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/controllers/online_now_controller.dart';
 import 'package:mataajer_saudi/app/functions/cloud_messaging.dart';
-import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
-// import 'package:mataajer_saudi/app/helper/notitication_helper.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/translation/tr.dart';
 import 'app/controllers/app_life_cycle_controller.dart';
@@ -40,6 +37,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await GetStorage.init();
   await HiveHelper.initHive();
@@ -65,7 +63,7 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       builder: (context, child) => GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        title: "Mataajer",
+        title: "Matajer",
         initialRoute: AppPages.INITIAL,
         getPages: AppPages.routes,
         themeMode: ThemeMode.light,

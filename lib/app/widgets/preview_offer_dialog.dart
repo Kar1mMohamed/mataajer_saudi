@@ -264,7 +264,7 @@ class PreviewOfferDialog extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  '${offerModule.toDate!.difference(offerModule.fromDate!).inDays + 1}',
+                                  '${offerModule.remainingDays}',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16.sp,

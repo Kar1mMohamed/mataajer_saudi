@@ -1,18 +1,23 @@
+// ignore_for_file: unused_element
+
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:mataajer_saudi/app/data/modules/tap/tap_charge_req.dart';
+import 'package:mataajer_saudi/app/helpers/env_helper.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 
-abstract class PaymentsHelper {
-  static bool get isDebug => true;
+class PaymentsHelper {
+  PaymentsHelper._();
+
+  static bool get isDebug => false;
   // TEST
-  static String get _debugAuthToken => 'sk_test_majGz4k1rq6fbT3ow02uytJh';
+  static String get _debugAuthToken => EnvHelper.instance.PAYMENT_DEVBUG_TOKEN!;
   // TEST
   // static int get _debugProfileId => 93643;
 
   // LIVE
-  static String get _liveAuthToken => 'sk_live_aXo8Z0S9yPblfOsqwvTCGNFh';
+  static String get _liveAuthToken => EnvHelper.instance.PAYMENT_LIVE_TOKEN!;
   // // LIVE
   // static int get _liveProfileId => 93769;
 

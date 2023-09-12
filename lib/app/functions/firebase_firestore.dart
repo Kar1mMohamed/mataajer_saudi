@@ -25,7 +25,7 @@ class FirebaseFirestoreHelper {
           .doc('app')
           .set(appSettings.toMap());
     } catch (e) {
-      print(e);
+      log(e);
     }
   }
 
@@ -220,7 +220,7 @@ class FirebaseFirestoreHelper {
 
         log('offers: ${ads.length}');
 
-        return ads;
+        return ads.where((element) => element.remainingDays > 0).toList();
       }
     } catch (e) {
       log(e);
