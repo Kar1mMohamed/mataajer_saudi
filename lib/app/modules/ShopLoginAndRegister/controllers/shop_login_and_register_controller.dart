@@ -160,6 +160,14 @@ class ShopLoginAndRegisterController extends GetxController {
   }
 
   Future<void> register(ChooseSubscriptionModule sub) async {
+    /// THIS METHOD IS TO AVOID APPLE STORE IN-APP PURCHASE
+    bool versionTEST = MainSettingsController.find.isVersionRelease;
+
+    if (versionTEST == false) {
+      KSnackBar.error('التسجيل غير متاح حاليا');
+      return;
+    }
+
     try {
       if (shopImageURL == null) {
         throw 'No image selected';

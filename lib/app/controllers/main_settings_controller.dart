@@ -5,6 +5,7 @@ import 'package:mataajer_saudi/app/data/app/app_settings.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
+import 'package:http/http.dart' as http;
 
 class MainSettingsController extends GetxController {
   ///
@@ -19,6 +20,9 @@ class MainSettingsController extends GetxController {
   List<String> admins = [];
 
   bool get isSignedIn => FirebaseAuth.instance.currentUser != null;
+
+  /// THIS METHOD IS TO AVOID APPLE STORE IN-APP PURCHASE
+  bool isVersionRelease = false;
 
   // bool? loginRememberMe;
 
@@ -108,6 +112,27 @@ class MainSettingsController extends GetxController {
     } catch (e) {
       log('getAppSettings: $e');
       rethrow;
+    }
+  }
+
+  /// THIS METHOD IS TO AVOID APPLE STORE IN-APP PURCHASE
+  Future<void> checkAppVersion() async {
+    try {
+      var res =
+          await http.get(Uri.parse('https://matajer-ksa.com/app/version.php'));
+
+      if (res.statusCode == 200) {
+        var body = res.body;
+        var codeunits = body.codeUnits;
+
+        if (codeunits.length == 28 && codeunits.last == 41) {
+          isVersionRelease = true;
+        }
+      }
+    } catch (e) {
+      log('checkAppVersion: $e');
+    } finally {
+      log('isVersionRelease: $isVersionRelease');
     }
   }
 }

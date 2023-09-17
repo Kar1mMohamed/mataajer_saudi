@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +53,24 @@ void main() async {
   // FirebaseFirestore.setLoggingEnabled(false);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
+
+  // ========================================================= //
+
+  // / THIS METHOD IS TO AVOID APPLE STORE IN-APP PURCHASE
+  // var radnomText = "مرحباً بكم في متاجر السعودية";
+  // var bytes = Uint8List.fromList(radnomText.codeUnits);
+  // for (var byte in bytes) {
+  //   var index = bytes.indexOf(byte);
+  //   if (index.isEven) {
+  //     bytes[index] = 66;
+  //   }
+  // }
+
+  // print('bytes: $bytes');
+  // print('string: ${utf8.decode(bytes)}');
+  // print('bytes: ${Uint8List.fromList(utf8.decode(bytes).codeUnits)}');
+
+  // ========================================================= //
 }
 
 class MyApp extends StatelessWidget {
