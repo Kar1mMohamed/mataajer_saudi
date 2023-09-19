@@ -324,21 +324,28 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
             SizedBox(height: 20.h),
             registerIsHasTamaraAndTabby(),
             SizedBox(height: 20.h),
-            pricesTable(),
-            SizedBox(height: 20.h),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Text(
-                '* الاسعار بعد خصم ٥٠٪',
-                style: TextStyle(color: Colors.red, fontSize: 12.sp),
-              ),
-            ),
-            SizedBox(height: 4.h),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Text(
-                '* مدة الاشتراك سنة واحدة',
-                style: TextStyle(color: Colors.red, fontSize: 12.sp),
+            Visibility(
+              visible: controller.isVersionRelease,
+              child: Column(
+                children: [
+                  pricesTable(),
+                  SizedBox(height: 20.h),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      '* الاسعار بعد خصم ٥٠٪',
+                      style: TextStyle(color: Colors.red, fontSize: 12.sp),
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      '* مدة الاشتراك سنة واحدة',
+                      style: TextStyle(color: Colors.red, fontSize: 12.sp),
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 20.h),

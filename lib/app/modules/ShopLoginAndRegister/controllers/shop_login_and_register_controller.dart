@@ -85,6 +85,8 @@ class ShopLoginAndRegisterController extends GetxController {
   int? shippingFrom;
   int? shippingTo;
 
+  bool get isVersionRelease => mainSettingsController.isVersionRelease;
+
   void loginRememberMeFunction(bool? value) async {
     loginRememberMe = value ?? false;
     update();
