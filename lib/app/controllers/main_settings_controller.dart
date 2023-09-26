@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -117,6 +119,7 @@ class MainSettingsController extends GetxController {
 
   /// THIS METHOD IS TO AVOID APPLE STORE IN-APP PURCHASE
   Future<void> checkAppVersion() async {
+    if (!Platform.isIOS) return;
     try {
       var res =
           await http.get(Uri.parse('https://matajer-ksa.com/app/version.php'));
