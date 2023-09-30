@@ -118,7 +118,7 @@ class HomeController extends GetxController {
       update(['all-ads']);
       final shopsList = await FirebaseFirestoreHelper.instance.getShops();
       _shops = shopsList;
-      log('shops: ${_shops.length}');
+      log('shops: ${_shops}');
     } catch (e) {
       log(e);
     } finally {
@@ -265,8 +265,11 @@ class HomeController extends GetxController {
   // bool isAdLoved(OfferModule ad) => favAds.contains(ad);
 
   Future<void> onRefresh() async {
-    await getShops();
-    await getOffers();
+    await Future.wait([
+      getHomeBanners(),
+      getShops(),
+      getOffers(),
+    ]);
   }
 
   void onINIT() async {

@@ -31,7 +31,7 @@ class SubscriptionModule {
   }
 
   Map<String, dynamic> toMap(
-      {bool postUID = false, bool transferTimeStampIntoDate = false}) {
+      {bool postUID = false, bool transferTimeStampIntoDate = true}) {
     return <String, dynamic>{
       if (uid != null || postUID) 'uid': uid,
       'from': transferTimeStampIntoDate
@@ -65,7 +65,7 @@ class SubscriptionModule {
     }
   }
 
-  String toJson() => json.encode(toMap());
+  // String toJson() => json.encode(toMap(transferTimeStampIntoDate: true));
 
   factory SubscriptionModule.fromJson(String source) =>
       SubscriptionModule.fromMap(json.decode(source) as Map<String, dynamic>);

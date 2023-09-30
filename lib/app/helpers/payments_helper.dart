@@ -12,7 +12,7 @@ class PaymentsHelper {
 
   static bool get isDebug => false;
   // TEST
-  static String get _debugAuthToken => EnvHelper.instance.PAYMENT_DEVBUG_TOKEN!;
+  static String get _debugAuthToken => EnvHelper.instance.PAYMENT_DEBUG_TOKEN!;
   // TEST
   // static int get _debugProfileId => 93643;
 

@@ -7,6 +7,6 @@ class EnvHelper {
   static final EnvHelper _instance = EnvHelper._();
   static EnvHelper get instance => _instance;
 
-  String? get PAYMENT_DEVBUG_TOKEN => dotenv.env['PAYMENT_DEVBUG_TOKEN'];
+  String? get PAYMENT_DEBUG_TOKEN => dotenv.env['PAYMENT_DEBUG_TOKEN'];
   String? get PAYMENT_LIVE_TOKEN => dotenv.env['PAYMENT_LIVE_TOKEN'];
 }

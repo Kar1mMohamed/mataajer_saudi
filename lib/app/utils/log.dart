@@ -1,3 +1,8 @@
 import 'dart:developer' as dv;
 
-void log(Object message) => dv.log(message.toString(), name: 'Mataajer');
+import 'package:flutter/foundation.dart';
+
+void log(Object message) {
+  if (!kDebugMode) return;
+  dv.log(message.toString(), name: 'Mataajer');
+}

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChooseSubscriptionModule {
-  final String? uid;
+  String? uid;
   String? name;
   int? allowedDays = 365; // default
   double? monthlyPrice;
@@ -33,7 +33,9 @@ class ChooseSubscriptionModule {
     this.isCanSendTwoNotification,
     this.isCanSendFourNotification,
     this.subscriptionDate,
-  });
+  }) {
+    uid ??= name;
+  }
 
   ChooseSubscriptionModule copyWith({
     String? uid,

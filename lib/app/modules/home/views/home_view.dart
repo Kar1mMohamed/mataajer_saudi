@@ -384,6 +384,8 @@ class HomeView extends GetView<HomeController> {
       String text, IconData icon, List<ShopModule> list, int crossCount) {
     double height = crossCount == 1 ? 170.h : (170.h * 2);
 
+    log("$text length: ${list.length}");
+
     return Column(
       children: [
         Padding(

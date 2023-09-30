@@ -363,7 +363,7 @@ class ShopModule {
           SubscriptionModule(
             from: DateTime.now(),
             to: DateTime.now().add(Duration(days: resData.allowedDays!)),
-            subscriptionSettingUID: resData.uid!,
+            subscriptionSettingUID: resData.uid ?? resData.name,
           ),
         );
 
@@ -531,6 +531,11 @@ class ShopModule {
     try {
       final gotSubscriptions = await getSubscriptions();
 
+      if (gotSubscriptions.isEmpty) {
+        log('no subscriptions found');
+        return;
+      }
+
       final newAllowedDays =
           gotSubscriptions.last.to.difference(DateTime.now()).inDays;
 
@@ -653,7 +658,7 @@ class ShopModule {
     );
   }
 
-  Map<String, dynamic> toMap({bool? forSignUp}) {
+  Map<String, dynamic> toMap({bool forSignUp = false}) {
     return <String, dynamic>{
       // 'uid': uid,
       'name': name,
@@ -680,7 +685,7 @@ class ShopModule {
       'isHasTamara': isHasTamara,
       'isHasTabby': isHasTabby,
       'isStaticAd': isStaticAd,
-      'validTill': validTill,
+      'validTill': validTill != null ? validTill!.millisecondsSinceEpoch : null,
       'isCanSendTwoNotification': isCanSendTwoNotification,
       'isCanSendFourNotification': isCanSendFourNotification,
       'isTwoPopUpAdsMonthly': isTwoPopUpAdsMonthly,
@@ -733,9 +738,8 @@ class ShopModule {
           map['isHasTamara'] != null ? map['isHasTamara'] as bool : false,
       isHasTabby: map['isHasTabby'] != null ? map['isHasTabby'] as bool : false,
       isStaticAd: map['isStaticAd'] != null ? map['isStaticAd'] as bool : false,
-      validTill: map['validTill'] != null
-          ? (map['validTill'] as Timestamp).toDate()
-          : null,
+      validTill:
+          map['validTill'] != null ? _handleTime(map['validTill']) : null,
       isCanSendTwoNotification: map['isCanSendTwoNotification'] != null
           ? map['isCanSendTwoNotification'] as bool
           : false,
@@ -754,6 +758,17 @@ class ShopModule {
               map['socialMediaLinks'] as Map<String, dynamic>)
           : null,
     );
+  }
+
+  static DateTime _handleTime(dynamic date) {
+    if (date is int) {
+      return DateTime.fromMillisecondsSinceEpoch(date);
+    } else if (date is Timestamp) {
+      return date.toDate();
+    } else {
+      // return DateTime.now();
+      throw Exception('Invalid date type');
+    }
   }
 
   String toJson() => json.encode(toMap());

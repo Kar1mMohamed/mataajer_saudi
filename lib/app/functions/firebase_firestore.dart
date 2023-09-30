@@ -100,7 +100,7 @@ class FirebaseFirestoreHelper {
           .collection('subscriptions')
           .add(subModule.toMap());
 
-      log('add subscription to $userUID, ${subModule.toJson()}');
+      log('add subscription to $userUID, ${subModule.toMap()}');
 
       return res.id;
     } catch (e) {
@@ -124,12 +124,10 @@ class FirebaseFirestoreHelper {
   Future<void> updateShop(ShopModule shopModule,
       {bool? updatePrivileges, bool? updateValidTill}) async {
     try {
-      if (updatePrivileges ?? false) {
-        await shopModule.updatePrivileges();
-      }
-      if (updateValidTill ?? false) {
-        await shopModule.updateValidTill();
-      }
+      await Future.wait([
+        if (updatePrivileges ?? false) shopModule.updatePrivileges(),
+        if (updateValidTill ?? false) shopModule.updateValidTill(),
+      ]);
 
       await FirebaseFirestore.instance
           .collection('shops')
@@ -169,8 +167,10 @@ class FirebaseFirestoreHelper {
       } else {
         final ads = await collection
             .where('isVisible', isEqualTo: true)
-            .where('validTill',
-                isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
+            .where(
+              'validTill',
+              isGreaterThanOrEqualTo: DateTime.now().millisecondsSinceEpoch,
+            )
             .get()
             .then((value) => value.docs
                 .map((e) => AdModule.fromMap(e.data()..['uid'] = e.id))
@@ -211,8 +211,10 @@ class FirebaseFirestoreHelper {
       } else {
         final ads = await collection
             .where('isVisible', isEqualTo: true)
-            .where('validTill',
-                isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
+            .where(
+              'validTill',
+              isGreaterThanOrEqualTo: DateTime.now().millisecondsSinceEpoch,
+            )
             .get()
             .then((value) => value.docs
                 .map((e) => OfferModule.fromMap(e.data(), uid: e.id))
@@ -241,8 +243,10 @@ class FirebaseFirestoreHelper {
       } else {
         shops = await collection
             .where('isVisible', isEqualTo: true)
-            .where('validTill',
-                isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
+            .where(
+              'validTill',
+              isGreaterThanOrEqualTo: DateTime.now().millisecondsSinceEpoch,
+            )
             .get()
             .then((value) => value.docs
                 .map((e) => ShopModule.fromMap(e.data(), e.id))
@@ -591,8 +595,10 @@ class FirebaseFirestoreHelper {
       } else {
         final ads = await collection
             .where('isVisible', isEqualTo: true)
-            .where('validTill',
-                isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
+            .where(
+              'validTill',
+              isGreaterThanOrEqualTo: DateTime.now().millisecondsSinceEpoch,
+            )
             .get()
             .then((value) => value.docs
                 .map((e) => PopUpAdModule.fromMap(e.data(), uid: e.id))
