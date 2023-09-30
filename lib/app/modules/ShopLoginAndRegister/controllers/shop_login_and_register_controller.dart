@@ -17,6 +17,7 @@ import 'package:mataajer_saudi/app/data/modules/tap/tap_charge_req.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/functions/firebase_storage.dart';
 import 'package:mataajer_saudi/app/helpers/payments_helper.dart';
+import 'package:mataajer_saudi/app/helpers/seucre_storage.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/widgets/check_out_webview.dart';
@@ -118,6 +119,15 @@ class ShopLoginAndRegisterController extends GetxController {
         log('Email not verified');
         await Get.offAndToNamed(Routes.RESET_PASSWORD,
             arguments: {'isEmailVerify': true});
+      }
+
+      if (loginRememberMe) {
+        SecureStorageHelper.instance.storage.write(
+            key: SecureStorageHelper.LOGIN_EMAIL,
+            value: loginEmailController.text);
+        SecureStorageHelper.instance.storage.write(
+            key: SecureStorageHelper.LOGIN_PASSWORD,
+            value: loginPasswordController.text);
       }
 
       final shopModule = await FirebaseFirestoreHelper.instance
@@ -454,11 +464,30 @@ class ShopLoginAndRegisterController extends GetxController {
     }
   }
 
+  Future<void> fillLoginFileds() async {
+    var email = await SecureStorageHelper.instance.storage
+        .read(key: SecureStorageHelper.LOGIN_EMAIL);
+
+    var password = await SecureStorageHelper.instance.storage
+        .read(key: SecureStorageHelper.LOGIN_PASSWORD);
+
+    if (email != null) {
+      loginEmailController.text = email;
+    }
+    if (password != null) {
+      loginPasswordController.text = password;
+    }
+  }
+
   @override
   void onInit() async {
     super.onInit();
 
     loginRememberMe = GetStorage().read('loginRememberMe') ?? false;
+
+    if (loginRememberMe) {
+      await fillLoginFileds();
+    }
 
     final currentUser = FirebaseAuth.instance.currentUser;
 

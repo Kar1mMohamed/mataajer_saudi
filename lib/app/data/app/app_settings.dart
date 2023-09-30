@@ -10,21 +10,27 @@ class AppSettings {
   List<CategoryModule> categories;
   List<ChooseSubscriptionModule> subscriptions;
   List<String> admins;
+
+  /// THIS METHOD IS TO AVOID APPLE STORE IN-APP PURCHASE
+  bool? isVersionRelease;
   AppSettings({
     required this.categories,
     required this.subscriptions,
     required this.admins,
+    this.isVersionRelease,
   });
 
   AppSettings copyWith({
     List<CategoryModule>? categories,
     List<ChooseSubscriptionModule>? subscriptions,
     List<String>? admins,
+    bool? isVersionRelease,
   }) {
     return AppSettings(
       categories: categories ?? this.categories,
       subscriptions: subscriptions ?? this.subscriptions,
       admins: admins ?? this.admins,
+      isVersionRelease: isVersionRelease ?? this.isVersionRelease,
     );
   }
 
@@ -33,24 +39,27 @@ class AppSettings {
       'categories': categories.map((x) => x.toMap()).toList(),
       'subscriptions': subscriptions.map((x) => x.toMap()).toList(),
       'admins': admins,
+      'isVersionRelease': isVersionRelease,
     };
   }
 
   factory AppSettings.fromMap(Map<String, dynamic> map) {
     return AppSettings(
-        categories: List<CategoryModule>.from(
-          (map['categories'] as List<dynamic>).map<CategoryModule>(
-            (x) => CategoryModule.fromMap(x as Map<String, dynamic>),
-          ),
+      categories: List<CategoryModule>.from(
+        (map['categories'] as List<dynamic>).map<CategoryModule>(
+          (x) => CategoryModule.fromMap(x as Map<String, dynamic>),
         ),
-        subscriptions: List<ChooseSubscriptionModule>.from(
-          (map['subscriptions'] as List<dynamic>).map<ChooseSubscriptionModule>(
-            (x) => ChooseSubscriptionModule.fromMap(x as Map<String, dynamic>),
-          ),
+      ),
+      subscriptions: List<ChooseSubscriptionModule>.from(
+        (map['subscriptions'] as List<dynamic>).map<ChooseSubscriptionModule>(
+          (x) => ChooseSubscriptionModule.fromMap(x as Map<String, dynamic>),
         ),
-        admins: List<String>.from(
-          (map['admins'] as List<dynamic>),
-        ));
+      ),
+      admins: List<String>.from((map['admins'] as List<dynamic>)),
+      isVersionRelease: map['isVersionRelease'] != null
+          ? map['isVersionRelease'] as bool
+          : null,
+    );
   }
 
   String toJson() => json.encode(toMap());
@@ -59,8 +68,9 @@ class AppSettings {
       AppSettings.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() =>
-      'AppSettings(categories: $categories, subscriptions: $subscriptions, admins: $admins)';
+  String toString() {
+    return 'AppSettings(categories: $categories, subscriptions: $subscriptions, admins: $admins, isVersionRelease: $isVersionRelease)';
+  }
 
   @override
   bool operator ==(covariant AppSettings other) {
@@ -68,10 +78,15 @@ class AppSettings {
 
     return listEquals(other.categories, categories) &&
         listEquals(other.subscriptions, subscriptions) &&
-        listEquals(other.admins, admins);
+        listEquals(other.admins, admins) &&
+        other.isVersionRelease == isVersionRelease;
   }
 
   @override
-  int get hashCode =>
-      categories.hashCode ^ subscriptions.hashCode ^ admins.hashCode;
+  int get hashCode {
+    return categories.hashCode ^
+        subscriptions.hashCode ^
+        admins.hashCode ^
+        isVersionRelease.hashCode;
+  }
 }

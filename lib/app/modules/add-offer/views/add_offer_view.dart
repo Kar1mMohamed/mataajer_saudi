@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:mataajer_saudi/app/utils/custom_snackbar.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 import 'package:mataajer_saudi/utils/input_format.dart';
@@ -75,6 +76,9 @@ class AddOfferView extends GetView<AddOfferController> {
                   SizedBox(height: 30.h),
                   _fieldItem('نسبة الخصم', controller.offerPercentage,
                       height: 50.h, isNumbersOnly: true, onChanged: (v) {
+                    if (controller.beforePrice.text.isEmpty) {
+                      return;
+                    }
                     if (v.isNotEmpty && v.isNumericOnly) {
                       controller.afterPrice.text =
                           (double.parse(controller.beforePrice.text) -
@@ -297,7 +301,7 @@ class AddOfferView extends GetView<AddOfferController> {
             controller: controller,
             maxLines: height != null ? 10 : 1,
             inputFormatters: (isNumbersOnly != null && isNumbersOnly == true)
-                ? numbersOnlyInputFormat
+                ? numbersOnlyWithPrecisionInputFormat
                 : null,
             decoration: InputDecoration(
               fillColor: Colors.white,

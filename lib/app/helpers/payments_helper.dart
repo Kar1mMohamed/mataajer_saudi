@@ -24,7 +24,7 @@ class PaymentsHelper {
   // static String get authToken => Sys.isDebug ? _debugAuthToken : _liveAuthToken;
   // static int get profileId => Sys.isDebug ? _debugProfileId : _liveProfileId;
 
-  static String get authToken => _liveAuthToken;
+  static String get authToken => _debugAuthToken;
   // _debugAuthToken;
 
   // static CustomerDetails get staticAddress => CustomerDetails(

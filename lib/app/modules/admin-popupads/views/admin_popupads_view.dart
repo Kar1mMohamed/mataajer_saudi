@@ -116,7 +116,7 @@ class AdminPopupadsView extends GetView<AdminPopupadsController> {
         border: Border.all(color: Colors.grey.shade300),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           InkWell(
             onTap: () {
@@ -142,75 +142,88 @@ class AdminPopupadsView extends GetView<AdminPopupadsController> {
               ),
             ),
           ),
-          Column(
-            children: [
-              InkWell(
-                onTap: () {
-                  if (ad.url != null) {
-                    URLLauncherFuntions.launchURL(ad.url!);
-                  }
-                },
-                child: Text(
-                  ad.url ?? '',
-                  style: const TextStyle(color: Colors.blue),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              if (ad.cancelReason != null)
-                Text(
-                  'سبب الرفض: ${ad.cancelReason}',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.red),
-                ),
-            ],
-          ),
-          IconButton(
-            onPressed: () {
-              final cancelReasonController = TextEditingController();
-              Get.dialog(
-                Dialog(
-                  backgroundColor: Colors.white,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 20.0.sp, vertical: 10.0.sp),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        textField(
-                          hint: 'سبب الرفض',
-                          controller: cancelReasonController,
-                        ),
-                        RoundedButton(
-                          text: 'رفض',
-                          press: () async {
-                            await controller.cancelFunction(
-                                ad..cancelReason = cancelReasonController.text);
-                            Get.back();
-                          },
-                        ),
-                      ],
-                    ),
+          SizedBox(width: 5.w),
+          Flexible(
+            child: Column(
+              children: [
+                InkWell(
+                  onTap: () {
+                    if (ad.url != null) {
+                      URLLauncherFuntions.launchURL(ad.url!);
+                    }
+                  },
+                  child: Text(
+                    ad.url ?? '',
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        color: Colors.blue, overflow: TextOverflow.ellipsis),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-              );
-            },
-            icon: const Icon(
-              Icons.cancel,
-              color: Colors.red,
+                if (ad.cancelReason != null)
+                  Text(
+                    'سبب الرفض: ${ad.cancelReason}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+              ],
             ),
           ),
-          if (!(ad.isVisible ?? false) && ad.isCanAcceptOrCancel)
-            IconButton(
-              onPressed: () async {
-                await FirebaseFirestoreHelper.instance
-                    .updatePopUpAdVisibility(ad..isVisible = true);
-              },
-              icon: const Icon(
-                Icons.check,
-                color: Colors.green,
+          Row(
+            children: [
+              IconButton(
+                onPressed: () {
+                  final cancelReasonController = TextEditingController();
+                  Get.dialog(
+                    Dialog(
+                      backgroundColor: Colors.white,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 20.0.sp, vertical: 10.0.sp),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            textField(
+                              hint: 'سبب الرفض',
+                              controller: cancelReasonController,
+                            ),
+                            RoundedButton(
+                              text: 'رفض',
+                              press: () async {
+                                await controller.cancelFunction(ad
+                                  ..cancelReason = cancelReasonController.text);
+                                Get.back();
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(
+                  Icons.cancel,
+                  color: Colors.red,
+                ),
               ),
-            ),
+              if (!(ad.isVisible ?? false) && ad.isCanAcceptOrCancel)
+                IconButton(
+                  onPressed: () async {
+                    await FirebaseFirestoreHelper.instance
+                        .updatePopUpAdVisibility(ad..isVisible = true);
+
+                    ad.isVisible = true;
+
+                    controller.update();
+                  },
+                  icon: const Icon(
+                    Icons.check,
+                    color: Colors.green,
+                  ),
+                ),
+            ],
+          )
         ],
       ),
     );

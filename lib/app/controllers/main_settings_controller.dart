@@ -108,6 +108,8 @@ class MainSettingsController extends GetxController {
       subscriptions = appSettings.subscriptions;
       admins = appSettings.admins;
 
+      isVersionRelease = appSettings.isVersionRelease ?? false;
+
       log('appSettings: $appSettings');
 
       return appSettings;
@@ -117,25 +119,25 @@ class MainSettingsController extends GetxController {
     }
   }
 
-  /// THIS METHOD IS TO AVOID APPLE STORE IN-APP PURCHASE
-  Future<void> checkAppVersion() async {
-    if (!Platform.isIOS) return;
-    try {
-      var res =
-          await http.get(Uri.parse('https://matajer-ksa.com/app/version.php'));
+  // /// THIS METHOD IS TO AVOID APPLE STORE IN-APP PURCHASE
+  // Future<void> checkAppVersion() async {
+  //   if (!Platform.isIOS) return;
+  //   try {
+  //     var res =
+  //         await http.get(Uri.parse('https://matajer-ksa.com/app/version.php'));
 
-      if (res.statusCode == 200) {
-        var body = res.body;
-        var codeunits = body.codeUnits;
+  //     if (res.statusCode == 200) {
+  //       var body = res.body;
+  //       var codeunits = body.codeUnits;
 
-        if (codeunits.length == 28 && codeunits.last == 41) {
-          isVersionRelease = true;
-        }
-      }
-    } catch (e) {
-      log('checkAppVersion: $e');
-    } finally {
-      log('isVersionRelease: $isVersionRelease');
-    }
-  }
+  //       if (codeunits.length == 28 && codeunits.last == 41) {
+  //         isVersionRelease = true;
+  //       }
+  //     }
+  //   } catch (e) {
+  //     log('checkAppVersion: $e');
+  //   } finally {
+  //     log('isVersionRelease: $isVersionRelease');
+  //   }
+  // }
 }

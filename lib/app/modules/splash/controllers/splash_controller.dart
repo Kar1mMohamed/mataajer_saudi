@@ -17,7 +17,6 @@ class SplashController extends GetxController {
       // await mainSettingsController.getCategories();
       // await mainSettingsController.getSubscriptions();
       await mainSettingsController.getAppSettings();
-      await mainSettingsController.checkAppVersion();
 
       // final offer = await FirebaseFirestoreHelper.instance
       //     .getOffers()
