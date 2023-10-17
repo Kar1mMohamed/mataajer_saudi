@@ -48,7 +48,11 @@ class AddPopupAdController extends GetxController {
       if (!await photosPerm.request().isGranted) {
         await photosPerm.request();
         KSnackBar.error('يجب السماح بالوصول للصور');
-        throw 'Permission not granted';
+        await Future.delayed(Duration(seconds: 1));
+        await openAppSettings();
+
+        // throw 'Permission not granted';
+        return;
       }
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
