@@ -7,8 +7,10 @@ import 'package:mataajer_saudi/app/utils/log.dart';
 class PreviewOfferDialogController extends GetxController {
   final OfferModule offerModule;
   PreviewOfferDialogController({required this.offerModule});
-  void addView() =>
-      FirebaseFirestoreHelper.instance.addHit('offers', offerModule.uid!);
+  void addView() {
+    offerModule.hits = offerModule.hits! + 1;
+    FirebaseFirestoreHelper.instance.addHit('offers', offerModule.uid!);
+  }
 
   List<OfferModule> get similarAds {
     try {
@@ -30,8 +32,8 @@ class PreviewOfferDialogController extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     addView();
     log('PreviewOfferDialogController initialized for uid: ${offerModule.name}');
-    super.onInit();
   }
 }

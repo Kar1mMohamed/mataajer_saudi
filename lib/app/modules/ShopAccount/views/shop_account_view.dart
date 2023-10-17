@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
+import 'package:mataajer_saudi/app/functions/url_launcher.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
 import 'package:mataajer_saudi/app/utils/custom_snackbar.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
@@ -64,7 +65,15 @@ class ShopAccountView extends GetView<ShopAccountController> {
                     isEmail: true, imageAssetIcon: Assets.emailPNG),
                 SizedBox(height: 20.h),
                 _fieldItem('رابط المتجر', controller.shopLinkController,
-                    imageAssetIcon: Assets.marketVectorPNG),
+                    imageAssetIcon: Assets.marketVectorPNG,
+                    isStatic: controller.isURLStatic),
+                TextButton(
+                  onPressed: () {
+                    URLLauncherFuntions.launchURL(
+                        controller.shopLinkController.text);
+                  },
+                  child: const Text('اضغط هنا لفتح الرابط'),
+                ),
                 SizedBox(height: 20.h),
                 chooseCategory(),
                 SizedBox(height: 20.h),
@@ -555,6 +564,7 @@ class ShopAccountView extends GetView<ShopAccountController> {
     void Function()? showPasswordTap,
     void Function(String)? onFieldSubmitted,
     double? height,
+    bool isStatic = false,
   }) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -572,6 +582,7 @@ class ShopAccountView extends GetView<ShopAccountController> {
         SizedBox(
           height: height,
           child: TextFormField(
+            readOnly: isStatic,
             style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,

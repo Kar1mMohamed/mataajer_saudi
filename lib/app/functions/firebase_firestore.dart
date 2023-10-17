@@ -211,10 +211,8 @@ class FirebaseFirestoreHelper {
       } else {
         final ads = await collection
             .where('isVisible', isEqualTo: true)
-            .where(
-              'validTill',
-              isGreaterThanOrEqualTo: DateTime.now().millisecondsSinceEpoch,
-            )
+            .where('validTill',
+                isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
             .get()
             .then((value) => value.docs
                 .map((e) => OfferModule.fromMap(e.data(), uid: e.id))
@@ -222,7 +220,9 @@ class FirebaseFirestoreHelper {
 
         log('offers: ${ads.length}');
 
-        return ads.where((element) => element.remainingDays > 0).toList();
+        return ads
+            .where((element) => element.remainingDays > 0)
+            .toList(); // return offers that valid at same day or greater
       }
     } catch (e) {
       log(e);

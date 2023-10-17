@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:mataajer_saudi/app/utils/custom_snackbar.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 import 'package:mataajer_saudi/utils/input_format.dart';
@@ -303,6 +302,7 @@ class AddOfferView extends GetView<AddOfferController> {
             inputFormatters: (isNumbersOnly != null && isNumbersOnly == true)
                 ? numbersOnlyWithPrecisionInputFormat
                 : null,
+
             decoration: InputDecoration(
               fillColor: Colors.white,
               prefixIcon: imageAssetIcon != null

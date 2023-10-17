@@ -4,7 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 class MainPermisionsController extends GetxController {
   Permission get photosPerm {
     if (GetPlatform.isAndroid) {
-      return Permission.storage;
+      return Permission.photos;
     } else if (GetPlatform.isIOS) {
       return Permission.photos;
     }

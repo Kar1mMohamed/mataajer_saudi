@@ -73,8 +73,8 @@ class AddAdController extends GetxController {
       if (imageURL == null) {
         throw 'يجب اختيار صورة';
       }
-      if (shopLinkController.text.isEmpty) {
-        throw 'يجب ادخال رابط المتجر';
+      if (shopLinkController.text.isEmpty || !shopLinkController.text.isURL) {
+        throw 'يجب ادخال الرابط صحيح';
       }
       if (currentShop == null) {
         throw 'يجب تسجيل الدخول';

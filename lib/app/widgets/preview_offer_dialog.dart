@@ -16,6 +16,7 @@ class PreviewOfferDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     PreviewOfferDialogController controller =
         Get.put(PreviewOfferDialogController(offerModule: offerModule));
+
     return GetBuilder<PreviewOfferDialogController>(builder: (context) {
       return Dialog(
         insetPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 35.h),

@@ -56,6 +56,8 @@ class ShopAccountController extends GetxController {
   bool isHasTamara = false;
   bool isHasTabby = false;
 
+  bool isURLStatic = true;
+
   void updateShowCategories() {
     showCategories = !showCategories;
     update(['showCategories']);
@@ -206,11 +208,19 @@ class ShopAccountController extends GetxController {
     }
   }
 
+  void allowEditURLIfAdmin() {
+    var uid = FirebaseAuth.instance.currentUser?.uid;
+    if (mainSettingsController.admins.contains(uid)) {
+      isURLStatic = false;
+    }
+  }
+
   @override
   void onInit() async {
     await getShop();
     initilizeDropMenu();
     setAlreadySetted();
+    allowEditURLIfAdmin();
     super.onInit();
   }
 }

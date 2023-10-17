@@ -317,11 +317,14 @@ class ShopLoginAndRegisterController extends GetxController {
       final finalShopModule = await FirebaseFirestoreHelper.instance
           .getShopModule(regResponse.user!.uid);
 
-      await finalShopModule.updateValidTill();
-      await finalShopModule.updatePrivileges();
+      await Future.wait([
+        finalShopModule.updateValidTill(),
+        finalShopModule.updatePrivileges(),
+        if (!regResponse.user!.emailVerified)
+          regResponse.user!.sendEmailVerification(),
+      ]);
 
-      await regResponse.user!.sendEmailVerification();
-      await Get.offAndToNamed(Routes.RESET_PASSWORD,
+      Get.offAndToNamed(Routes.RESET_PASSWORD,
           arguments: {'isEmailVerify': true});
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -439,7 +442,8 @@ class ShopLoginAndRegisterController extends GetxController {
         // throw 'Email not verified';
         log('Email not verified');
 
-        await FirebaseAuth.instance.currentUser!.sendEmailVerification();
+        FirebaseAuth.instance.currentUser!.sendEmailVerification();
+
         await Get.offAndToNamed(Routes.RESET_PASSWORD,
             arguments: {'isEmailVerify': true});
       }
@@ -484,16 +488,21 @@ class ShopLoginAndRegisterController extends GetxController {
     super.onInit();
 
     loginRememberMe = GetStorage().read('loginRememberMe') ?? false;
-
-    if (loginRememberMe) {
-      await fillLoginFileds();
-    }
-
     final currentUser = FirebaseAuth.instance.currentUser;
 
-    if (loginRememberMe && currentUser != null) {
-      await automaticLogin(currentUser.uid);
-    }
+    await Future.wait([
+      if (loginRememberMe) fillLoginFileds(),
+      if (loginRememberMe && currentUser != null)
+        automaticLogin(currentUser.uid),
+    ]);
+
+    // if (loginRememberMe) {
+    //   await fillLoginFileds();
+    // }
+
+    // if (loginRememberMe && currentUser != null) {
+    //   await automaticLogin(currentUser.uid);
+    // }
 
     if (isNavigateToRegister) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {

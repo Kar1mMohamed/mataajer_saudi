@@ -56,7 +56,11 @@ class AddOfferController extends GetxController {
       if (!await photosPerm.request().isGranted) {
         await photosPerm.request();
         KSnackBar.error('يجب السماح بالوصول للصور');
-        throw 'Permission not granted';
+        await Future.delayed(Duration(seconds: 1));
+        await openAppSettings();
+
+        // throw 'Permission not granted';
+        return;
       }
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
@@ -82,8 +86,8 @@ class AddOfferController extends GetxController {
       if (imageURL == null) {
         throw 'يجب اختيار صورة';
       }
-      if (shopLinkController.text.isEmpty) {
-        throw 'يجب ادخال رابط المتجر';
+      if (shopLinkController.text.isEmpty || !shopLinkController.text.isURL) {
+        throw 'يجب ادخال الرابط صحيح صحيح';
       }
       if (currentShop == null) {
         throw 'يجب تسجيل الدخول';
@@ -178,8 +182,10 @@ class AddOfferController extends GetxController {
   void onInit() async {
     super.onInit();
     if (isSignedIn) {
-      await getCurrentShopModule();
-      await getOffers();
+      await Future.wait([
+        getCurrentShopModule(),
+        getOffers(),
+      ]);
     }
   }
 }

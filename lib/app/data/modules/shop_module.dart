@@ -152,31 +152,31 @@ class ShopModule {
     // return true; // Temprory true untill do it as logic
   }
 
-  bool get isMostOffers {
-    try {
-      final allOffers = Get.find<HomeController>().offers;
-      final offers = allOffers
-          .where((element) => element.shopUID == uid)
-          .toList()
-        ..sort((a, b) => b.hits?.compareTo(a.hits ?? 0) ?? 0);
+  // bool get isMostOffers {
+  //   try {
+  //     final allOffers = Get.find<HomeController>().offers;
+  //     final offers = allOffers
+  //         .where((element) => element.shopUID == uid)
+  //         .toList()
+  //       ..sort((a, b) => b.hits?.compareTo(a.hits ?? 0) ?? 0);
 
-      if (offers.isEmpty) return false;
+  //     if (offers.isEmpty) return false;
 
-      final bestOffers = offers.take(20);
+  //     final bestOffers = offers.take(20);
 
-      bool isCurrentOfferInsideBsetShops =
-          bestOffers.where((element) => element.uid == uid).toList().isNotEmpty;
+  //     bool isCurrentOfferInsideBsetShops =
+  //         bestOffers.where((element) => element.uid == uid).toList().isNotEmpty;
 
-      return isCurrentOfferInsideBsetShops;
-    } catch (e) {
-      log('isMostOffers error: $e');
-      return false;
-    }
-    // return true; // Temprory true untill do it as logic
-  }
+  //     return isCurrentOfferInsideBsetShops;
+  //   } catch (e) {
+  //     log('isMostOffers error: $e');
+  //     return false;
+  //   }
+  //   // return true; // Temprory true untill do it as logic
+  // }
 
   bool get isOtherAd {
-    if ((isStaticAd ?? false) || isMostOffers || isMostOffers) {
+    if ((isStaticAd ?? false)) {
       return false;
     } else {
       return true;

@@ -21,8 +21,9 @@ class AdminInvoiceShopModule {
     final subscriptionSettingUID = invoice.subscriptionSettingUID;
     final subscriptionSetting = Get.find<MainSettingsController>()
         .subscriptions
-        .where((element) => element.uid == subscriptionSettingUID)
-        .first;
+        .firstWhereOrNull((element) => element.uid == subscriptionSettingUID);
+
+    if (subscriptionSetting == null) return 'غير مشترك';
 
     return subscriptionSetting.name ?? '';
   }

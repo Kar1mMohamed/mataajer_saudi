@@ -103,7 +103,7 @@ class AllOffersView extends GetView<AllOffersController> {
                   borderRadius: BorderRadius.circular(10.r),
                   image: DecorationImage(
                     image: NetworkImage(offer.imageURL),
-                    fit: BoxFit.fill,
+                    fit: BoxFit.cover,
                   ),
                   boxShadow: [
                     BoxShadow(

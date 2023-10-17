@@ -44,8 +44,12 @@ class HomeController extends GetxController {
   // mostViewed.addAll(controller.shops);
   // mostViewed.sort((a, b) => (b.hits ?? 0).compareTo(a.hits ?? 0));
 
-  List<ShopModule> get mostOffers =>
-      shops.where((element) => element.isMostOffers).toList();
+  List<ShopModule> get mostOffers {
+    var shops = this.shops;
+    shops.sort((a, b) => (b.hits ?? 0).compareTo(a.hits ?? 0));
+
+    return shops;
+  }
 
   List<ShopModule> get others =>
       shops.where((element) => element.isOtherAd).toList();
@@ -135,7 +139,7 @@ class HomeController extends GetxController {
 
       final offersList = await FirebaseFirestoreHelper.instance.getOffers();
       _offers = offersList;
-      log('offers: ${_offers.length}');
+      log('_offers: ${_offers.length}');
     } catch (e) {
       log(e);
     } finally {
@@ -276,13 +280,12 @@ class HomeController extends GetxController {
     isHomeFullyInitilized = false;
     update();
 
-    if (isSignedIn) {
-      await getCurrentShop();
-    }
-    await getShops();
-    await getOffers();
-    await getHomeBanners();
-
+    await Future.wait([
+      if (isSignedIn) getCurrentShop(),
+      getShops(),
+      getOffers(),
+      getHomeBanners(),
+    ]);
     Get.find<MainNotificationController>().getNotificationsCount();
 
     if (FirebaseAuth.instance.currentUser == null) {

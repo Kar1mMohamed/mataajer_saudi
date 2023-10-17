@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 
 import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
 
 class OfferModule {
   final String? uid;
@@ -30,9 +31,13 @@ class OfferModule {
   double? priceBefore;
   double? priceAfter;
 
+  /// (+1): if = 1 that mean that this valid to 'this' day
   int get remainingDays {
     if (toDate == null) return 0;
-    return toDate!.difference(DateTime.now()).inDays;
+    var remainingDays = DateTime.now().difference(toDate!).inDays;
+    log('remainingDays: $remainingDays');
+
+    return remainingDays + 1;
   }
 
   // bool get isMostVisitedOffer {
