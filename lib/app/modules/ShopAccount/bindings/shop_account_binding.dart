@@ -7,6 +7,7 @@ class ShopAccountBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<ShopAccountController>(
       () => ShopAccountController(),
+      fenix: true,
     );
   }
 }

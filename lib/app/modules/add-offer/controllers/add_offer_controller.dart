@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mataajer_saudi/app/controllers/main_account_controller.dart';
 import 'package:mataajer_saudi/app/controllers/main_permisions_controller.dart';
+import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/offer_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
@@ -35,6 +36,12 @@ class AddOfferController extends GetxController {
 
   int chooseDuration = 1;
 
+  bool showCategories = false;
+
+  List<CategoryModule> get categoriesList => currentShop!.categories;
+
+  List<CategoryModule> choosedCategories = [];
+
   Future<void> getCurrentShopModule() async {
     try {
       loading = true;
@@ -56,7 +63,7 @@ class AddOfferController extends GetxController {
       if (!await photosPerm.request().isGranted) {
         await photosPerm.request();
         KSnackBar.error('يجب السماح بالوصول للصور');
-        await Future.delayed(Duration(seconds: 1));
+        await Future.delayed(const Duration(seconds: 1));
         await openAppSettings();
 
         // throw 'Permission not granted';
@@ -110,6 +117,9 @@ class AddOfferController extends GetxController {
       if (chooseDuration == 0) {
         throw 'يجب اختيار مدة العرض';
       }
+      if (choosedCategories.isEmpty) {
+        throw 'يجب اختيار تصنيف واحد على الاقل';
+      }
       loading = true;
       update();
 
@@ -120,7 +130,7 @@ class AddOfferController extends GetxController {
         name: offerName.text,
         shopDescription: currentShop!.description,
         offerDescription: offerDescription.text,
-        categoryUIDs: currentShop!.categoriesUIDs,
+        categoryUIDs: choosedCategories.map((e) => e.uid!).toList(),
         imageURL: imageURL!,
         avgShippingPrice: currentShop!.avgShippingPrice,
         avgShippingTime: currentShop!.avgShippingTime,
@@ -176,6 +186,11 @@ class AddOfferController extends GetxController {
 
   void showOffer(OfferModule offer) {
     Get.dialog(PreviewOfferDialog(offerModule: offer));
+  }
+
+  void updateShowCategories() {
+    showCategories = !showCategories;
+    update(['showCategories']);
   }
 
   @override

@@ -98,9 +98,8 @@ class PopUpAdModule {
           map['description'] != null ? map['description'] as String : null,
       image: map['image'] as String,
       isVisible: map['isVisible'] != null ? map['isVisible'] as bool : null,
-      validTill: map['validTill'] != null
-          ? (map['validTill'] as Timestamp).toDate()
-          : null,
+      validTill:
+          map['validTill'] != null ? _handleTime(map['validTill']) : null,
       url: map['url'] != null ? map['url'] as String : null,
       shopUID: map['shopUID'],
       hits: map['hits'] != null ? map['hits'] as int : null,
@@ -153,5 +152,16 @@ class PopUpAdModule {
         hits.hashCode ^
         date.hashCode ^
         cancelReason.hashCode;
+  }
+
+  static DateTime _handleTime(dynamic date) {
+    if (date is int) {
+      return DateTime.fromMillisecondsSinceEpoch(date);
+    } else if (date is Timestamp) {
+      return date.toDate();
+    } else {
+      // return DateTime.now();
+      throw Exception('Invalid date type');
+    }
   }
 }

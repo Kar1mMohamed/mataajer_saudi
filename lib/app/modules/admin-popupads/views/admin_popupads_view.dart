@@ -38,7 +38,7 @@ class AdminPopupadsView extends GetView<AdminPopupadsController> {
                   children: [
                     Flexible(
                       child: RoundedButton(
-                        text: 'المستقبلة',
+                        text: 'الجديدة',
                         press: () {
                           controller.showIsNotActive = true;
                           controller.update();

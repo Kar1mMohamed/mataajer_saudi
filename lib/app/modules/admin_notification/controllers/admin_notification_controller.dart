@@ -117,6 +117,8 @@ class AdminNotificationController extends GetxController {
 
       await CloudMessaging.increaseSentNumber(module.senderUserUID!, dateUID);
 
+      await getNotifications();
+
       KSnackBar.success('تم ارسال الاشعارات بنجاح');
     } catch (e) {
       log(e);

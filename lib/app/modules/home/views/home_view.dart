@@ -126,11 +126,11 @@ class HomeView extends GetView<HomeController> {
                       }),
                 ),
                 SizedBox(height: 20.h),
-                Padding(
-                  padding: EdgeInsets.all(8.0.sp),
-                  child: homeBanners(context),
-                ),
-                SizedBox(height: 20.h),
+                // Padding(
+                //   padding: EdgeInsets.all(8.0.sp),
+                //   child: homeBanners(context),
+                // ),
+                // SizedBox(height: 20.h),
                 GetBuilder<HomeController>(
                     id: 'all-ads',
                     builder: (_) {

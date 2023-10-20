@@ -212,13 +212,17 @@ class FirebaseFirestoreHelper {
         final ads = await collection
             .where('isVisible', isEqualTo: true)
             .where('validTill',
-                isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now()))
+                isGreaterThanOrEqualTo: DateTime.now().millisecondsSinceEpoch)
             .get()
             .then((value) => value.docs
                 .map((e) => OfferModule.fromMap(e.data(), uid: e.id))
                 .toList());
 
         log('offers: ${ads.length}');
+
+        // ads.forEach((element) {
+        //   print('remainingDays: ${element.remainingDays}');
+        // });
 
         return ads
             .where((element) => element.remainingDays > 0)
@@ -230,7 +234,8 @@ class FirebaseFirestoreHelper {
     }
   }
 
-  Future<List<ShopModule>> getShops({bool? forAdmin}) async {
+  Future<List<ShopModule>> getShops(
+      {bool? forAdmin, bool getSubscriptions = false}) async {
     forAdmin ??= false;
     try {
       var collection = FirebaseFirestore.instance.collection('shops');
@@ -240,8 +245,15 @@ class FirebaseFirestoreHelper {
       if (forAdmin) {
         shops = await collection.get().then((value) =>
             value.docs.map((e) => ShopModule.fromMap(e.data(), e.id)).toList());
+
+        if (getSubscriptions) {
+          for (var shop in shops) {
+            await shop.getSubscriptions();
+          }
+        }
       } else {
         shops = await collection
+            .where('verified', isEqualTo: true)
             .where('isVisible', isEqualTo: true)
             .where(
               'validTill',
@@ -257,6 +269,12 @@ class FirebaseFirestoreHelper {
           element.categories.isEmpty || element.categoriesUIDs.isEmpty);
 
       log('shops: ${shops.length}');
+
+      if (getSubscriptions) {
+        for (var shop in shops) {
+          await shop.getSubscriptions();
+        }
+      }
 
       return shops;
     } catch (e) {
@@ -337,6 +355,23 @@ class FirebaseFirestoreHelper {
     } catch (e) {
       log(e);
       return 0;
+    }
+  }
+
+  Future<List<NotificationModule>> getUserNotifications(String userUID) async {
+    try {
+      var collection = FirebaseFirestore.instance
+          .collection('notifications')
+          .where('senderUserUID', isEqualTo: userUID)
+          .get()
+          .then((value) => value.docs
+              .map((e) => NotificationModule.fromMap(e.data()))
+              .toList());
+
+      return collection;
+    } catch (e) {
+      log('getUserNotifications: $e');
+      return [];
     }
   }
 
@@ -463,6 +498,20 @@ class FirebaseFirestoreHelper {
           .collection('shops')
           .doc(module.uid)
           .update({'isVisible': module.isVisible});
+    } catch (e) {
+      log(e);
+      rethrow;
+    }
+  }
+
+  Future<void> updateShopVerification(ShopModule module) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('shops')
+          .doc(module.uid)
+          .update({'verified': module.verified});
+
+      log('updated shop verification: ${module.verified}, ${module.uid}');
     } catch (e) {
       log(e);
       rethrow;
@@ -672,6 +721,20 @@ class FirebaseFirestoreHelper {
           .collection('offers')
           .doc(offer.uid)
           .delete();
+    } catch (e) {
+      log(e);
+    }
+  }
+
+  Future<void> updateUserSubscription(
+      String userUID, String subUID, SubscriptionModule module) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('shops')
+          .doc(userUID)
+          .collection('subscriptions')
+          .doc(subUID)
+          .update(module.toMap());
     } catch (e) {
       log(e);
     }

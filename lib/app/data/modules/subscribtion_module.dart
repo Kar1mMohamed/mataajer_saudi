@@ -44,9 +44,9 @@ class SubscriptionModule {
     };
   }
 
-  factory SubscriptionModule.fromMap(Map<String, dynamic> map) {
+  factory SubscriptionModule.fromMap(Map<String, dynamic> map, {String? uid}) {
     return SubscriptionModule(
-      uid: map['uid'] != null ? map['uid'] as String : null,
+      uid: uid ?? (map['uid'] != null ? map['uid'] as String : null),
       from: _handleDateTime(map['from'])!,
       to: _handleDateTime(map['to'])!,
       subscriptionSettingUID: map['subscriptionSettingUID'] != null

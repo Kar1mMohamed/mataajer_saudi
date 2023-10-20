@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -7,7 +5,6 @@ import 'package:mataajer_saudi/app/data/app/app_settings.dart';
 import 'package:mataajer_saudi/app/data/modules/category_module.dart';
 import 'package:mataajer_saudi/app/data/modules/choose_subscription_module.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
-import 'package:http/http.dart' as http;
 
 class MainSettingsController extends GetxController {
   ///

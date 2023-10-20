@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:mataajer_saudi/app/data/modules/category_module.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/back_button.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 import 'package:mataajer_saudi/utils/input_format.dart';
@@ -58,6 +61,9 @@ class AddOfferView extends GetView<AddOfferController> {
                     height: 50.h,
                   ),
                   SizedBox(height: 30.h),
+                  chooseCategory(),
+                  SizedBox(height: 30.h),
+
                   _fieldItem(
                     'ضع رابط الخدمة او المنتج  ',
                     controller.shopLinkController,
@@ -507,6 +513,128 @@ class AddOfferView extends GetView<AddOfferController> {
         ),
       ),
       barrierDismissible: false,
+    );
+  }
+
+  Widget chooseCategory() {
+    return Column(
+      children: [
+        InkWell(
+          onTap: () => controller.updateShowCategories(),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 10.sp, vertical: 20.sp),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('التصنيفات'),
+                Icon(Icons.arrow_drop_down),
+              ],
+            ),
+          ),
+        ),
+        GetBuilder<AddOfferController>(
+            id: 'showCategories',
+            builder: (_) {
+              return Visibility(
+                visible: controller.showCategories,
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 10.sp, vertical: 20.sp),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 7,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: MultiSelectContainer<CategoryModule>(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    textStyles: MultiSelectTextStyles(
+                      selectedTextStyle: TextStyle(
+                        color: const Color(0xFF5E5E5E),
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textStyle: TextStyle(
+                        color: const Color(0xFF5E5E5E),
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    itemsDecoration: const MultiSelectDecorations(
+                      selectedDecoration: BoxDecoration(
+                        color: Colors.white,
+                      ),
+                    ),
+                    prefix: MultiSelectPrefix(
+                      enabledPrefix: Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.grey, width: 0.5),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(2.0),
+                            child: Icon(
+                              Icons.check,
+                              size: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      selectedPrefix: Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: MataajerTheme.mainColor,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.grey, width: 0.5),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(2.0),
+                            child: Icon(
+                              Icons.check,
+                              size: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    items: controller.categoriesList
+                        .map(
+                          (e) => MultiSelectCard(
+                            selected: controller.choosedCategories.contains(e),
+                            value: e,
+                            child: Text(e.name),
+                          ),
+                        )
+                        .toList(),
+                    onChange: (allSelectedItems, selectedItem) {
+                      controller.choosedCategories = allSelectedItems;
+                      controller.update();
+                      log('categories: ${controller.choosedCategories}');
+                    },
+                  ),
+                ),
+              );
+            }),
+      ],
     );
   }
 }

@@ -8,7 +8,7 @@ class PreviewOfferDialogController extends GetxController {
   final OfferModule offerModule;
   PreviewOfferDialogController({required this.offerModule});
   void addView() {
-    offerModule.hits = offerModule.hits! + 1;
+    offerModule.hits = (offerModule.hits ?? 0) + 1;
     FirebaseFirestoreHelper.instance.addHit('offers', offerModule.uid!);
   }
 

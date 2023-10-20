@@ -102,19 +102,20 @@ class AdminUsersView extends GetView<AdminUsersController> {
                                     ],
                                   ),
                                   trailing: IconButton(
-                                      onPressed: () async {
-                                        controller.loading = true;
-                                        controller.updateShopCard(index);
+                                    onPressed: () async {
+                                      controller.loading = true;
+                                      controller.updateShopCard(index);
 
-                                        await controller.deleteShop(
-                                            controller.shops[index]);
-                                        await controller.getShops();
+                                      await controller
+                                          .deleteShop(controller.shops[index]);
+                                      await controller.getShops();
 
-                                        controller.loading = false;
-                                        controller.updateShopCard(index);
-                                      },
-                                      icon: const Icon(Icons.delete,
-                                          color: Colors.red)),
+                                      controller.loading = false;
+                                      controller.updateShopCard(index);
+                                    },
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
+                                  ),
                                 );
                               });
                         },

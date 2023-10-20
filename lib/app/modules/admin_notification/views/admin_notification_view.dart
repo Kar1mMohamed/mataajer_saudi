@@ -37,7 +37,7 @@ class AdminNotificationView extends GetView<AdminNotificationController> {
                   children: [
                     Flexible(
                       child: RoundedButton(
-                        text: 'المستقبلة',
+                        text: 'جديدة',
                         press: () {
                           controller.showIsNotActive = true;
                           controller.update();

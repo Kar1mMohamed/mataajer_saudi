@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 import '../controllers/on_boarding_controller.dart';
 
@@ -29,6 +30,7 @@ class OnBoardingView extends GetView<OnBoardingController> {
                   hoverColor: Colors.transparent,
                   overlayColor: MaterialStateProperty.all(Colors.transparent),
                   onTap: () async {
+                    log('isShopOwner: false');
                     controller.isShopOwner.value = false;
                     controller.update();
                   },
@@ -43,6 +45,7 @@ class OnBoardingView extends GetView<OnBoardingController> {
                   hoverColor: Colors.transparent,
                   overlayColor: MaterialStateProperty.all(Colors.transparent),
                   onTap: () {
+                    log('isShopOwner: true');
                     controller.isShopOwner.value = true;
                     controller.update();
                   },

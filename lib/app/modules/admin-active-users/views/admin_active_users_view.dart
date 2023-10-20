@@ -4,8 +4,10 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/data/assets.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
 import 'package:mataajer_saudi/app/extensions/for_admin.dart';
+import 'package:mataajer_saudi/app/functions/url_launcher.dart';
 import 'package:mataajer_saudi/app/routes/app_pages.dart';
 import 'package:mataajer_saudi/app/theme/theme.dart';
+import 'package:mataajer_saudi/app/utils/custom_snackbar.dart';
 import 'package:mataajer_saudi/app/widgets/custom_switch.dart';
 import 'package:mataajer_saudi/app/widgets/drawer.dart';
 import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
@@ -68,7 +70,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
 
   Widget allShops() {
     if (controller.loading) {
-      return MataajerTheme.loadingWidget;
+      return const Center(child: CircularProgressIndicator());
     }
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
@@ -77,7 +79,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
           id: 'allShopsCard-$index',
           builder: (_) {
             if (controller.loading) {
-              return MataajerTheme.loadingWidget;
+              return const Center(child: CircularProgressIndicator());
             }
             return _shopCard(controller.allShops[index], index);
           }),
@@ -87,7 +89,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
 
   Widget activeShops() {
     if (controller.loading) {
-      return MataajerTheme.loadingWidget;
+      return const Center(child: CircularProgressIndicator());
     }
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
@@ -96,7 +98,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
           id: 'activeShopsCard-$index',
           builder: (_) {
             if (controller.loading) {
-              return MataajerTheme.loadingWidget;
+              return const Center(child: CircularProgressIndicator());
             }
             return _shopCard(controller.activeShops[index], index);
           }),
@@ -104,7 +106,7 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
     );
   }
 
-  Widget _shopCard(ShopModule shop, int indedx) {
+  Widget _shopCard(ShopModule shop, int index) {
     bool isHasUnVisiblePopUpAds = controller.isHasUnVisiblePopUpAds(shop);
     bool isHasUnVisibleOffers = controller.isHasUnVisibleOffers(shop);
     return InkWell(
@@ -153,10 +155,10 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
                   Row(
                     children: [
                       CustomSwitch(
-                        value: shop.isVisible!,
+                        value: shop.verified ?? false,
                         onChanged: (v) {
-                          shop.isVisible = v;
-                          controller.updateShopVisibility(shop, indedx);
+                          shop.verified = v;
+                          controller.updateShopVerification(shop, index);
                         },
                       ),
                       SizedBox(width: 10.w),
@@ -170,6 +172,14 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
                     ],
                   ),
                 ],
+              ),
+              Text('الباقة: ${shop.getLastSubscriptionName}'),
+              Text(shop.remainingDaysForSubscription > 1 ? "متسمر" : "منتهي"),
+              RoundedButton(
+                text: 'كل الاشعارات',
+                press: () => controller.allNoitificatioDialog(shop),
+                verticalPadding: 0,
+                verticalMargin: 5,
               ),
               Stack(
                 children: [
@@ -243,6 +253,32 @@ class AdminActiveUsersView extends GetView<AdminActiveUsersController> {
                       );
                     }),
                 ],
+              ),
+              TextButton(
+                onPressed: () {
+                  URLLauncherFuntions.launchURL(shop.shopLink);
+                },
+                child: Text('الذهاب لرابط المتجر'),
+              ),
+              TextButton(
+                onPressed: () {
+                  var phone = shop.phone;
+                  if (phone == null) {
+                    CustomSnackBar.error('لا يوجد رقم هاتف');
+                    return;
+                  }
+                  if (!phone.startsWith('+966')) {
+                    phone = '+966${shop.phone}';
+                  }
+                  var whatsapplink = 'https://wa.me/$phone';
+
+                  URLLauncherFuntions.launchURL(whatsapplink);
+                },
+                child: Text('التواصل مع المتجر'),
+              ),
+              TextButton(
+                onPressed: () => controller.upgradeShop(shop, index),
+                child: Text('ترقية'),
               ),
             ],
           ),

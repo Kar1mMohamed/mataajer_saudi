@@ -34,8 +34,8 @@ class OfferModule {
   /// (+1): if = 1 that mean that this valid to 'this' day
   int get remainingDays {
     if (toDate == null) return 0;
-    var remainingDays = DateTime.now().difference(toDate!).inDays;
-    log('remainingDays: $remainingDays');
+    var remainingDays = toDate!.difference(DateTime.now()).inDays;
+    log('remainingDays: $remainingDays, toDate: $toDate');
 
     return remainingDays + 1;
   }
@@ -170,7 +170,7 @@ class OfferModule {
       'offerPercentage': offerPercentage,
       'imageURL': imageURL,
       'hits': hits,
-      'validTill': validTill != null ? Timestamp.fromDate(validTill!) : null,
+      'validTill': validTill != null ? validTill!.millisecondsSinceEpoch : null,
       'isStaticAd': isStaticAd,
       'isVisible': isVisible,
       'offerLink': offerLink,
@@ -208,9 +208,8 @@ class OfferModule {
           : null,
       imageURL: map['imageURL'] as String,
       hits: map['hits'] != null ? map['hits'] as int : null,
-      validTill: map['validTill'] != null
-          ? (map['validTill'] as Timestamp).toDate()
-          : null,
+      validTill:
+          map['validTill'] != null ? _handleTime(map['validTill']) : null,
       isStaticAd: map['isStaticAd'] != null ? map['isStaticAd'] as bool : null,
       isVisible: map['isVisible'] != null ? map['isVisible'] as bool : null,
       offerLink: map['offerLink'] != null ? map['offerLink'] as String : null,
@@ -282,5 +281,16 @@ class OfferModule {
         offerLink.hashCode ^
         priceBefore.hashCode ^
         priceAfter.hashCode;
+  }
+
+  static DateTime _handleTime(dynamic date) {
+    if (date is int) {
+      return DateTime.fromMillisecondsSinceEpoch(date);
+    } else if (date is Timestamp) {
+      return date.toDate();
+    } else {
+      // return DateTime.now();
+      throw Exception('Invalid date type');
+    }
   }
 }

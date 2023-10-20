@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_notification_controller.dart';
+import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/offer_module.dart';
 import 'package:mataajer_saudi/app/data/modules/pop_up_ad_module.dart';
 import 'package:mataajer_saudi/app/data/modules/shop_module.dart';
@@ -9,6 +10,7 @@ import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
 import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/loading_image.dart';
 import 'package:mataajer_saudi/app/widgets/preview_shop_dialog.dart';
+import 'package:mataajer_saudi/app/widgets/rounded_button.dart';
 
 import '../../../functions/firebase_auth.dart';
 
@@ -60,8 +62,8 @@ class AdminActiveUsersController extends GetxController {
     loading = true;
     updateAllShops();
     try {
-      final shopsList =
-          await FirebaseFirestoreHelper.instance.getShops(forAdmin: true);
+      final shopsList = await FirebaseFirestoreHelper.instance
+          .getShops(forAdmin: true, getSubscriptions: true);
       allShops = shopsList;
 
       await getAllPopUpAds();
@@ -80,8 +82,8 @@ class AdminActiveUsersController extends GetxController {
     loading = true;
     updateActiveShops();
     try {
-      final shopsList =
-          await FirebaseFirestoreHelper.instance.getShops(forAdmin: true);
+      final shopsList = await FirebaseFirestoreHelper.instance
+          .getShops(forAdmin: true, getSubscriptions: true);
       activeShops = shopsList.where((element) => element.isVisible!).toList();
     } catch (e) {
       log(e);
@@ -99,6 +101,24 @@ class AdminActiveUsersController extends GetxController {
 
     try {
       await FirebaseFirestoreHelper.instance.updateShopVisiblity(module);
+    } catch (e) {
+      log(e);
+    } finally {
+      loading = false;
+      isCurrentPageAllShops
+          ? updateAllShopsCard(index)
+          : updateActiveShopsCard(index);
+    }
+  }
+
+  void updateShopVerification(ShopModule module, int index) async {
+    loading = true;
+    isCurrentPageAllShops
+        ? updateAllShopsCard(index)
+        : updateActiveShopsCard(index);
+
+    try {
+      await FirebaseFirestoreHelper.instance.updateShopVerification(module);
     } catch (e) {
       log(e);
     } finally {
@@ -204,6 +224,57 @@ class AdminActiveUsersController extends GetxController {
                   onPressed: () {
                     Get.dialog(PreviewShopDialog(shop: shops[index]));
                   },
+                ),
+              ),
+            );
+          },
+          separatorBuilder: (context, index) => const SizedBox(height: 10),
+        ),
+      ),
+    ));
+
+    loading = false;
+    update();
+  }
+
+  void allNoitificatioDialog(ShopModule shop) async {
+    loading = true;
+    update();
+
+    final shops =
+        await FirebaseFirestoreHelper.instance.getUserNotifications(shop.uid!);
+
+    Get.dialog(Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Container(
+        width: 300.w,
+        height: 400.h,
+        padding: const EdgeInsets.all(12.0),
+        child: ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          itemCount: shops.length,
+          itemBuilder: (context, index) {
+            return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: ListTile(
+                title: Text(shops[index].title ?? ''),
+                subtitle: Text(shops[index].body ?? ''),
+                trailing: IconButton(
+                  onPressed: () async {
+                    await FirebaseFirestoreHelper.instance
+                        .deleteNotification(shops[index]);
+                    await getAllShops();
+                    Get.back();
+                  },
+                  icon: const Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                  ),
                 ),
               ),
             );
@@ -470,6 +541,58 @@ class AdminActiveUsersController extends GetxController {
     activeShops.sort((a, b) =>
         noOfUnVisibleOffers(b).compareTo(noOfUnVisibleOffers(a)) +
         noOfUnVisiblePopUpAds(b).compareTo(noOfUnVisiblePopUpAds(a)));
+  }
+
+  void upgradeShop(ShopModule shop, int index) async {
+    loading = true;
+    isCurrentPageAllShops ? updateAllShops() : updateActiveShops();
+    try {
+      var neededSubscriptionSettingUId = await Get.dialog(Dialog(
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: MainSettingsController.find.subscriptions
+                .map((e) => RoundedButton(
+                    text: e.name ?? '',
+                    press: () {
+                      Get.back(result: e.name);
+                    }))
+                .toList(),
+          ),
+        ),
+      ));
+
+      log('neededSubscriptionSettingUId $neededSubscriptionSettingUId');
+
+      if (neededSubscriptionSettingUId == null ||
+          neededSubscriptionSettingUId is! String ||
+          neededSubscriptionSettingUId.toString().isEmpty) return;
+
+      log('updating user subscription ${shop.subscriptions!.last.uid}');
+
+      var lastSubscription = shop.subscriptions!.last;
+
+      var subIndex = shop.subscriptions!
+          .indexWhere((element) => element.uid == lastSubscription.uid);
+
+      lastSubscription = lastSubscription.copyWith(
+          subscriptionSettingUID: neededSubscriptionSettingUId);
+
+      await FirebaseFirestoreHelper.instance.updateUserSubscription(
+          shop.uid!, shop.subscriptions!.last.uid!, lastSubscription);
+
+      shop.subscriptions?[subIndex] = lastSubscription;
+    } catch (e) {
+      print(e);
+    } finally {
+      loading = false;
+      isCurrentPageAllShops ? updateAllShops() : updateActiveShops();
+    }
   }
 
   @override

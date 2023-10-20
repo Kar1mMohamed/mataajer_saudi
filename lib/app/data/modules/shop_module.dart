@@ -59,6 +59,8 @@ class ShopModule {
   String? token;
   //
   SocialMediaLinks? socialMediaLinks;
+
+  bool? verified;
   ShopModule({
     this.uid,
     this.shopNumber,
@@ -88,12 +90,23 @@ class ShopModule {
     this.validTill,
     this.token,
     this.socialMediaLinks,
+    this.verified,
   }) {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return;
     if (Constants.admins.contains(currentUser.uid)) {
       // implement any code for admins only
     }
+  }
+
+  String get getLastSubscriptionName {
+    if (subscriptions == null || subscriptions!.isEmpty) return '';
+    final lastSub = subscriptions!.last;
+    final lastSubscriptionUID = lastSub.subscriptionSettingUID;
+    final subscriptionSetting = MainSettingsController.find.subscriptions
+        .firstWhereOrNull((element) => element.uid == lastSubscriptionUID);
+
+    return subscriptionSetting?.name ?? '';
   }
 
   String get getShopCategoryName {
@@ -252,7 +265,8 @@ class ShopModule {
   int get remainingDaysForSubscription {
     if (subscriptions == null || subscriptions!.isEmpty) {
       log('subscriptions is null or empty');
-      throw Exception('subscriptions is null or empty');
+      // throw Exception('subscriptions is null or empty');
+      return -1;
     }
 
     final lastSub = subscriptions!.last;
@@ -514,7 +528,7 @@ class ShopModule {
           .collection('subscriptions')
           .get()
           .then((value) => value.docs
-              .map((e) => SubscriptionModule.fromMap(e.data()))
+              .map((e) => SubscriptionModule.fromMap(e.data(), uid: e.id))
               .toList());
 
       log('shop subscriptions: ${subscriptions.map((e) => e.toMap()).toList()}');
@@ -554,6 +568,7 @@ class ShopModule {
   Future<void> updateShopServicesValidTill() async {
     try {
       final newAllowedDays = remainingDaysForSubscription;
+
       final validTill = DateTime.now().add(Duration(days: newAllowedDays));
 
       final offers = await FirebaseFirestore.instance
@@ -570,12 +585,14 @@ class ShopModule {
 
       for (var e in offers.docs) {
         log('update validTill for offer ${e.id}');
-        batch.update(e.reference, {'validTill': validTill});
+        batch.update(
+            e.reference, {'validTill': validTill.millisecondsSinceEpoch});
       }
 
       for (var e in popUpAds.docs) {
         log('update validTill for pop up ad ${e.id}');
-        batch.update(e.reference, {'validTill': validTill});
+        batch.update(
+            e.reference, {'validTill': validTill.millisecondsSinceEpoch});
       }
 
       await batch.commit();
@@ -622,6 +639,7 @@ class ShopModule {
     DateTime? validTill,
     String? token,
     SocialMediaLinks? socialMediaLinks,
+    bool? verified,
   }) {
     return ShopModule(
       uid: uid ?? this.uid,
@@ -655,6 +673,7 @@ class ShopModule {
       validTill: validTill ?? this.validTill,
       token: token ?? this.token,
       socialMediaLinks: socialMediaLinks ?? this.socialMediaLinks,
+      verified: verified ?? this.verified,
     );
   }
 
@@ -692,6 +711,7 @@ class ShopModule {
       'isFourPopUpAdsMonthly': isFourPopUpAdsMonthly,
       'token': token,
       'socialMediaLinks': socialMediaLinks?.toMap(),
+      'verified': verified,
     };
   }
 
@@ -757,6 +777,7 @@ class ShopModule {
           ? SocialMediaLinks.fromMap(
               map['socialMediaLinks'] as Map<String, dynamic>)
           : null,
+      verified: map['verified'] != null ? map['verified'] as bool : false,
     );
   }
 
@@ -812,7 +833,8 @@ class ShopModule {
         other.isCanSendFourNotification == isCanSendFourNotification &&
         other.validTill == validTill &&
         other.token == token &&
-        other.socialMediaLinks == socialMediaLinks;
+        other.socialMediaLinks == socialMediaLinks &&
+        other.verified == verified;
   }
 
   @override
@@ -844,7 +866,8 @@ class ShopModule {
         isCanSendFourNotification.hashCode ^
         validTill.hashCode ^
         token.hashCode ^
-        socialMediaLinks.hashCode;
+        socialMediaLinks.hashCode ^
+        verified.hashCode;
   }
 
   List<ShopModule> operator +(ShopModule other) {
