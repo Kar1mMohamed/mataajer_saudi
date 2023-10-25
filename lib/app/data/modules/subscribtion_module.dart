@@ -38,7 +38,7 @@ class SubscriptionModule {
           ? from.millisecondsSinceEpoch
           : Timestamp.fromDate(from),
       'to': transferTimeStampIntoDate
-          ? to.microsecondsSinceEpoch
+          ? to.millisecondsSinceEpoch
           : Timestamp.fromDate(to),
       'subscriptionSettingUID': subscriptionSettingUID,
     };
@@ -56,11 +56,21 @@ class SubscriptionModule {
   }
 
   static DateTime? _handleDateTime(dynamic dateTime) {
-    if (dateTime is Timestamp) {
-      return dateTime.toDate();
-    } else if (dateTime is int) {
-      return DateTime.fromMillisecondsSinceEpoch(dateTime);
-    } else {
+    try {
+      if (dateTime is Timestamp) {
+        return dateTime.toDate();
+      } else if (dateTime is int) {
+        try {
+          return DateTime.fromMillisecondsSinceEpoch(dateTime);
+        } catch (e) {
+          print(e);
+          return DateTime.fromMicrosecondsSinceEpoch(dateTime);
+        }
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print(e);
       return null;
     }
   }
