@@ -6,7 +6,7 @@ class MainPermisionsController extends GetxController {
     if (GetPlatform.isAndroid) {
       return Permission.mediaLibrary;
     } else if (GetPlatform.isIOS) {
-      return Permission.mediaLibrary;
+      return Permission.photos;
     }
     return Permission.storage;
   }
