@@ -59,11 +59,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAJAQLOPFJO7FsoV9t8yP2APRVrMaY5CVM',
-    appId: '1:6741381817:ios:aa9f106ee82e7d02a9c168',
+    appId: '1:6741381817:ios:7b106a68487af7c3a9c168',
     messagingSenderId: '6741381817',
     projectId: 'mataajer-saudi',
     storageBucket: 'mataajer-saudi.appspot.com',
-    iosClientId: '6741381817-dek6hq8d94kp8fpljnd8trtmfuniigj5.apps.googleusercontent.com',
-    iosBundleId: 'com.example.mataajerSaudi',
+    iosBundleId: 'com.matajersaudi.app',
   );
 }

@@ -377,26 +377,6 @@ class FirebaseFirestoreHelper {
 
   Future<void> sendFCMToken(String token, String docUID) async {
     try {
-      // final uid = GetStorage().read('fcm_token_uid') as String?;
-
-      // if (uid == null) {
-      //   final res =
-      //       await FirebaseFirestore.instance.collection('fcm_tokens').add({
-      //     'token': token,
-      //     'createdAt': DateTime.now().toIso8601String(),
-      //   });
-
-      //   await GetStorage().write('fcm_token_uid', res.id);
-      // } else {
-      //   await FirebaseFirestore.instance
-      //       .collection('fcm_tokens')
-      //       .doc(uid)
-      //       .update({
-      //     'token': token,
-      //     'createdAt': DateTime.now().toIso8601String(),
-      //   });
-      // }
-
       await FirebaseFirestore.instance
           .collection('fcm_tokens')
           .doc(docUID)
@@ -405,7 +385,7 @@ class FirebaseFirestoreHelper {
         'createdAt': DateTime.now().toIso8601String(),
       });
     } catch (e) {
-      GetStorage().remove('fcm_token_uid');
+      await GetStorage().remove('fcm_token_uid');
       log(e);
       rethrow;
     }

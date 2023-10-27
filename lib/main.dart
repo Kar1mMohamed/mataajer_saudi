@@ -42,6 +42,8 @@ void main() async {
   await GetStorage.init();
   await HiveHelper.initHive();
   await CloudMessaging.initialize();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   // await FirebaseAppCheck.instance.activate(
   //   androidProvider: Constants.isDebug
   //       ? AndroidProvider.debug
@@ -49,7 +51,6 @@ void main() async {
   //   appleProvider: AppleProvider.deviceCheck,
   // );
   // FirebaseFirestore.setLoggingEnabled(false);
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
 
   // ========================================================= //

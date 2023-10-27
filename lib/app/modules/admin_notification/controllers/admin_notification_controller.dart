@@ -59,7 +59,7 @@ class AdminNotificationController extends GetxController {
     }
 
     module.isActive = true;
-
+    updateNotificationCard(index);
     try {
       final shopModule = shops
           .firstWhereOrNull((element) => element.uid == module.senderUserUID);
@@ -124,8 +124,8 @@ class AdminNotificationController extends GetxController {
       log(e);
     } finally {
       module.sendingText = '';
-
       await onRefresh();
+      updateNotificationCard(index);
     }
   }
 

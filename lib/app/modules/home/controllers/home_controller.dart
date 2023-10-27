@@ -288,12 +288,13 @@ class HomeController extends GetxController {
     ]);
     Get.find<MainNotificationController>().getNotificationsCount();
 
+    isHomeFullyInitilized = true;
+    update();
+    update(['_appBarTitle']);
+
     if (FirebaseAuth.instance.currentUser == null) {
       PopUpAdsFunctions.showPopUpAd();
     }
-
-    isHomeFullyInitilized = true;
-    update();
   }
 
   Future<void> getHomeBanners() async {

@@ -428,26 +428,43 @@ class PreviewShopDialog extends StatelessWidget {
           CircleAvatar(
             radius: 40.r,
             backgroundImage: NetworkImage(
-              shop.image,
+              offer.imageURL,
               // height: 75,
               // width: 75,
             ),
           ),
           SizedBox(height: 10.h),
           Text(
-            shop.name,
+            offer.name,
             style: TextStyle(
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,
             ),
           ),
-          Text(
-            'نسبة الخصم ${offer.offerPercentage} %',
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w500,
+          Text.rich(
+            TextSpan(
+              children: <TextSpan>[
+                TextSpan(
+                  text: '${offer.priceBefore?.toStringAsFixed(2)}',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    color: Colors.grey.shade500,
+                    decoration: TextDecoration.lineThrough,
+                    fontSize: 12.sp,
+                  ),
+                ),
+                TextSpan(
+                  text: ' ${offer.priceAfter?.toStringAsFixed(2)} ر.س',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    color: MataajerTheme.mainColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12.sp,
+                  ),
+                ),
+              ],
             ),
-          ),
+          )
         ],
       ),
     );

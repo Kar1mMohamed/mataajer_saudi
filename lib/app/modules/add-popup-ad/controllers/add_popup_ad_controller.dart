@@ -99,7 +99,7 @@ class AddPopupAdController extends GetxController {
       await FirebaseFirestoreHelper.instance.addPopUpAd(module);
       return true;
     } catch (e) {
-      // KSnackBar.error(e.toString());
+      KSnackBar.error(e.toString());
       return false;
       // log(e.toString());
     } finally {

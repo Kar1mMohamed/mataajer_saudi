@@ -81,7 +81,7 @@ class PopUpAdModule {
       'description': description,
       'image': image,
       'isVisible': isVisible,
-      'validTill': validTill != null ? Timestamp.fromDate(validTill!) : null,
+      'validTill': validTill != null ? validTill!.millisecondsSinceEpoch : null,
       'url': url,
       'shopUID': shopUID,
       'hits': hits,

@@ -12,17 +12,24 @@ class PopUpAdsFunctions {
   PopUpAdsFunctions._();
 
   static void showPopUpAd({List<PopUpAdModule>? ads}) async {
+    print('showPopUpAd: ${ads?.length}');
     bool isUser = FirebaseAuth.instance.currentUser != null;
-    if (!isUser) {
+    if (isUser) {
+      print('showPopUpAd: user signed in');
       return;
     }
+
+    print('showPopUpAd: user not signed in');
     ads ??= Get.find<MainPopupAdsController>().ads;
     if (ads.isEmpty) {
       return;
     }
     final randomIndex = Random().nextInt(ads.length);
     final ad = ads[randomIndex];
+    print('showPopUpAd: randomIndex: $randomIndex');
+    print('showPopUpAd: ads: ${ads.length}');
     // show ad
+    print('showPopUpAd: showing ad ${ad.uid}');
     await Get.dialog(
       Dialog(
         clipBehavior: Clip.antiAlias,

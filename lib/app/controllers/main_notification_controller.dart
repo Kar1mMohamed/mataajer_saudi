@@ -12,7 +12,7 @@ class MainNotificationController extends GetxController {
 
   Future<void> getNotificationsCount() async {
     try {
-      final deviceUUID = GetStorage().read<String>('deviceUUID');
+      final deviceUUID = GetStorage().read<String>('deviceUUID_v2');
       log('deviceUUID: $deviceUUID');
       if (deviceUUID == null) {
         throw 'deviceUUID is null';

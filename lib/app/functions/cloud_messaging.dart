@@ -21,11 +21,15 @@ class CloudMessaging {
 
   static Future<void> initialize() async {
     try {
-      String? deviceUUID = GetStorage().read<String>('deviceUUID');
+      String? deviceUUID = GetStorage().read<String>('deviceUUID_v2');
+
       if (deviceUUID == null) {
         deviceUUID = UUIDFunctions.getDeviceUUID();
-        GetStorage().write('deviceUUID', deviceUUID);
+        await GetStorage().write('deviceUUID_v2', deviceUUID);
       }
+
+      log('deviceUUID: $deviceUUID');
+
       FirebaseMessaging messaging = FirebaseMessaging.instance;
 
       NotificationSettings settings = await messaging.requestPermission(
@@ -39,6 +43,8 @@ class CloudMessaging {
       );
 
       log('User granted permission: ${settings.authorizationStatus}');
+
+      sendFCMTokenToFirebase(deviceUUID); // TO SEND ANY VISITOR TO DATABASE
 
       FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
         log('Got a message whilst in the foreground!');
@@ -67,8 +73,6 @@ class CloudMessaging {
       });
 
       // initLocalNotifications();
-
-      sendFCMTokenToFirebase(deviceUUID); // TO SEND ANY VISITOR TO DATABASE
     } catch (e) {
       log(e);
     }

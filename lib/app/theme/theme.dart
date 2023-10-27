@@ -130,6 +130,17 @@ class MataajerTheme {
         colorScheme: ColorScheme.fromSwatch(primarySwatch: mainColorSwatch)
             .copyWith(background: Colors.transparent)
             .copyWith(background: Colors.white),
+        drawerTheme: const DrawerThemeData(
+          elevation: 1,
+          backgroundColor: Colors.white,
+        ),
+        dialogTheme: DialogTheme(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 1,
+          backgroundColor: Colors.white,
+        ),
       );
 
   static const Color mainBackgroundColor = Color(0xFFF5F5F5);
