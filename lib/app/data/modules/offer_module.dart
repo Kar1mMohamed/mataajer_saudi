@@ -35,7 +35,7 @@ class OfferModule {
   int get remainingDays {
     if (toDate == null) return 0;
     var remainingDays = toDate!.difference(DateTime.now()).inDays;
-    log('remainingDays: $remainingDays, toDate: $toDate');
+    log('remainingDays: $remainingDays, toDate: $toDate,uid: $uid');
 
     return remainingDays + 1;
   }

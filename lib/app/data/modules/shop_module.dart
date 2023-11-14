@@ -41,6 +41,8 @@ class ShopModule {
   List<SubscriptionModule>? subscriptions;
   String? shopLink;
   List<String>? keywords = [];
+
+  /// Default value for isVisible is true if not set
   bool? isVisible;
   String? userCategory;
   int? hits;
@@ -750,7 +752,7 @@ class ShopModule {
                   .map<String>((x) => x as String),
             )
           : [],
-      isVisible: map['isVisible'] != null ? map['isVisible'] as bool : false,
+      isVisible: map['isVisible'] != null ? map['isVisible'] as bool : true,
       userCategory:
           map['userCategory'] != null ? map['userCategory'] as String : null,
       hits: map['hits'] != null ? map['hits'] as int : 0,

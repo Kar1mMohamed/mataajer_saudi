@@ -24,6 +24,7 @@ class AdminUsersController extends GetxController {
   final phoneController = TextEditingController();
   String? shopImageURL;
   final shopNameController = TextEditingController();
+  final shopImageURLController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final shopLinkController = TextEditingController();
@@ -218,6 +219,7 @@ class AdminUsersController extends GetxController {
 
   void clearAll() {
     shopImageURL = null;
+    shopImageURLController.clear();
     shopNameController.clear();
     emailController.clear();
     passwordController.clear();

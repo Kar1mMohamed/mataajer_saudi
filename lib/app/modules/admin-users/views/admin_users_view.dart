@@ -158,6 +158,7 @@ class AdminUsersView extends GetView<AdminUsersController> {
     bool showPassword = false,
     void Function()? showPasswordTap,
     void Function(String)? onFieldSubmitted,
+    void Function(String)? onChanged,
     double? height,
   }) {
     return Column(
@@ -181,6 +182,7 @@ class AdminUsersView extends GetView<AdminUsersController> {
               fontWeight: FontWeight.w500,
               fontFamily: 'Tajawal',
             ),
+            onChanged: onChanged,
             obscureText: isPassword ? !showPassword : false,
             obscuringCharacter: '*',
             controller: controller,
@@ -398,6 +400,22 @@ class AdminUsersView extends GetView<AdminUsersController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      _fieldItem(
+                          'رابط الصورة', controller.shopImageURLController,
+                          onFieldSubmitted: (v) {
+                        controller.updateAdShopDialog();
+                      }),
+                      SizedBox(height: 10.h),
+                      Visibility(
+                        visible:
+                            controller.shopImageURLController.text.isNotEmpty,
+                        child: CircleAvatar(
+                          radius: 50.r,
+                          backgroundImage: NetworkImage(
+                              controller.shopImageURLController.text),
+                        ),
+                      ),
+                      SizedBox(height: 10.h),
                       _fieldItem(
                         'اسم المتجر',
                         controller.shopNameController,

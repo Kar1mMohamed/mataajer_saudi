@@ -136,6 +136,7 @@ class HomeView extends GetView<HomeController> {
                     builder: (_) {
                       return _ads(context);
                     }),
+                SizedBox(height: 75.h),
               ],
             ),
           );

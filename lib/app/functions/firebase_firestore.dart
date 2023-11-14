@@ -265,8 +265,14 @@ class FirebaseFirestoreHelper {
                 .toList());
       }
 
-      shops.removeWhere((element) =>
-          element.categories.isEmpty || element.categoriesUIDs.isEmpty);
+      shops.removeWhere((element) {
+        if (element.categories.isEmpty || element.categoriesUIDs.isEmpty) {
+          log('removed shop ${element.uid}, ${element.name}');
+          return true;
+        } else {
+          return false;
+        }
+      });
 
       log('shops: ${shops.length}');
 

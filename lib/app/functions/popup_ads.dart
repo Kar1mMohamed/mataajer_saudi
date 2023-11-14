@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math' as math;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,30 +6,31 @@ import 'package:get/get.dart';
 import 'package:mataajer_saudi/app/controllers/main_popup_ads_controller.dart';
 import 'package:mataajer_saudi/app/data/modules/pop_up_ad_module.dart';
 import 'package:mataajer_saudi/app/functions/url_launcher.dart';
+import 'package:mataajer_saudi/app/utils/log.dart';
 import 'package:mataajer_saudi/app/widgets/loading_image.dart';
 
 class PopUpAdsFunctions {
   PopUpAdsFunctions._();
 
   static void showPopUpAd({List<PopUpAdModule>? ads}) async {
-    print('showPopUpAd: ${ads?.length}');
+    log('showPopUpAd: ${ads?.length}');
     bool isUser = FirebaseAuth.instance.currentUser != null;
     if (isUser) {
-      print('showPopUpAd: user signed in');
+      log('showPopUpAd: user signed in');
       return;
     }
 
-    print('showPopUpAd: user not signed in');
+    log('showPopUpAd: user not signed in');
     ads ??= Get.find<MainPopupAdsController>().ads;
     if (ads.isEmpty) {
       return;
     }
-    final randomIndex = Random().nextInt(ads.length);
+    final randomIndex = math.Random().nextInt(ads.length);
     final ad = ads[randomIndex];
-    print('showPopUpAd: randomIndex: $randomIndex');
-    print('showPopUpAd: ads: ${ads.length}');
+    log('showPopUpAd: randomIndex: $randomIndex');
+    log('showPopUpAd: ads: ${ads.length}');
     // show ad
-    print('showPopUpAd: showing ad ${ad.uid}');
+    log('showPopUpAd: showing ad ${ad.uid}');
     await Get.dialog(
       Dialog(
         clipBehavior: Clip.antiAlias,

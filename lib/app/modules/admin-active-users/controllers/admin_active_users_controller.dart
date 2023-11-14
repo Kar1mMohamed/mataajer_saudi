@@ -66,8 +66,10 @@ class AdminActiveUsersController extends GetxController {
           .getShops(forAdmin: true, getSubscriptions: true);
       allShops = shopsList;
 
-      await getAllPopUpAds();
-      await getAllOffers();
+      await Future.wait([
+        getAllPopUpAds(),
+        getAllOffers(),
+      ]);
     } catch (e) {
       log(e);
     } finally {
@@ -84,7 +86,8 @@ class AdminActiveUsersController extends GetxController {
     try {
       final shopsList = await FirebaseFirestoreHelper.instance
           .getShops(forAdmin: true, getSubscriptions: true);
-      activeShops = shopsList.where((element) => element.isVisible!).toList();
+      activeShops =
+          shopsList.where((element) => element.verified ?? false).toList();
     } catch (e) {
       log(e);
     } finally {
@@ -141,8 +144,11 @@ class AdminActiveUsersController extends GetxController {
     loading = true;
     isCurrentPageAllShops ? updateAllShops() : updateActiveShops();
     try {
-      await FirebaseAuthFuntions.deleteUsersWithoutLogin(token: module.token);
-      await FirebaseFirestoreHelper.instance.deleteShop(module);
+      await Future.wait([
+        FirebaseAuthFuntions.deleteUsersWithoutLogin(token: module.token),
+        FirebaseFirestoreHelper.instance.deleteShop(module)
+      ]);
+
       isCurrentPageAllShops
           ? allShops.remove(module)
           : activeShops.remove(module);
