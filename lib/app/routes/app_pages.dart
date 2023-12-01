@@ -34,6 +34,8 @@ import '../modules/admin-users/bindings/admin_users_binding.dart';
 import '../modules/admin-users/views/admin_users_view.dart';
 import '../modules/admin_notification/bindings/admin_notification_binding.dart';
 import '../modules/admin_notification/views/admin_notification_view.dart';
+import '../modules/cart/bindings/cart_binding.dart';
+import '../modules/cart/views/cart_view.dart';
 import '../modules/favorites/bindings/favorites_binding.dart';
 import '../modules/favorites/views/favorites_view.dart';
 import '../modules/home/bindings/home_binding.dart';
@@ -166,6 +168,11 @@ class AppPages {
       name: _Paths.ALL_OFFERS,
       page: () => const AllOffersView(),
       binding: AllOffersBinding(),
+    ),
+    GetPage(
+      name: _Paths.CART,
+      page: () => const CartView(),
+      binding: CartBinding(),
     ),
   ];
 }

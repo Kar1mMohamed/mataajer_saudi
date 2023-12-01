@@ -164,19 +164,20 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
     return SingleChildScrollView(
       child: Column(
         children: [
+          SizedBox(height: 10.h),
           _fieldItem(
-            'البريد الالكتروني',
+            "رقم الجوال",
             controller.loginEmailController,
             imageAssetIcon: Assets.emailPNG,
           ),
-          SizedBox(height: 20.h),
-          _fieldItem('كلمة المرور', controller.loginPasswordController,
-              imageAssetIcon: Assets.passwordPNG,
-              isPassword: true,
-              showPassword: controller.showPassword, showPasswordTap: () {
-            controller.showPassword = !controller.showPassword;
-            controller.update();
-          }),
+          // SizedBox(height: 20.h),
+          // _fieldItem('كلمة المرور', controller.loginPasswordController,
+          //     imageAssetIcon: Assets.passwordPNG,
+          //     isPassword: true,
+          //     showPassword: controller.showPassword, showPasswordTap: () {
+          //   controller.showPassword = !controller.showPassword;
+          //   controller.update();
+          // }),
           SizedBox(height: 10.h),
           Row(
             children: [
@@ -189,36 +190,36 @@ class ShopLoginAndRegisterView extends GetView<ShopLoginAndRegisterController> {
           ),
           SizedBox(height: 10.h),
           RoundedButton(
-            text: 'تسجيل الدخول',
+            text: 'تأكيد رقم الجوال',
             press: controller.login,
             radius: 12,
           ),
           SizedBox(height: 5.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'هل نسيت كلمة المرور؟',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF626262),
-                ),
-              ),
-              SizedBox(width: 5.w),
-              InkWell(
-                onTap: controller.resetPasswordFunction,
-                child: const Text(
-                  'استعدها',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: MataajerTheme.mainColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     const Text(
+          //       'هل نسيت كلمة المرور؟',
+          //       style: TextStyle(
+          //         fontSize: 13,
+          //         fontWeight: FontWeight.w500,
+          //         color: Color(0xFF626262),
+          //       ),
+          //     ),
+          //     SizedBox(width: 5.w),
+          //     InkWell(
+          //       onTap: controller.resetPasswordFunction,
+          //       child: const Text(
+          //         'استعدها',
+          //         style: TextStyle(
+          //           fontSize: 13,
+          //           fontWeight: FontWeight.w500,
+          //           color: MataajerTheme.mainColor,
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );

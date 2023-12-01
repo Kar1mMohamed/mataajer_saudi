@@ -97,23 +97,22 @@ class AllOffersView extends GetView<AllOffersController> {
         width: 100.w,
         child: Column(
           children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.r),
-                  image: DecorationImage(
-                    image: NetworkImage(offer.imageURL),
-                    fit: BoxFit.cover,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      spreadRadius: 1,
-                      blurRadius: 1,
-                      offset: const Offset(0, 1), // changes position of shadow
-                    ),
-                  ],
+            Container(
+              height: 100.h,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.r),
+                image: DecorationImage(
+                  image: NetworkImage(offer.imageURL),
+                  fit: BoxFit.cover,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 1,
+                    blurRadius: 1,
+                    offset: const Offset(0, 1), // changes position of shadow
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 10.h),

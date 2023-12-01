@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:mataajer_saudi/app/controllers/main_settings_controller.dart';
 import 'package:mataajer_saudi/app/data/app/category_with_offers.dart';
 import 'package:mataajer_saudi/app/data/modules/offer_module.dart';
 import 'package:mataajer_saudi/app/functions/firebase_firestore.dart';
@@ -9,18 +10,18 @@ class AllOffersController extends GetxController {
 
   RxList<CategoryWithOffers> categoriesWithOffers = <CategoryWithOffers>[].obs;
 
-  // List<OfferModule> dumpOffers(OfferModule offerModule) {
-  //   var mainCategories = Get.find<MainSettingsController>().mainCategories;
-  //   var offers = <OfferModule>[];
-  //   for (var mainCategory in mainCategories) {
-  //     var newOffer = offerModule.copyWith(
-  //       categoryUIDs: [mainCategory.uid!],
-  //     );
-  //     offers.add(newOffer);
-  //   }
+  List<OfferModule> dumpOffers(OfferModule offerModule) {
+    var mainCategories = Get.find<MainSettingsController>().mainCategories;
+    var offers = <OfferModule>[];
+    for (var mainCategory in mainCategories) {
+      var newOffer = offerModule.copyWith(
+        categoryUIDs: [mainCategory.uid!],
+      );
+      offers.add(newOffer);
+    }
 
-  //   return offers;
-  // }
+    return offers;
+  }
 
   Future<void> getOffers() async {
     loading.value = true;
@@ -29,6 +30,15 @@ class AllOffersController extends GetxController {
       var offers = await FirebaseFirestoreHelper.instance.getOffers();
 
       var preparedOffers = await prepare(offers);
+
+      var dump = dumpOffers(OfferModule(
+        name: 'ساعة يد',
+        categoryUIDs: ['ساعات'],
+        imageURL:
+            'https://images-na.ssl-images-amazon.com/images/I/71Swqqe7XAL._AC_SX466_.jpg',
+      ));
+
+      // preparedOffers.addAll(await prepare(dump));
 
       categoriesWithOffers.addAll(preparedOffers);
 
